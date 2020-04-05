@@ -9,7 +9,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, run_async, DispatcherHandlerStop, MessageHandler, Filters, CallbackQueryHandler
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, BAN_STICKER, WHITELIST_USERS, TIGER_USERS
+from tg_bot import dispatcher, BAN_STICKER, WHITELIST_USERS, SARDEGNA_USERS
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import (is_user_admin, bot_admin, user_admin_no_reply, user_admin,
                                                      can_restrict)
@@ -30,18 +30,18 @@ def warn(user: User, chat: Chat, reason: str, message: Message, warner: User = N
         # message.reply_text("Damn admins, They are too far to be One Punched!")
         return
 
-    if user.id in TIGER_USERS:
+    if user.id in SARDEGNA_USERS:
         if warner:
             message.reply_text("Tigers cant be warned.")
         else:
-            message.reply_text("Tiger triggered an auto warn filter!\n I can't warn tigers but they should avoid abusing this.")
+            message.reply_text("Tiger triggered an auto warn filter!\n I can't warn Sardegnas but they should avoid abusing this.")
         return
 
     if user.id in WHITELIST_USERS:
         if warner:
-            message.reply_text("Wolf disasters are warn immune.")
+            message.reply_text("Neptunia Nations are warn immune.")
         else:
-            message.reply_text("Wolf Disaster triggered an auto warn filter!\n I can't warn wolves but they should avoid abusing this.")
+            message.reply_text("Neptunia Nation triggered an auto warn filter!\n I can't warn Neptunians but they should avoid abusing this.")
         return
 
     if warner:
@@ -64,7 +64,7 @@ def warn(user: User, chat: Chat, reason: str, message: Message, warner: User = N
         for warn_reason in reasons:
             reply += f"\n - {html.escape(warn_reason)}"
 
-        message.bot.send_sticker(chat.id, BAN_STICKER)  # Saitama's sticker
+        message.bot.send_sticker(chat.id, BAN_STICKER)  # Kigyō's sticker
         keyboard = []
         log_reason = (f"<b>{html.escape(chat.title)}:</b>\n"
                       f"#WARN_BAN\n"

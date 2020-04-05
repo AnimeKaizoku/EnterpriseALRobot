@@ -80,8 +80,8 @@
          "required": false,
          "value": "615304572"
       },
-      "TIGER_USERS": {
-         "description": "A space separated list of user IDs who you wanna assign as tiger users.",
+      "SARDEGNA_USERS": {
+         "description": "A space separated list of user IDs who you wanna assign as Sardegna users.",
          "required": false,
          "value": ""
       },
@@ -111,8 +111,8 @@
       "weeb",
       "group",
       "manager",
-      "Saitama"
+      "Kigyō"
    ],
-   "name": "Saitama Robot",
-   "repository": "https://github.com/AnimeKaizoku/SaitamaRobot"
+   "name": "Kigyō bot",
+   "repository": "https://github.com/AnimeKaizoku/Kigyōbot"
 }

@@ -90,13 +90,13 @@ def chatbot(bot: Bot, update: Update):
 __mod_name__ = "Chatbot"
 
 __help__ = """
-Chatbot utilizes the CoffeeHouse API and allows Saitama to talk back making your chat more interactive.
-This is an ongoing upgrade and is only available in your chats if you reach out to @OnePunchSupport and ask for it. 
+Chatbot utilizes the CoffeeHouse API and allows Kigyō to talk back making your chat more interactive.
+This is an ongoing upgrade and is only available in your chats if you reach out to @YorktownEagleUnion and ask for it. 
 
 In future we might make it open for any chat and controllable by group admins.
 
 Powered by CoffeeHouse (https://coffeehouse.intellivoid.net/) from @Intellivoid
-Commands: These only work for Saitama Staff users. 
+Commands: These only work for Kigyō Staff users. 
  - /addchat : Enables Chatbot mode in the chat.
  - /rmchat  : Disables Chatbot mode in the chat.
 """

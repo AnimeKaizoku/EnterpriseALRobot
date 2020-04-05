@@ -6,7 +6,7 @@ from telegram.error import BadRequest
 from telegram.ext import MessageHandler, CommandHandler, Filters, run_async
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, WHITELIST_USERS, TIGER_USERS
+from tg_bot import dispatcher, WHITELIST_USERS, SARDEGNA_USERS
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin, user_admin, can_restrict, connection_status
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql import antiflood_sql as sql
@@ -28,7 +28,7 @@ def check_flood(bot: Bot, update: Update) -> str:
     # ignore admins and whitelists
     if (is_user_admin(chat, user.id) 
             or user.id in WHITELIST_USERS
-            or user.id in TIGER_USERS):
+            or user.id in SARDEGNA_USERS):
         sql.update_flood(chat.id, None)
         return log_message
 

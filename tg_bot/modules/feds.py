@@ -97,7 +97,7 @@ def new_fed(bot: Bot, update: Update):
 
 		x = sql.new_fed(user.id, fed_name, fed_id)
 		if not x:
-			update.effective_message.reply_text("Can't federate! Please contact @OnePunchSupport if the problem persists.")
+			update.effective_message.reply_text("Can't federate! Please contact @YorktownEagleUnion if the problem persists.")
 			return
 
 		update.effective_message.reply_text("*You have succeeded in creating a new federation!*"\
@@ -216,7 +216,7 @@ def join_fed(bot: Bot, update: Update, args: List[str]):
 
 		x = sql.chat_join_fed(args[0], chat.title, chat.id)
 		if not x:
-			message.reply_text("Failed to join federation! Please contact @OnePunchSupport should this problem persists!")
+			message.reply_text("Failed to join federation! Please contact @YorktownEagleUnion should this problem persists!")
 			return
 
 		get_fedlog = sql.get_fed_log(args[0])
@@ -557,7 +557,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
 			return
 		x = sql.fban_user(fed_id, fban_user_id, fban_user_name, fban_user_lname, fban_user_uname, reason, int(time.time()))
 		if not x:
-			message.reply_text("Failed to ban from the federation! If this problem continues, contact @OnePunchSupport.")
+			message.reply_text("Failed to ban from the federation! If this problem continues, contact @YorktownEagleUnion.")
 			return
 
 		fed_chats = sql.all_fed_chats(fed_id)
@@ -660,7 +660,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
 
 	x = sql.fban_user(fed_id, fban_user_id, fban_user_name, fban_user_lname, fban_user_uname, reason, int(time.time()))
 	if not x:
-		message.reply_text("Failed to ban from the federation! If this problem continues, contact @OnePunchSupport.")
+		message.reply_text("Failed to ban from the federation! If this problem continues, contact @YorktownEagleUnion.")
 		return
 
 	fed_chats = sql.all_fed_chats(fed_id)
@@ -960,7 +960,7 @@ def set_frules(bot: Bot, update: Update, args: List[str]):
 			markdown_rules = markdown_parser(txt, entities=msg.parse_entities(), offset=offset)
 		x = sql.set_frules(fed_id, markdown_rules)
 		if not x:
-			update.effective_message.reply_text("Big F! There is an error while setting federation rules! If you wondered why please ask it in @OnePunchSupport !")
+			update.effective_message.reply_text("Big F! There is an error while setting federation rules! If you wondered why please ask it in @YorktownEagleUnion !")
 			return
 
 		rules = sql.get_fed_info(fed_id)['frules']
@@ -1103,8 +1103,8 @@ def fed_ban_list(bot: Bot, update: Update, args: List[str], chat_data):
 				backups += json.dumps(json_parser)
 				backups += "\n"
 			with BytesIO(str.encode(backups)) as output:
-				output.name = "saitama_fbanned_users.json"
-				update.effective_message.reply_document(document=output, filename="saitama_fbanned_users.json",
+				output.name = "Kigyō_fbanned_users.json"
+				update.effective_message.reply_document(document=output, filename="Kigyō_fbanned_users.json",
 													caption="Total {} User are blocked by the Federation {}.".format(len(getfban), info['fname']))
 			return
 		elif args[0] == 'csv':
@@ -1128,8 +1128,8 @@ def fed_ban_list(bot: Bot, update: Update, args: List[str], chat_data):
 				backups += "{user_id},{first_name},{last_name},{user_name},{reason}".format(user_id=users, first_name=getuserinfo['first_name'], last_name=getuserinfo['last_name'], user_name=getuserinfo['user_name'], reason=getuserinfo['reason'])
 				backups += "\n"
 			with BytesIO(str.encode(backups)) as output:
-				output.name = "saitama_fbanned_users.csv"
-				update.effective_message.reply_document(document=output, filename="saitama_fbanned_users.csv",
+				output.name = "Kigyō_fbanned_users.csv"
+				update.effective_message.reply_document(document=output, filename="Kigyō_fbanned_users.csv",
 													caption="Total {} User are blocked by Federation {}.".format(len(getfban), info['fname']))
 			return
 

@@ -29,7 +29,7 @@ def slap(bot: Bot, update: Update, args: List[str]):
     user_id = extract_user(message, args)
 
     if user_id == bot.id:
-        temp = random.choice(fun_strings.SLAP_SAITAMA_TEMPLATES)
+        temp = random.choice(fun_strings.SLAP_Kigyō_TEMPLATES)
 
         if isinstance(temp, list):
             if temp[2] == "tmute":

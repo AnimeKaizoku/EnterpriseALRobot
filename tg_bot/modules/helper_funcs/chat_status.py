@@ -2,11 +2,11 @@ from functools import wraps
 
 from telegram import Bot, Chat, ChatMember, Update, ParseMode
 
-from tg_bot import dispatcher, DEL_CMDS, WHITELIST_USERS, TIGER_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS
+from tg_bot import dispatcher, DEL_CMDS, WHITELIST_USERS, SARDEGNA_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS
 
 
 def is_whitelist_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return any(user_id in user for user in [WHITELIST_USERS, TIGER_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS])
+    return any(user_id in user for user in [WHITELIST_USERS, SARDEGNA_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS])
 
 
 def is_support_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
@@ -49,7 +49,7 @@ def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -
             or user_id in SUDO_USERS
             or user_id in DEV_USERS
             or user_id in WHITELIST_USERS
-            or user_id in TIGER_USERS
+            or user_id in SARDEGNA_USERS
             or chat.all_members_are_administrators):
         return True
 
@@ -124,7 +124,7 @@ def whitelist_plus(func):
         if user and is_whitelist_plus(chat, user.id):
             return func(bot, update, *args, **kwargs)
         else:
-            update.effective_message.reply_text("You don't have access to use this.\nVisit @OnePunchSupport")
+            update.effective_message.reply_text("You don't have access to use this.\nVisit @YorktownEagleUnion")
 
     return is_whitelist_plus_func
 

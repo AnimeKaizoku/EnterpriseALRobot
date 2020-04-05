@@ -10,7 +10,7 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.global_bans_sql as sql
-from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, DEV_USERS, SUPPORT_USERS, TIGER_USERS, WHITELIST_USERS, STRICT_GBAN, GBAN_LOGS
+from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, DEV_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, STRICT_GBAN, GBAN_LOGS
 from tg_bot.modules.helper_funcs.chat_status import user_admin, is_user_admin, support_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.helper_funcs.misc import send_to_list
@@ -61,23 +61,23 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     if int(user_id) in DEV_USERS:
-        message.reply_text("That user is part of the Association\nI can't act against our own.")
+        message.reply_text("That user is part of the Union\nI can't act against our own.")
         return
 
     if int(user_id) in SUDO_USERS:
-        message.reply_text("I spy, with my little eye... a disaster! Why are you guys turning on each other?")
+        message.reply_text("I spy, with my little eye... a Nation! Why are you guys turning on each other?")
         return
 
     if int(user_id) in SUPPORT_USERS:
-        message.reply_text("OOOH someone's trying to gban a Demon Disaster! *grabs popcorn*")
+        message.reply_text("OOOH someone's trying to gban a Sakura Nation! *grabs popcorn*")
         return
 
-    if int(user_id) in TIGER_USERS:
+    if int(user_id) in SARDEGNA_USERS:
         message.reply_text("That's a Tiger! They cannot be banned!")
         return
 
     if int(user_id) in WHITELIST_USERS:
-        message.reply_text("That's a Wolf! They cannot be banned!")
+        message.reply_text("That's a Neptunia! They cannot be banned!")
         return
 
     if user_id == bot.id:
@@ -197,7 +197,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
     try:
         bot.send_message(user_id,
                          "You have been globally banned from all groups where I have administrative permissions."
-                         "If you think that this was a mistake, you may appeal your ban here: @OnePunchSupport",
+                         "If you think that this was a mistake, you may appeal your ban here: @YorktownEagleUnion",
                          parse_mode=ParseMode.HTML)
     except:
         pass  # bot probably blocked by user
@@ -328,7 +328,7 @@ def check_and_ban(update, user_id, should_message=True):
         if should_message:
             update.effective_message.reply_text("Alert: This user is globally banned.\n"
                                                 "*bans them from here*.\n"
-                                                "Appeal chat: @OnePunchSupport")
+                                                "Appeal chat: @YorktownEagleUnion")
 
 
 @run_async
@@ -387,7 +387,7 @@ def __user_info__(user_id):
         user = sql.get_gbanned_user(user_id)
         if user.reason:
             text += f"\n<b>Reason:</b> {html.escape(user.reason)}"
-        text += "\n<b>Appeal Chat:</b> @OnePunchSupport"
+        text += "\n<b>Appeal Chat:</b> @YorktownEagleUnion"
     else:
         text = text.format("No")
     return text
@@ -408,7 +408,7 @@ __help__ = """
 Gbans, also known as global bans, are used by the bot owners to ban spammers across all groups. This helps protect \
 you and your groups by removing spam flooders as quickly as possible. They can be disabled for you group by calling \
 /gbanstat
-Note: You can appeal gbans or ask gbans at @OnePunchSupport
+Note: You can appeal gbans or ask gbans at @YorktownEagleUnion
 """
 
 GBAN_HANDLER = CommandHandler("gban", gban, pass_args=True)

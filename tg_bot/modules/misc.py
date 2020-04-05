@@ -8,7 +8,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, run_async, Filters
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, DEV_USERS, TIGER_USERS, WHITELIST_USERS
+from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, DEV_USERS, SARDEGNA_USERS, WHITELIST_USERS
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, sudo_plus
@@ -134,29 +134,29 @@ def info(bot: Bot, update: Update, args: List[str]):
     except BadRequest:
         pass
 
-    disaster_level_present = False
+    Nation_level_present = False
 
     if user.id == OWNER_ID:
-        text += "\nThe Disaster level of this person is 'God'."
-        disaster_level_present = True
+        text += "\nThe Nation level of this person is 'God'."
+        Nation_level_present = True
     elif user.id in DEV_USERS:
-        text += "\nThis member is one of 'Hero Association'."
-        disaster_level_present = True
+        text += "\nThis member is one of 'Hero Union'."
+        Nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += "\nThe Disaster level of this person is 'Dragon'."
-        disaster_level_present = True
+        text += "\nThe Nation level of this person is 'Royal'."
+        Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += "\nThe Disaster level of this person is 'Demon'."
-        disaster_level_present = True
-    elif user.id in TIGER_USERS:
-        text += "\nThe Disaster level of this person is 'Tiger'."
-        disaster_level_present = True
+        text += "\nThe Nation level of this person is 'Sakura'."
+        Nation_level_present = True
+    elif user.id in SARDEGNA_USERS:
+        text += "\nThe Nation level of this person is 'Tiger'."
+        Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += "\nThe Disaster level of this person is 'Wolf'."
-        disaster_level_present = True
+        text += "\nThe Nation level of this person is 'Neptunia'."
+        Nation_level_present = True
 
-    if disaster_level_present:
-        text += ' [<a href="http://t.me/{}?start=disasters">?</a>]'.format(bot.username)
+    if Nation_level_present:
+        text += ' [<a href="http://t.me/{}?start=Nations">?</a>]'.format(bot.username)
 
     text += "\n"
     for mod in USER_INFO:

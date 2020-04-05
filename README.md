@@ -1,14 +1,14 @@
 ![Enterprise](https://images.alphacoders.com/104/1043959.jpg)
 # Kigyō bot
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6141417ceaf84545bab6bd671503df51)](https://app.codacy.com/gh/AnimeKaizoku/SaitamaRobot?utm_source=github.com&utm_medium=referral&utm_content=AnimeKaizoku/SaitamaRobot&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6141417ceaf84545bab6bd671503df51)](https://app.codacy.com/gh/AnimeKaizoku/Kigyōbot?utm_source=github.com&utm_medium=referral&utm_content=AnimeKaizoku/Kigyōbot&utm_campaign=Badge_Grade_Settings)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Dank-del/EnterpriseAL)
 
 
 A modular telegram Python bot running on python3 with an sqlalchemy database.
 
-Originally a marie fork - Saitama has evolved further and was built to be more useful for Anime Chats. 
+Originally a marie fork - Kigyō has evolved further and was built to be more useful for Anime Chats. 
 
-Can be found on telegram as [SaitamaRobot](https://t.me/SaitamaRobot).
+Can be found on telegram as [Kigyōbot](https://t.me/Kigyōbot).
 
 The Support group can be reached out to at [One Punch Support](https://t.me/OnePunchSupport), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available. 
 
@@ -22,7 +22,7 @@ News channel as at [One Punch Updates](https://t.me/OnePunchUpdates)
   
  
  
- Note: This instruction set is just a copy paste from marie, note that [One Punch Support](https://t.me/OnePunchSupport) aims to handle support for @SaitamaRobot and now how to setup your own fork, if you find this bit confusing/tough to understand then we recommend you ask a dev, kindly avoid asking how to setup the bot instance in the support chat, it aims to help our own instance of the bot. 
+ Note: This instruction set is just a copy paste from marie, note that [One Punch Support](https://t.me/OnePunchSupport) aims to handle support for @Kigyōbot and now how to setup your own fork, if you find this bit confusing/tough to understand then we recommend you ask a dev, kindly avoid asking how to setup the bot instance in the support chat, it aims to help our own instance of the bot. 
   
   ## Setting up the bot (Read this before trying to use!):
 Please make sure to use python3.6, as I cannot guarantee everything will work as expected on older python versions!
@@ -189,7 +189,7 @@ For queries or any issues regarding the bot please open an issue ticket or visit
 For starters click on this button
 
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/AnimeKaizoku/SaitamaRobot.git)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/AnimeKaizoku/Kigyōbot.git)
 
 Fill in all the details , Deploy.
 Now go to https://dashboard.heroku.com/apps/(app-name)/resources ( Replace (app-name) with your app name )
