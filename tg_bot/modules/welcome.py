@@ -112,9 +112,9 @@ def new_member(bot: Bot, update: Update, job_queue: JobQueue):
 
             # Welcome Whitelisted
             elif new_mem.id in SARDEGNA_USERS:
-                update.effective_message.reply_text("Oof! A Tiger Nation just joined!")
+                update.effective_message.reply_text("Oof! A Sardegna Nation just joined!")
 
-            # Welcome Tigers
+            # Welcome Sardegnas
             elif new_mem.id in WHITELIST_USERS:
                 update.effective_message.reply_text("Oof! A Neptunia Nation just joined!")
 

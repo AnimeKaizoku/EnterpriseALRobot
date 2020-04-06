@@ -32,9 +32,9 @@ def warn(user: User, chat: Chat, reason: str, message: Message, warner: User = N
 
     if user.id in SARDEGNA_USERS:
         if warner:
-            message.reply_text("Tigers cant be warned.")
+            message.reply_text("Sardegnas cant be warned.")
         else:
-            message.reply_text("Tiger triggered an auto warn filter!\n I can't warn Sardegnas but they should avoid abusing this.")
+            message.reply_text("Sardegna triggered an auto warn filter!\n I can't warn Sardegnas but they should avoid abusing this.")
         return
 
     if user.id in WHITELIST_USERS:

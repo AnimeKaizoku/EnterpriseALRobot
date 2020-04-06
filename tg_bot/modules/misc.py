@@ -149,7 +149,7 @@ def info(bot: Bot, update: Update, args: List[str]):
         text += "\nThe Nation level of this person is 'Sakura'."
         Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += "\nThe Nation level of this person is 'Tiger'."
+        text += "\nThe Nation level of this person is 'Sardegna'."
         Nation_level_present = True
     elif user.id in WHITELIST_USERS:
         text += "\nThe Nation level of this person is 'Neptunia'."

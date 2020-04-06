@@ -34,7 +34,7 @@ Nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
 Owner has complete bot access, including bot adminship in chats Kigyō is at.
 \n*Royals* - Have super user access, can gban, manage Nations lower than them and are admins in Kigyō.
 \n*Sakuras* - Have access go globally ban users across Kigyō.
-\n*Tigers* - Same as Neptunians but can unban themselves if banned.
+\n*Sardegnas* - Same as Neptunians but can unban themselves if banned.
 \n*Neptunians* - Cannot be banned, muted flood kicked but can be manually banned by admins.
 \n*Disclaimer*: The Nation levels in Kigyō are there for troubleshooting, support, banning potential scammers.
 Report abuse or ask us more on these at [Eagle Union](https://t.me/OnePunchSupport).
@@ -222,22 +222,22 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
         data = json.load(infile)
 
     if user_id in SUDO_USERS:
-        rt += "This member is a Royal Nation, Demoting to Tiger."
+        rt += "This member is a Royal Nation, Demoting to Sardegna."
         data['sudos'].remove(user_id)
         SUDO_USERS.remove(user_id)
 
     if user_id in SUPPORT_USERS:
-        rt += "This user is already a Sakura Nation, Demoting to Tiger."
+        rt += "This user is already a Sakura Nation, Demoting to Sardegna."
         data['supports'].remove(user_id)
         SUPPORT_USERS.remove(user_id)
 
     if user_id in WHITELIST_USERS:
-        rt += "This user is already a Neptunia Nation, Demoting to Tiger."
+        rt += "This user is already a Neptunia Nation, Demoting to Sardegna."
         data['whitelists'].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
     if user_id in SARDEGNA_USERS:
-        message.reply_text("This user is already a Tiger.")
+        message.reply_text("This user is already a Sardegna.")
         return ""
 
     data['Sardegnas'].append(user_id)
@@ -247,7 +247,7 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
         json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
-        rt + f"\nSuccessfully promoted {user_member.first_name} to a Tiger Nation!")
+        rt + f"\nSuccessfully promoted {user_member.first_name} to a Sardegna Nation!")
 
     log_message = (f"#SARDEGNA\n"
                    f"<b>Admin:</b> {mention_html(user.id, user.first_name)} \n"
@@ -280,22 +280,22 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
         data = json.load(infile)
 
     if user_id in SUDO_USERS:
-        rt += "This member is a Royal Nation, Demoting to Tiger."
+        rt += "This member is a Royal Nation, Demoting to Sardegna."
         data['sudos'].remove(user_id)
         SUDO_USERS.remove(user_id)
 
     if user_id in SUPPORT_USERS:
-        rt += "This user is already a Sakura Nation, Demoting to Tiger."
+        rt += "This user is already a Sakura Nation, Demoting to Sardegna."
         data['supports'].remove(user_id)
         SUPPORT_USERS.remove(user_id)
 
     if user_id in WHITELIST_USERS:
-        rt += "This user is already a Neptunia Nation, Demoting to Tiger."
+        rt += "This user is already a Neptunia Nation, Demoting to Sardegna."
         data['whitelists'].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
     if user_id in SARDEGNA_USERS:
-        message.reply_text("This user is already a Tiger.")
+        message.reply_text("This user is already a Sardegna.")
         return ""
 
     data['Sardegnas'].append(user_id)
@@ -305,7 +305,7 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
         json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
-        rt + f"\nSuccessfully promoted {user_member.first_name} to a Tiger Nation!")
+        rt + f"\nSuccessfully promoted {user_member.first_name} to a Sardegna Nation!")
 
     log_message = (f"#SARDEGNA\n"
                    f"<b>Admin:</b> {mention_html(user.id, user.first_name)} \n"
@@ -475,7 +475,7 @@ def removeSardegna(bot: Bot, update: Update, args: List[str]) -> str:
 
         return log_message
     else:
-        message.reply_text("This user is not a Tiger Nation!")
+        message.reply_text("This user is not a Sardegna Nation!")
         return ""
 
 
@@ -497,7 +497,7 @@ def whitelistlist(bot: Bot, update: Update):
 @run_async
 @whitelist_plus
 def Sardegnalist(bot: Bot, update: Update):
-    reply = "<b>Known Tiger Nations 🐯:</b>\n"
+    reply = "<b>Known Sardegna Nations 🐯:</b>\n"
     for each_user in SARDEGNA_USERS:
         user_id = int(each_user)
         try:
@@ -556,7 +556,7 @@ __help__ = """
  - /Eagle - Lists all Hero Union members.
  - /Royals - Lists all Royal Nations.
  - /Sakuras - Lists all Sakura Nations.
- - /Sardegnas - Lists all Tigers Nations.
+ - /Sardegnas - Lists all Sardegnas Nations.
  - /Neptunians - Lists all Neptunia Nations.
  Note: These commands list users with special bot priveleges and can only be used by them.
  You can visit @YorktownEagleUnion to query more about these.
