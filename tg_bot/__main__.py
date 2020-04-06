@@ -22,14 +22,14 @@ I am an Anime themed group management bot.
 
 You can find the list of available commands with /help.
 
-[Kigyō's Repo](github.com/AnimeKaizoku/Kigyōbot) 
-See [Basic Configuration Checklist](t.me/OnePunchUpdates/29) on how to secure your groups.
+[Kigyō's Repo](https://github.com/Dank-del/EnterpriseAL) 
+
 The support group chat is at @YorktownEagleUnion
 """
 
 HELP_STRINGS = """
 Hey there! My name is *{}*.
-I'm a Hero For Fun and help admins manage their groups with One Punch! Have a look at the following for an idea of some of \
+Have a look at the following for an idea of some of \
 the things I can help you with.
 
 *Main* commands available:
