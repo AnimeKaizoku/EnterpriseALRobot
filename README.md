@@ -1,4 +1,4 @@
-![Enterprise](https://images.alphacoders.com/104/1043959.jpg)
+![Enterprise](https://imgur.com/a/G6P3AKP)
 # Kigyō bot
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Dank-del/EnterpriseAL)
