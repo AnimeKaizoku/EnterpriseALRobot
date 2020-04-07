@@ -1,4 +1,4 @@
-![Enterprise]([img]https://i.imgur.com/IYqzviU.jpg[/img])
+![Enterprise](https://i.imgur.com/IYqzviU.jpg)
 # Kigyō bot
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Dank-del/EnterpriseAL)
