@@ -37,7 +37,7 @@ Owner has complete bot access, including bot adminship in chats Kigyō is at.
 \n*Sardegnas* - Same as Neptunians but can unban themselves if banned.
 \n*Neptunians* - Cannot be banned, muted flood kicked but can be manually banned by admins.
 \n*Disclaimer*: The Nation levels in Kigyō are there for troubleshooting, support, banning potential scammers.
-Report abuse or ask us more on these at [Eagle Union](https://t.me/OnePunchSupport).
+Report abuse or ask us more on these at [Eagle Union](https://t.me/YorktownEagleUnion).
 """
 # do not async, not a handler 
 def send_Nations(update):
