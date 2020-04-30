@@ -8,6 +8,7 @@ psycopg2-binary
 feedparser
 pynewtonmath
 spongemock
+tswift
 zalgo-text
 geopy
 nltk
@@ -19,5 +20,3 @@ googletrans
 jikanpy
 speedtest-cli
 coffeehouse
-tswift
-PyLyrics
