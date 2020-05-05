@@ -7,6 +7,7 @@
 
 
 A modular telegram Python bot running on python3 with an sqlalchemy database.
+Concept taken from [Saitama Robot](https://github.com/AnimeKaizoku/SaitamaRobot)
 
 Originally a marie fork - Kigyō has evolved further and was built to be more useful for Anime Chats. 
 
