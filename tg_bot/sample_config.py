@@ -43,6 +43,7 @@ class Config(object):
     TIME_API_KEY = None # Get one from https://timezonedb.com/register
     AI_API_KEY = None # Coffeehouse chatbot api key, get one from https://coffeehouse.intellivoid.info/
     WALL_API = None # Get one from https://wall.alphacoders.com/api.php
+    LASTFM_API_KEY = None # Get one from https://last.fm/api/
 
 
 class Production(Config):
