@@ -62,7 +62,6 @@ if ENV:
     URL = os.environ.get('URL', "")  # Does not contain token
     PORT = int(os.environ.get('PORT', 5000))
     CERT_PATH = os.environ.get("CERT_PATH")
-
     DB_URI = os.environ.get('DATABASE_URL')
     DONATION_LINK = os.environ.get('DONATION_LINK')
     LOAD = os.environ.get("LOAD", "").split()
@@ -76,7 +75,7 @@ if ENV:
     TIME_API_KEY = os.environ.get('TIME_API_KEY', None)
     AI_API_KEY = os.environ.get('AI_API_KEY', None)
     WALL_API = os.environ.get('WALL_API', None)
-
+    LASTFM_API_KEY = os.environ.get('LASTFM_API_KEY', None)
 
 else:
     from tg_bot.config import Development as Config
@@ -135,7 +134,7 @@ else:
     TIME_API_KEY = Config.TIME_API_KEY
     AI_API_KEY = Config.AI_API_KEY
     WALL_API = Config.WALL_API
-
+    LASTFM_API_KEY = Config.LASTFM_API_KEY
 SUDO_USERS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
 
