@@ -22,7 +22,7 @@ I am an Anime themed group management bot.
 
 You can find the list of available commands with /help.
 
-[Kigyō's Repo](https://github.com/Dank-del/EnterpriseAL) 
+[Kigyō's Repo](https://github.com/Dank-del/EnterpriseALRobot) 
 
 The support group chat is at @YorktownEagleUnion
 """
