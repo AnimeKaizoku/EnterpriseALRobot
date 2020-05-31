@@ -18,7 +18,7 @@ from tg_bot.modules.helper_funcs.misc import paginate_modules
 
 PM_START_TEXT = """
 Hi {}, my name is {}! 
-I am an Anime themed group management bot.
+I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 You can find the list of available commands with /help.
 
@@ -29,7 +29,7 @@ The support group chat is at @YorktownEagleUnion
 
 HELP_STRINGS = """
 Hey there! My name is *{}*.
-I'm a part of Eagle Union.
+I'm a part of [Eagle Union](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 Have a look at the following for an idea of some of \
 the things I can help you with.
