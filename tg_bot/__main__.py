@@ -51,6 +51,9 @@ Source code from [SaitamaRobot](https://github.com/AnimeKaizoku/SaitamaRobot)
 And the following:
 """.format(dispatcher.bot.first_name, "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n")
 
+
+KIGYO_IMG = "https://telegra.ph/file/d5a2e552ba53871952547.jpg"
+
 DONATE_STRING = """Heya, glad to hear you want to donate!
 Kigyō is hosted on one of Kaizoku's Servers and doesn't require any donations as of now but \
 You can donate to the original writer of the Base code, Paul
@@ -142,9 +145,10 @@ def start(bot: Bot, update: Update, args: List[str]):
 
         else:
             first_name = update.effective_user.first_name
-            update.effective_message.reply_text(
+            update.effective_message.reply_photo(KIGYO_IMG,
                 PM_START_TEXT.format(escape_markdown(first_name), escape_markdown(bot.first_name), OWNER_ID),
-                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Add Kigyō to your group",
+                                                                       url="t.me/{}?startgroup=true".format(bot.username))]]))
     else:
         update.effective_message.reply_text("Yo, whadup?")
 
