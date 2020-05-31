@@ -52,7 +52,7 @@ And the following:
 """.format(dispatcher.bot.first_name, "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n")
 
 
-KIGYO_IMG = "https://telegra.ph/file/d5a2e552ba53871952547.jpg"
+KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
 DONATE_STRING = """Heya, glad to hear you want to donate!
 Kigyō is hosted on one of Kaizoku's Servers and doesn't require any donations as of now but \
