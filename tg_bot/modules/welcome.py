@@ -88,6 +88,11 @@ def new_member(bot: Bot, update: Update, job_queue: JobQueue):
         sent = None
         should_mute = True
         welcome_bool = True
+        
+        if sw != None:
+                sw_ban = sw.get_ban(new_mem.id)
+                if sw_ban:
+                    return
 
         if should_welc:
 
@@ -266,6 +271,12 @@ def left_member(bot: Bot, update: Update):
     if should_goodbye:
         left_mem = update.effective_message.left_chat_member
         if left_mem:
+          
+          if sw != None:
+                sw_ban = sw.get_ban(left_mem.id)
+                if sw_ban:
+                    return
+                  
             # Ignore bot being kicked
             if left_mem.id == bot.id:
                 return
@@ -277,7 +288,7 @@ def left_member(bot: Bot, update: Update):
 
             # Give the devs a special goodbye
             elif left_mem.id in DEV_USERS:
-                update.effective_message.reply_text("See you later at the Hero's Union!")
+                update.effective_message.reply_text("See you later at the Eagle Union!")
                 return
 
             # if media goodbye, use appropriate function for it
