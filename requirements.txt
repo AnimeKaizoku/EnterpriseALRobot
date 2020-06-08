@@ -20,3 +20,4 @@ googletrans
 jikanpy
 speedtest-cli
 coffeehouse
+spamwatch
