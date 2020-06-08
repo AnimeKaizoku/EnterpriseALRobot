@@ -323,6 +323,16 @@ def gbanlist(bot: Bot, update: Update):
 
 def check_and_ban(update, user_id, should_message=True):
     
+    chat = update.effective_chat  # type: Optional[Chat]
+    sw_ban = sw.get_ban(int(user_id))
+    if sw_ban:
+        update.effective_chat.kick_member(user_id)
+        if should_message:
+            update.effective_message.reply_markdown("**This user is detected as spam bot by SpamWatch and have been removed!**\n\nPlease visit @SpamWatchSupport to appeal!")
+            return
+        else:
+            return
+ 
     if sql.is_user_gbanned(user_id):
         update.effective_chat.kick_member(user_id)
         if should_message:
@@ -409,6 +419,11 @@ Gbans, also known as global bans, are used by the bot owners to ban spammers acr
 you and your groups by removing spam flooders as quickly as possible. They can be disabled for you group by calling \
 /gbanstat
 Note: You can appeal gbans or ask gbans at @YorktownEagleUnion
+
+Kigyo also integrates @Spamwatch API into gbans to remove Spammers as much as possible from your chatroom!
+*What is SpamWatch?*
+SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/f584b643c6f4be0b1de53.jpg)
+Kigyo will constantly help banning spammers off from your group automatically So, you don't have to worry about spammers storming your group.
 """
 
 GBAN_HANDLER = CommandHandler("gban", gban, pass_args=True)
