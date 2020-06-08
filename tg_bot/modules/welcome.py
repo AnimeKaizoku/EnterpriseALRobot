@@ -272,7 +272,7 @@ def left_member(bot: Bot, update: Update):
         left_mem = update.effective_message.left_chat_member
         if left_mem:
           
-          if sw != None:
+            if sw != None:
                 sw_ban = sw.get_ban(left_mem.id)
                 if sw_ban:
                     return
