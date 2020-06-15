@@ -23,15 +23,13 @@ I am an Anime themed group management bot with some fun extras [;)](https://tele
 You can find the list of available commands with /help.
 
 [Kigyō's Repo](https://github.com/Dank-del/EnterpriseALRobot) 
-AI and blacklist module from [TheRealPhoenixBot](https://github.com/rsktg/TheRealPhoenixBot.git)
-Source code from [SaitamaRobot](https://github.com/AnimeKaizoku/SaitamaRobot)
 
 The support group chat is at @YorktownEagleUnion
 """
 
 HELP_STRINGS = """
 Hey there! My name is *{}*.
-I'm a part of [Eagle Union](https://telegra.ph/file/095d7e696096e21b06447.jpg)
+I'm a part of Eagle Union
 Have a look at the following for an idea of some of \
 the things I can help you with.
 *Main* commands available:
