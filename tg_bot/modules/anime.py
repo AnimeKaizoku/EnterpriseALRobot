@@ -180,17 +180,6 @@ def manga(bot: Bot, update: Update, args):
         msg.reply_text(rep, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(keyb))
         
         
-__help__ = """
-Get information about anime, manga or characters with the help of this module! All data is fetched from [MyAnimeList](https://myanimelist.net).
-
-*Available commands:*
- - /sanime <anime>: returns information about the anime.
- - /scharacter <character>: returns information about the character.
- - /smanga <manga>: returns information about the manga.
- - /upcoming: returns a list of new anime in the upcoming seasons.
- """
-
-__mod_name__ = "MyAnimeList"
         
         
 ANIME_HANDLER = CommandHandler("sanime", anime, pass_args=True)

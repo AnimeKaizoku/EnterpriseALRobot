@@ -27,14 +27,11 @@ def weebify(bot: Bot, update: Update, args: List[str]):
         message.reply_text(string)
 
 
-__help__ = """
- - /weebify <text>: returns a weebified text
- """
+
 
 WEEBIFY_HANDLER = DisableAbleCommandHandler("weebify", weebify, pass_args=True)
 
 dispatcher.add_handler(WEEBIFY_HANDLER)
 
-__mod_name__ = "Weebify"
 __command_list__ = ["weebify"]
 __handlers__ = [WEEBIFY_HANDLER]

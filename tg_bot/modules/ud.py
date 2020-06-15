@@ -18,15 +18,10 @@ def ud(bot: Bot, update: Update):
     message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN)
 
 
-__help__ = """
- - /ud <word>: Type the word or expression you want to search use.
- - /urban <word>: Same as /ud
-"""
 
 UD_HANDLER = DisableAbleCommandHandler(["ud", "urban"], ud)
 
 dispatcher.add_handler(UD_HANDLER)
 
-__mod_name__ = "Urban dictionary"
 __command_list__ = ["ud", "urban"]
 __handlers__ = [UD_HANDLER]

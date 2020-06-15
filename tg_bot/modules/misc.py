@@ -156,7 +156,7 @@ def info(bot: Bot, update: Update, args: List[str]):
         Nation_level_present = True
 
     if Nation_level_present:
-        text += ' [<a href="http://t.me/{}?start=Nations">?</a>]'.format(bot.username)
+        text += ' [<a href="http://t.me/{}?start=nations">?</a>]'.format(bot.username)
 
     text += "\n"
     for mod in USER_INFO:
@@ -209,6 +209,70 @@ __help__ = """
  - /gifid: reply to a gif to me to tell you its file ID.
  - /info: get information about a user.
  - /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
+ - /reverse: Does a reverse image search of the media which it was replied to.
+ - /ud <word>: Type the word or expression you want to search use.
+ - /urban <word>: Same as /ud
+ - /paste - Do a paste at `neko.bin`
+ - /react: Reacts with a random reaction
+ - /weebify <text>: returns a weebified text
+ - /lyrics <song>: returns the lyrics of that song.
+ - /tr (language code) as reply to a long message.
+ - /time <query> : Gives information about a timezone.
+ - /cash : currency converter
+   example syntax: /cash 1 USD INR
+──────────────────────────────────────
+*Notes*
+ - /get <notename>: get the note with this notename
+ - #<notename>: same as /get
+ - /notes or /saved: list all saved notes in this chat
+
+If you would like to retrieve the contents of a note without any formatting, use `/get <notename> noformat`. This can \
+be useful when updating a current note.
+
+*Admin only:*
+ - /save <notename> <notedata>: saves notedata as a note with name notename
+A button can be added to a note by using standard markdown link syntax - the link should just be prepended with a \
+`buttonurl:` section, as such: `[somelink](buttonurl:example.com)`. Check /markdownhelp for more info.
+ - /save <notename>: save the replied message as a note with name notename
+ - /clear <notename>: clear note with this name
+──────────────────────────────────────
+*Last.FM*
+Share what you're what listening to with the help of this module!
+*Available commands:*
+ - /setuser <username>: sets your last.fm username.
+ - /clearuser: removes your last.fm username from the bot's database.
+ - /lastfm: returns what you're scrobbling on last.fm.
+──────────────────────────────────────
+*MyAnimeList*
+Get information about anime, manga or characters.
+*Available commands:*
+ - /sanime <anime>: returns information about the anime.
+ - /scharacter <character>: returns information about the character.
+ - /smanga <manga>: returns information about the manga.
+ - /upcoming: returns a list of new anime in the upcoming seasons.
+──────────────────────────────────────
+*Math*
+Solves complex math problems using https://newton.now.sh
+ - /math: Simplify `/simplify 2^2+2(2)`
+ - /factor: Factor `/factor x^2 + 2x`
+ - /derive: Derive `/derive x^2+2x`
+ - /integrate: Integrate `/integrate x^2+2x`
+ - /zeroes: Find 0's `/zeroes x^2+2x`
+ - /tangent: Find Tangent `/tangent 2lx^3`
+ - /area: Area Under Curve `/area 2:4lx^3`
+ - /cos: Cosine `/cos pi`
+ - /sin: Sine `/sin 0`
+ - /tan: Tangent `/tan 0`
+ - /arccos: Inverse Cosine `/arccos 1`
+ - /arcsin: Inverse Sine `/arcsin 0`
+ - /arctan: Inverse Tangent `/arctan 0`
+ - /abs: Absolute Value `/abs -1`
+ - /log: Logarithm `/log 2l8`
+
+__Keep in mind__: To find the tangent line of a function at a certain x value, send the request as c|f(x) where c is the given x value and f(x) is the function expression, the separator is a vertical bar '|'. See the table above for an example request.
+To find the area under a function, send the request as c:d|f(x) where c is the starting x value, d is the ending x value, and f(x) is the function under which you want the curve between the two x values.
+To compute fractions, enter expressions as numerator(over)denominator. For example, to process 2/4 you must send in your expression as 2(over)4. The result expression will be in standard math notation (1/2, 3/4).
+
 """
 
 ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)

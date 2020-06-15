@@ -130,6 +130,13 @@ __help__ = """
  - /bluetext : check urself :V
  - /roll : Roll a dice.
  - /rlg : Join ears,nose,mouth and create an emo ;-;
+ - /shout <keyword>: write anything you want to give loud shout.
+    ```
+    t e s t
+    e e
+    s   s
+    t     t
+    ```
 """
 
 RUNS_HANDLER = DisableAbleCommandHandler("runs", runs)

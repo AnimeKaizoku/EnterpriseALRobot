@@ -29,14 +29,9 @@ The support group chat is at @YorktownEagleUnion
 
 HELP_STRINGS = """
 Hey there! My name is *{}*.
-I'm a part of [Eagle Union](https://telegra.ph/file/095d7e696096e21b06447.jpg)
-
+I'm a part of *Eagle Union*
 Have a look at the following for an idea of some of \
 the things I can help you with.
-
-AI and blacklist module from [TheRealPhoenixBot](https://github.com/rsktg/TheRealPhoenixBot.git)
-Source code from [SaitamaRobot](https://github.com/AnimeKaizoku/SaitamaRobot)
-
 *Main* commands available:
  - /start: start the bot
  - /help: PM's you this message.
@@ -45,8 +40,6 @@ Source code from [SaitamaRobot](https://github.com/AnimeKaizoku/SaitamaRobot)
  - /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
-
-
 {}
 And the following:
 """.format(dispatcher.bot.first_name, "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n")
@@ -55,7 +48,7 @@ And the following:
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
 DONATE_STRING = """Heya, glad to hear you want to donate!
-Kigyō is hosted on one of Kaizoku's Servers and doesn't require any donations as of now but \
+Kigyō is hosted on one of Heroku Servers and doesn't require any donations as of now but \
 You can donate to the original writer of the Base code, Paul
 There are two ways of supporting him; [PayPal](paypal.me/PaulSonOfLars), or [Monzo](monzo.me/paulnionvestergaardlarsen)."""
 
