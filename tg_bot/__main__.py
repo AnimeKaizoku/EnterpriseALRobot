@@ -29,7 +29,7 @@ The support group chat is at @YorktownEagleUnion
 
 HELP_STRINGS = """
 Hey there! My name is *{}*.
-I'm a part of Eagle Union
+I'm a part of *Eagle Union*
 Have a look at the following for an idea of some of \
 the things I can help you with.
 *Main* commands available:
@@ -48,7 +48,7 @@ And the following:
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
 DONATE_STRING = """Heya, glad to hear you want to donate!
-Kigyō is hosted on one of Kaizoku's Servers and doesn't require any donations as of now but \
+Kigyō is hosted on one of Heroku Servers and doesn't require any donations as of now but \
 You can donate to the original writer of the Base code, Paul
 There are two ways of supporting him; [PayPal](paypal.me/PaulSonOfLars), or [Monzo](monzo.me/paulnionvestergaardlarsen)."""
 
