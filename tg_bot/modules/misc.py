@@ -209,6 +209,53 @@ __help__ = """
  - /gifid: reply to a gif to me to tell you its file ID.
  - /info: get information about a user.
  - /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
+ - /reverse: Does a reverse image search of the media which it was replied to.
+ - /ud <word>: Type the word or expression you want to search use.
+ - /urban <word>: Same as /ud
+ - /paste - Do a paste at `neko.bin`
+ - /react: Reacts with a random reaction
+ - /weebify <text>: returns a weebified text
+ - /lyrics <song>: returns the lyrics of that song.
+ - /tr (language code) as reply to a long message.
+ - /time <query> : Gives information about a timezone.
+ - /shout <keyword>: write anything you want to give loud shout.
+    ```
+    t e s t
+    e e
+    s   s
+    t     t
+    ```
+──────────────────────────────────────
+*Notes*
+ - /get <notename>: get the note with this notename
+ - #<notename>: same as /get
+ - /notes or /saved: list all saved notes in this chat
+
+If you would like to retrieve the contents of a note without any formatting, use `/get <notename> noformat`. This can \
+be useful when updating a current note.
+
+*Admin only:*
+ - /save <notename> <notedata>: saves notedata as a note with name notename
+A button can be added to a note by using standard markdown link syntax - the link should just be prepended with a \
+`buttonurl:` section, as such: `[somelink](buttonurl:example.com)`. Check /markdownhelp for more info.
+ - /save <notename>: save the replied message as a note with name notename
+ - /clear <notename>: clear note with this name
+──────────────────────────────────────
+*Last.FM*
+Share what you're what listening to with the help of this module!
+*Available commands:*
+ - /setuser <username>: sets your last.fm username.
+ - /clearuser: removes your last.fm username from the bot's database.
+ - /lastfm: returns what you're scrobbling on last.fm.
+──────────────────────────────────────
+*MyAnimeList*
+Get information about anime, manga or characters.
+*Available commands:*
+ - /sanime <anime>: returns information about the anime.
+ - /scharacter <character>: returns information about the character.
+ - /smanga <manga>: returns information about the manga.
+ - /upcoming: returns a list of new anime in the upcoming seasons.
+
 """
 
 ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)
