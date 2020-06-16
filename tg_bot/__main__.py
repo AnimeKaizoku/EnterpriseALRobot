@@ -36,7 +36,6 @@ the things I can help you with.
  - /start: start the bot
  - /help: PM's you this message.
  - /help <module name>: PM's you info about that module.
- - /donate: information about how to donate!
  - /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
@@ -47,10 +46,7 @@ And the following:
 
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
-DONATE_STRING = """Heya, glad to hear you want to donate!
-Kigyō is hosted on one of Heroku Servers and doesn't require any donations as of now but \
-You can donate to the original writer of the Base code, Paul
-There are two ways of supporting him; [PayPal](paypal.me/PaulSonOfLars), or [Monzo](monzo.me/paulnionvestergaardlarsen)."""
+DONATE_STRING = """I'm free for everyone!! """
 
 IMPORTED = {}
 MIGRATEABLE = []
