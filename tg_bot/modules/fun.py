@@ -130,6 +130,10 @@ __help__ = """
  - /bluetext : check urself :V
  - /roll : Roll a dice.
  - /rlg : Join ears,nose,mouth and create an emo ;-;
+ - /shout <keyword>: write anything you want to give loud shout.
+ - /stickerid: reply to a sticker to get its ID.
+ - /getsticker: reply to a sticker to get the raw PNG image.
+ - /steal: reply to a sticker or image to add it to your pack.
 """
 
 RUNS_HANDLER = DisableAbleCommandHandler("runs", runs)

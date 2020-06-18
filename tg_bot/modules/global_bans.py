@@ -10,7 +10,7 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.global_bans_sql as sql
-from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, DEV_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, STRICT_GBAN, GBAN_LOGS
+from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, DEV_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, STRICT_GBAN, GBAN_LOGS, sw
 from tg_bot.modules.helper_funcs.chat_status import user_admin, is_user_admin, support_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.helper_funcs.misc import send_to_list
@@ -422,7 +422,7 @@ Note: You can appeal gbans or ask gbans at @YorktownEagleUnion
 
 Kigyo also integrates @Spamwatch API into gbans to remove Spammers as much as possible from your chatroom!
 *What is SpamWatch?*
-SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/f584b643c6f4be0b1de53.jpg)
+SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/ac12a2c6b831dd005015b.jpg)
 Kigyo will constantly help banning spammers off from your group automatically So, you don't have to worry about spammers storming your group.
 """
 

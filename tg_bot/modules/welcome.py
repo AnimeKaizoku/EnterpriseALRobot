@@ -12,7 +12,7 @@ from telegram.ext import MessageHandler, Filters, CommandHandler, run_async, Cal
 from telegram.utils.helpers import mention_markdown, mention_html, escape_markdown
 
 import tg_bot.modules.sql.welcome_sql as sql
-from tg_bot import dispatcher, OWNER_ID, DEV_USERS, SUDO_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, LOGGER
+from tg_bot import dispatcher, OWNER_ID, DEV_USERS, SUDO_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, LOGGER, sw
 from tg_bot.modules.helper_funcs.chat_status import user_admin, is_user_ban_protected
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from tg_bot.modules.helper_funcs.msg_types import get_welcome_type
@@ -606,18 +606,18 @@ def user_button(bot: Bot, update: Update):
 
 WELC_HELP_TXT = ("Your group's welcome/goodbye messages can be personalised in multiple ways. If you want the messages"
                  " to be individually generated, like the default welcome message is, you can use *these* variables:\n"
-                 " - `{{first}}`: this represents the user's *first* name\n"
-                 " - `{{last}}`: this represents the user's *last* name. Defaults to *first name* if user has no "
+                 " - `{first}`: this represents the user's *first* name\n"
+                 " - `{last}`: this represents the user's *last* name. Defaults to *first name* if user has no "
                  "last name.\n"
-                 " - `{{fullname}}`: this represents the user's *full* name. Defaults to *first name* if user has no "
+                 " - `{fullname}`: this represents the user's *full* name. Defaults to *first name* if user has no "
                  "last name.\n"
-                 " - `{{username}}`: this represents the user's *username*. Defaults to a *mention* of the user's "
+                 " - `{username}`: this represents the user's *username*. Defaults to a *mention* of the user's "
                  "first name if has no username.\n"
-                 " - `{{mention}}`: this simply *mentions* a user - tagging them with their first name.\n"
-                 " - `{{id}}`: this represents the user's *id*\n"
-                 " - `{{count}}`: this represents the user's *member number*.\n"
-                 " - `{{chatname}}`: this represents the *current chat name*.\n"
-                 "\nEach variable MUST be surrounded by `{{}}` to be replaced.\n"
+                 " - `{mention}`: this simply *mentions* a user - tagging them with their first name.\n"
+                 " - `{id}`: this represents the user's *id*\n"
+                 " - `{count}`: this represents the user's *member number*.\n"
+                 " - `{chatname}`: this represents the *current chat name*.\n"
+                 "\nEach variable MUST be surrounded by `{}` to be replaced.\n"
                  "Welcome messages also support markdown, so you can make any elements bold/italic/code/links. "
                  "Buttons are also supported, so you can make your welcomes look awesome with some nice intro "
                  "buttons.\n"
@@ -717,7 +717,7 @@ dispatcher.add_handler(WELCOMEMUTE_HANDLER)
 dispatcher.add_handler(BUTTON_VERIFY_HANDLER)
 dispatcher.add_handler(WELCOME_MUTE_HELP)
 
-__mod_name__ = "Welcomes/Goodbyes"
+__mod_name__ = "Greetings"
 __command_list__ = ["welcome", "goodbye", "setwelcome", "setgoodbye", "resetwelcome", "resetgoodbye",
                     "welcomemute", "cleanwelcome", "welcomehelp", "welcomemutehelp"]
 __handlers__ = [NEW_MEM_HANDLER, LEFT_MEM_HANDLER, WELC_PREF_HANDLER, GOODBYE_PREF_HANDLER,

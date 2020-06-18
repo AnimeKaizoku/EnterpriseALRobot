@@ -92,18 +92,10 @@ def pingall(bot: Bot, update: Update):
 
     update.effective_message.reply_text(reply_msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
-
-__help__ = """
- - /ping - get ping time of bot to telegram server
- - /pingall - get all listed ping time
-"""
-
 PING_HANDLER = DisableAbleCommandHandler("ping", ping)
 PINGALL_HANDLER = DisableAbleCommandHandler("pingall", pingall)
 
 dispatcher.add_handler(PING_HANDLER)
 dispatcher.add_handler(PINGALL_HANDLER)
-
-__mod_name__ = "Ping"
 __command_list__ = ["ping", "pingall"]
 __handlers__ = [PING_HANDLER, PINGALL_HANDLER]
