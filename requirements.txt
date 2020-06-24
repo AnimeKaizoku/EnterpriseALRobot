@@ -21,3 +21,4 @@ jikanpy
 speedtest-cli
 coffeehouse
 spamwatch
+telethon
