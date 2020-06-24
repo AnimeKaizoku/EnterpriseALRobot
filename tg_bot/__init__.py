@@ -4,6 +4,7 @@ import sys
 import time
 import spamwatch
 import telegram.ext as tg
+from telethon import TelegramClient
 
 StartTime = time.time()
 
@@ -62,6 +63,8 @@ if ENV:
     WEBHOOK = bool(os.environ.get('WEBHOOK', False))
     URL = os.environ.get('URL', "")  # Does not contain token
     PORT = int(os.environ.get('PORT', 5000))
+    API_ID = os.environ.get('API_ID', None)
+    API_HASH = os.environ.get('API_HASH', None)
     CERT_PATH = os.environ.get("CERT_PATH")
     DB_URI = os.environ.get('DATABASE_URL')
     DONATION_LINK = os.environ.get('DONATION_LINK')
@@ -78,10 +81,11 @@ if ENV:
     WALL_API = os.environ.get('WALL_API', None)
     LASTFM_API_KEY = os.environ.get('LASTFM_API_KEY', None)
     MOE_API = os.environ.get('MOE_API', "")
+    spamwatch_api = os.environ.get('sw_api', None)
 
 else:
     from tg_bot.config import Development as Config
-    TOKEN = Config.API_KEY
+    TOKEN = Config.TOKEN
 
     try:
         OWNER_ID = int(Config.OWNER_ID)
@@ -122,7 +126,8 @@ else:
     URL = Config.URL
     PORT = Config.PORT
     CERT_PATH = Config.CERT_PATH
-
+    API_ID =  Config.API_ID
+    API_HASH = Config.API_HASH
     DB_URI = Config.SQLALCHEMY_DATABASE_URI
     DONATION_LINK = Config.DONATION_LINK
     LOAD = Config.LOAD
@@ -138,12 +143,11 @@ else:
     WALL_API = Config.WALL_API
     MOE_API = Config.MOE_API
     LASTFM_API_KEY = Config.LASTFM_API_KEY
+    spamwatch_api = Config.spamwatch_api
 SUDO_USERS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
 
 # SpamWatch
-spamwatch_api = os.environ.get('sw_api', None)
-
 if spamwatch_api == "None":
     sw = None
     LOGGER.warning("SpamWatch API key is missing! Check your config.env.")
@@ -152,6 +156,7 @@ else:
     
     
 updater = tg.Updater(TOKEN, workers=WORKERS)
+telethn = TelegramClient("lynda", API_ID, API_HASH)
 dispatcher = updater.dispatcher
 
 SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
