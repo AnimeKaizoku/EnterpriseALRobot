@@ -19,6 +19,7 @@ The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEa
 
 ## Setting up the bot (Read this before trying to use!):
 
+
 # How to setup
 <details>
   <summary>Click to expand!! </summary>
