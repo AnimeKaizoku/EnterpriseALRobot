@@ -1,9 +1,8 @@
 ![Enterprise](https://i.imgur.com/IYqzviU.jpg)
 # Kigyō bot
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/04423a6d18ab43d396ab738fca5ba804)](https://www.codacy.com/manual/Dank-del/EnterpriseAL?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseAL&amp;utm_campaign=Badge_Grade)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Dank-del/EnterpriseAL)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Dank-del/EnterpriseALRobot) ![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-green) [![Join Support!](https://img.shields.io/badge/Support%20Chat-EagleUnion-red)](https://t.me/YorktownEagleUnion) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseALRobot&amp;utm_campaign=Badge_Grade)
 
 
 A modular telegram Python bot running on python3 with an sqlalchemy database.
@@ -18,6 +17,7 @@ The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEa
  
 
 ## Setting up the bot (Read this before trying to use!):
+
 
 # How to setup
 <details>
