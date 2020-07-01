@@ -220,7 +220,7 @@ __help__ = """
  - /time <query> : Gives information about a timezone.
  - /cash : currency converter
    example syntax: /cash 1 USD INR
-──────────────────────────────────────
+───────────────────────────────
 *Notes*
  - /get <notename>: get the note with this notename
  - #<notename>: same as /get
@@ -235,22 +235,25 @@ A button can be added to a note by using standard markdown link syntax - the lin
 `buttonurl:` section, as such: `[somelink](buttonurl:example.com)`. Check /markdownhelp for more info.
  - /save <notename>: save the replied message as a note with name notename
  - /clear <notename>: clear note with this name
-──────────────────────────────────────
+───────────────────────────────
 *Last.FM*
 Share what you're what listening to with the help of this module!
 *Available commands:*
  - /setuser <username>: sets your last.fm username.
  - /clearuser: removes your last.fm username from the bot's database.
  - /lastfm: returns what you're scrobbling on last.fm.
-──────────────────────────────────────
+───────────────────────────────
 *MyAnimeList*
-Get information about anime, manga or characters.
+Get information about anime, manga or characters from [MyAnimeList](https://myanimelist.net).
 *Available commands:*
- - /sanime <anime>: returns information about the anime.
- - /scharacter <character>: returns information about the character.
- - /smanga <manga>: returns information about the manga.
- - /upcoming: returns a list of new anime in the upcoming seasons.
-──────────────────────────────────────
+ • `/anime <anime>`*:* returns information about the anime.
+ • `/character <character>`*:* returns information about the character.
+ • `/manga <manga>`*:* returns information about the manga.
+ • `/user <user>`*:* returns information about a MyAnimeList user.
+ • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
+ • `/kaizoku <anime>`*:* search an anime on animekaizoku.com
+ • `/kayo <anime>`*:* search an anime on animekayo.com
+───────────────────────────────
 *Math*
 Solves complex math problems using https://newton.now.sh
  - /math: Simplify `/simplify 2^2+2(2)`
