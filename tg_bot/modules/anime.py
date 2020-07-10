@@ -12,9 +12,6 @@ from tg_bot import dispatcher
 
 jikan = Jikan()
 
-kaizoku_btn = "Kaizoku ☠️"
-kayo_btn = "Kayo 🏴‍☠️"
-close_btn = "Close ❌"
 
 
 def anime_call_api(search_str):
@@ -78,7 +75,7 @@ def formatJSON(outData):
         msg += f"\n**Score** : {jsonData['averageScore']}"
         msg += f"\n**Duration** : {jsonData['duration']} min"
         msg += f"\n\n __{jsonData['description']}__"
-        return msg.replace("<br>", '')
+        return msg.replace("<br>", '').replace("</br>", '').replace("<i>", '').replace("</i>", '')
 
 
 @run_async
@@ -89,10 +86,7 @@ def anime(_bot: Bot, update: Update, args):
     msg = formatJSON(result)
     yt_search = query.replace(" ", "+")
     url_link = f"https://www.youtube.com/results?search_query={yt_search}"
-    kaizoku = f'https://animekaizoku.com/?s={query}'
-    kayo = f'https://animekayo.com/?s={query}'
-    buttons = [[InlineKeyboardButton("🎥Trailer", url=url_link)],
-               [InlineKeyboardButton(kaizoku_btn, url=kaizoku), InlineKeyboardButton(kayo_btn, url=kayo)]]
+    buttons = [[InlineKeyboardButton("🎥Trailer", url=url_link)]]
     message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
     
 
