@@ -78,7 +78,7 @@ def formatJSON(outData):
         msg += f"\n**Score** : {jsonData['averageScore']}"
         msg += f"\n**Duration** : {jsonData['duration']} min"
         msg += f"\n\n __{jsonData['description']}__"
-        return msg
+        return msg.replace("<br>", '')
 
 
 @run_async
