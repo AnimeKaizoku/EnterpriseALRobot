@@ -243,14 +243,12 @@ Share what you're what listening to with the help of this module!
  - /clearuser: removes your last.fm username from the bot's database.
  - /lastfm: returns what you're scrobbling on last.fm.
 ───────────────────────────────
-*Anime*
-Get information about anime, manga or characters.
+*AniList*
+Get information about anime, manga or characters with the help of this module! All data is fetched from [AniList](anilist.co).
 *Available commands:*
- • `/anime <anime>`*:* returns information about the anime.
- • `/character <character>`*:* returns information about the character.
- • `/manga <manga>`*:* returns information about the manga.
- • `/user <user>`*:* returns information about a MyAnimeList user.
- • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
+ - /anime <anime>: returns information about the anime.
+ - /character <character>: returns information about the character.
+ - /manga <manga>: returns information about the manga.
 ───────────────────────────────
 *Math*
 Solves complex math problems using https://newton.now.sh
