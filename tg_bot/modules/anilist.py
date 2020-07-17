@@ -3,7 +3,7 @@
 from telegram.ext.dispatcher import run_async
 from telegram.ext import CommandHandler
 from telegram import Message, Chat, User, ParseMode, Update, Bot, InlineKeyboardMarkup, InlineKeyboardButton
-from TohsakaRobot import dispatcher
+from tg_bot import dispatcher
 import requests
 import math
 import time
