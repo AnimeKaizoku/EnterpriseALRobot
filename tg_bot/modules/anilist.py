@@ -15,7 +15,12 @@ def shorten(description, info = 'anilist.co'):
            msg += f"\n*Description*: _{description}_[Read More]({info})"
     else:
           msg += f"\n*Description*:_{description}_"
-    return msg
+    return (
+            msg.replace("<br>", "")
+            .replace("</br>", "")
+            .replace("<i>", "")
+            .replace("</i>", "")
+        )
 
 
 #time formatter from uniborg
