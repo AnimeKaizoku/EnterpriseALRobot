@@ -25,16 +25,15 @@ def lyrics(bot: Bot, update: Update, args):
         else:
             reply = "Song not found!"
         if len(reply) > 4090:
-            with open("lyrics.txt", 'w') as f:
+            with open("lyrics.txt", "w") as f:
                 f.write(f"{reply}\n\n\nOwO UwU OmO")
-            with open("lyrics.txt", 'rb') as f:
-                msg.reply_document(document=f,
-                caption="Message length exceeded max limit! Sending as a text file.")
+            with open("lyrics.txt", "rb") as f:
+                msg.reply_document(
+                    document=f,
+                    caption="Message length exceeded max limit! Sending as a text file.",
+                )
         else:
             msg.reply_text(reply)
-                
-        
-                
 
 
 LYRICS_HANDLER = DisableAbleCommandHandler("lyrics", lyrics, pass_args=True)

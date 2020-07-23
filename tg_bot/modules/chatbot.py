@@ -31,8 +31,8 @@ def add_chat(bot: Bot, update: Update):
         msg.reply_text("AI successfully enabled for this chat!")
     else:
         msg.reply_text("AI is already enabled for this chat!")
-        
-        
+
+
 @run_async
 def remove_chat(bot: Bot, update: Update):
     msg = update.effective_message
@@ -43,8 +43,8 @@ def remove_chat(bot: Bot, update: Update):
     else:
         sql.rem_chat(chat_id)
         msg.reply_text("AI disabled successfully!")
-        
-        
+
+
 def check_message(bot: Bot, message):
     reply_msg = message.reply_to_message
     if message.text.lower() == "kigyo":
@@ -54,8 +54,8 @@ def check_message(bot: Bot, message):
             return True
     else:
         return False
-                
-        
+
+
 @run_async
 def chatbot(bot: Bot, update: Update):
     global api_client
@@ -79,13 +79,13 @@ def chatbot(bot: Bot, update: Update):
         except ValueError:
             pass
         try:
-            bot.send_chat_action(chat_id, action='typing')
+            bot.send_chat_action(chat_id, action="typing")
             rep = api_client.think_thought(sesh, query)
             sleep(0.3)
             msg.reply_text(rep, timeout=60)
         except CFError as e:
             bot.send_message(OWNER_ID, f"Chatbot error: {e} occurred in {chat_id}!")
-                    
+
 
 __mod_name__ = "Chatbot"
 
@@ -100,11 +100,16 @@ Commands: These only work for Kigyō Staff users.
  - /addchat : Enables Chatbot mode in the chat.
  - /rmchat  : Disables Chatbot mode in the chat.
 """
-                  
+
 ADD_CHAT_HANDLER = CommandHandler("addchat", add_chat, filters=CustomFilters.dev_filter)
-REMOVE_CHAT_HANDLER = CommandHandler("rmchat", remove_chat, filters=CustomFilters.dev_filter)
-CHATBOT_HANDLER = MessageHandler(Filters.text & (~Filters.regex(r"^#[^\s]+") & ~Filters.regex(r"^!")
-                                  & ~Filters.regex(r"^s\/")), chatbot)
+REMOVE_CHAT_HANDLER = CommandHandler(
+    "rmchat", remove_chat, filters=CustomFilters.dev_filter
+)
+CHATBOT_HANDLER = MessageHandler(
+    Filters.text
+    & (~Filters.regex(r"^#[^\s]+") & ~Filters.regex(r"^!") & ~Filters.regex(r"^s\/")),
+    chatbot,
+)
 # Filters for ignoring #note messages, !commands and sed.
 
 dispatcher.add_handler(ADD_CHAT_HANDLER)
