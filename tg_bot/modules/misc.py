@@ -177,7 +177,7 @@ def info(bot: Bot, update: Update, args: List[str]):
             Nation_level_present = True
     elif user.id in WHITELIST_USERS:
             text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Neptunia</a>'
-            Nation_level_present = True)
+            Nation_level_present = True
 
     text += "\n"
     for mod in USER_INFO:
