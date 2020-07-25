@@ -9,6 +9,7 @@ class CleanerBlueTextChatSettings(BASE):
     __tablename__ = "cleaner_bluetext_chat_setting"
     chat_id = Column(UnicodeText, primary_key=True)
     is_enable = Column(Boolean, default=False)
+
     def __init__(self, chat_id, is_enable):
         self.chat_id = chat_id
         self.is_enable = is_enable
@@ -16,10 +17,12 @@ class CleanerBlueTextChatSettings(BASE):
     def __repr__(self):
         return "clean blue text for {}".format(self.chat_id)
 
+
 class CleanerBlueTextChat(BASE):
     __tablename__ = "cleaner_bluetext_chat_ignore_commands"
     chat_id = Column(UnicodeText, primary_key=True)
     command = Column(UnicodeText, primary_key=True)
+
     def __init__(self, chat_id, command):
         self.chat_id = chat_id
         self.command = command
@@ -55,7 +58,9 @@ def set_cleanbt(chat_id, is_enable):
             curr.is_enabled = is_enable
 
         if str(chat_id) not in CLEANER_CHATS:
-            CLEANER_CHATS.setdefault(str(chat_id), {"setting": False, "commands": set()})
+            CLEANER_CHATS.setdefault(
+                str(chat_id), {"setting": False, "commands": set()}
+            )
 
         CLEANER_CHATS[str(chat_id)]["setting"] = is_enable
 
@@ -71,7 +76,9 @@ def chat_ignore_command(chat_id, ignore):
         if not ignored:
 
             if str(chat_id) not in CLEANER_CHATS:
-                CLEANER_CHATS.setdefault(str(chat_id), {"setting": False, "commands": set()})
+                CLEANER_CHATS.setdefault(
+                    str(chat_id), {"setting": False, "commands": set()}
+                )
 
             CLEANER_CHATS[str(chat_id)]["commands"].add(ignore)
 
@@ -91,7 +98,9 @@ def chat_unignore_command(chat_id, unignore):
         if unignored:
 
             if str(chat_id) not in CLEANER_CHATS:
-                CLEANER_CHATS.setdefault(str(chat_id), {"setting": False, "commands": set()})
+                CLEANER_CHATS.setdefault(
+                    str(chat_id), {"setting": False, "commands": set()}
+                )
             if unignore in CLEANER_CHATS.get(str(chat_id)).get("commands"):
                 CLEANER_CHATS[str(chat_id)]["commands"].remove(unignore)
 
@@ -142,7 +151,7 @@ def is_command_ignored(chat_id, command):
         return True
 
     if str(chat_id) in CLEANER_CHATS:
-        if command.lower() in CLEANER_CHATS.get(str(chat_id)).get('commands'):
+        if command.lower() in CLEANER_CHATS.get(str(chat_id)).get("commands"):
             return True
 
     return False
@@ -150,7 +159,7 @@ def is_command_ignored(chat_id, command):
 
 def is_enabled(chat_id):
     if str(chat_id) in CLEANER_CHATS:
-        settings = CLEANER_CHATS.get(str(chat_id)).get('setting')
+        settings = CLEANER_CHATS.get(str(chat_id)).get("setting")
         return settings
 
     return False
@@ -170,7 +179,9 @@ def __load_cleaner_list():
     global CLEANER_CHATS
 
     try:
-        GLOBAL_IGNORE_COMMANDS = {int(x.command) for x in SESSION.query(CleanerBlueTextGlobal).all()}
+        GLOBAL_IGNORE_COMMANDS = {
+            int(x.command) for x in SESSION.query(CleanerBlueTextGlobal).all()
+        }
     finally:
         SESSION.close()
 

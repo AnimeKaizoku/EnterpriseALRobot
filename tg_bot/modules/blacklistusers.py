@@ -7,12 +7,21 @@ from telegram.ext import CommandHandler, run_async
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.blacklistusers_sql as sql
-from tg_bot import dispatcher, OWNER_ID, DEV_USERS, SUDO_USERS, WHITELIST_USERS, SUPPORT_USERS
+from tg_bot import (
+    dispatcher,
+    OWNER_ID,
+    DEV_USERS,
+    SUDO_USERS,
+    WHITELIST_USERS,
+    SUPPORT_USERS,
+)
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text, extract_user
 from tg_bot.modules.log_channel import gloggable
 
-BLACKLISTWHITELIST = [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
+BLACKLISTWHITELIST = (
+    [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
+)
 BLABLEUSERS = [OWNER_ID] + DEV_USERS
 
 
@@ -48,9 +57,11 @@ def bl_user(bot: Bot, update: Update, args: List[str]) -> str:
 
     sql.blacklist_user(user_id, reason)
     message.reply_text("I shall ignore the existence of this user!")
-    log_message = (f"#BLACKLIST\n"
-                   f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-                   f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}")
+    log_message = (
+        f"#BLACKLIST\n"
+        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+        f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}"
+    )
     if reason:
         log_message += f"\n<b>Reason:</b> {reason}"
 
@@ -87,9 +98,11 @@ def unbl_user(bot: Bot, update: Update, args: List[str]) -> str:
 
         sql.unblacklist_user(user_id)
         message.reply_text("*notices user*")
-        log_message = (f"#UNBLACKLIST\n"
-                       f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-                       f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}")
+        log_message = (
+            f"#UNBLACKLIST\n"
+            f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+            f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}"
+        )
 
         return log_message
 
@@ -117,7 +130,7 @@ def bl_users(bot: Bot, update: Update):
     if not users:
         message += "Noone is being ignored as of yet."
     else:
-        message += '\n'.join(users)
+        message += "\n".join(users)
 
     update.effective_message.reply_text(message, parse_mode=ParseMode.HTML)
 

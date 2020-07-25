@@ -1,4 +1,4 @@
-from tg_bot.modules.helper_funcs.telethn.chatstatus import user_is_admin 
+from tg_bot.modules.helper_funcs.telethn.chatstatus import user_is_admin
 from tg_bot.modules.helper_funcs.telethn.chatstatus import can_delete_messages
 from tg_bot.lyn import lyndabot
 
@@ -33,8 +33,8 @@ async def purge_messages(event):
             messages = []
 
     await event.client.delete_messages(event.chat_id, messages)
-    text = ("Purged Successfully!")
-    await event.respond(text, parse_mode='markdown')
+    text = "Purged Successfully!"
+    await event.respond(text, parse_mode="markdown")
 
 
 @lyndabot(pattern="^/del$")
@@ -57,6 +57,7 @@ async def delete_messages(event):
     chat = await event.get_input_chat()
     del_message = [message, event.message]
     await event.client.delete_messages(chat, del_message)
+
 
 __help__ = """
 *Admin only:*

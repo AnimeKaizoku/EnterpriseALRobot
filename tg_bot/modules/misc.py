@@ -8,7 +8,15 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, run_async, Filters
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, DEV_USERS, SARDEGNA_USERS, WHITELIST_USERS
+from tg_bot import (
+    dispatcher,
+    OWNER_ID,
+    SUDO_USERS,
+    SUPPORT_USERS,
+    DEV_USERS,
+    SARDEGNA_USERS,
+    WHITELIST_USERS,
+)
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, sudo_plus
@@ -54,35 +62,43 @@ def get_id(bot: Bot, update: Update, args: List[str]):
             user1 = message.reply_to_message.from_user
             user2 = message.reply_to_message.forward_from
 
-            msg.reply_text(f"The original sender, {html.escape(user2.first_name)},"
-                           f" has an ID of <code>{user2.id}</code>.\n"
-                           f"The forwarder, {html.escape(user1.first_name)},"
-                           f" has an ID of <code>{user1.id}</code>.",
-                           parse_mode=ParseMode.HTML)
+            msg.reply_text(
+                f"The original sender, {html.escape(user2.first_name)},"
+                f" has an ID of <code>{user2.id}</code>.\n"
+                f"The forwarder, {html.escape(user1.first_name)},"
+                f" has an ID of <code>{user1.id}</code>.",
+                parse_mode=ParseMode.HTML,
+            )
 
         else:
 
             user = bot.get_chat(user_id)
-            msg.reply_text(f"{html.escape(user.first_name)}'s id is <code>{user.id}</code>.",
-                           parse_mode=ParseMode.HTML)
+            msg.reply_text(
+                f"{html.escape(user.first_name)}'s id is <code>{user.id}</code>.",
+                parse_mode=ParseMode.HTML,
+            )
 
     else:
 
         if chat.type == "private":
-            msg.reply_text(f"Your id is <code>{chat.id}</code>.",
-                           parse_mode=ParseMode.HTML)
+            msg.reply_text(
+                f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+            )
 
         else:
-            msg.reply_text(f"This group's id is <code>{chat.id}</code>.",
-                           parse_mode=ParseMode.HTML)
+            msg.reply_text(
+                f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+            )
 
 
 @run_async
 def gifid(bot: Bot, update: Update):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
-        update.effective_message.reply_text(f"Gif ID:\n<code>{msg.reply_to_message.animation.file_id}</code>",
-                                            parse_mode=ParseMode.HTML)
+        update.effective_message.reply_text(
+            f"Gif ID:\n<code>{msg.reply_to_message.animation.file_id}</code>",
+            parse_mode=ParseMode.HTML,
+        )
     else:
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
@@ -99,18 +115,26 @@ def info(bot: Bot, update: Update, args: List[str]):
     elif not message.reply_to_message and not args:
         user = message.from_user
 
-    elif not message.reply_to_message and (not args or (
-            len(args) >= 1 and not args[0].startswith("@") and not args[0].isdigit() and not message.parse_entities(
-        [MessageEntity.TEXT_MENTION]))):
+    elif not message.reply_to_message and (
+        not args
+        or (
+            len(args) >= 1
+            and not args[0].startswith("@")
+            and not args[0].isdigit()
+            and not message.parse_entities([MessageEntity.TEXT_MENTION])
+        )
+    ):
         message.reply_text("I can't extract a user from this.")
         return
 
     else:
         return
 
-    text = (f"<b>Characteristics:</b>\n"
-            f"ID: <code>{user.id}</code>\n"
-            f"First Name: {html.escape(user.first_name)}")
+    text = (
+        f"<b>Characteristics:</b>\n"
+        f"ID: <code>{user.id}</code>\n"
+        f"First Name: {html.escape(user.first_name)}"
+    )
 
     if user.last_name:
         text += f"\nLast Name: {html.escape(user.last_name)}"
@@ -125,38 +149,35 @@ def info(bot: Bot, update: Update, args: List[str]):
 
     try:
         user_member = chat.get_member(user.id)
-        if user_member.status == 'administrator':
-            result = requests.post(f"https://api.telegram.org/bot{TOKEN}/getChatMember?chat_id={chat.id}&user_id={user.id}")
+        if user_member.status == "administrator":
+            result = requests.post(
+                f"https://api.telegram.org/bot{TOKEN}/getChatMember?chat_id={chat.id}&user_id={user.id}"
+            )
             result = result.json()["result"]
             if "custom_title" in result.keys():
-                custom_title = result['custom_title']
+                custom_title = result["custom_title"]
                 text += f"\nThis user holds the title <b>{custom_title}</b> here."
     except BadRequest:
         pass
 
-    Nation_level_present = False
-
     if user.id == OWNER_ID:
-        text += "\nThe Nation level of this person is 'God'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">God</a>'
+            Nation_level_present = True
     elif user.id in DEV_USERS:
-        text += "\nThis member is one of 'Hero Union'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Hero Union</a>'
+            Nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += "\nThe Nation level of this person is 'Royal'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Royal</a>'
+            Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += "\nThe Nation level of this person is 'Sakura'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sakura</a>'
+            Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += "\nThe Nation level of this person is 'Sardegna'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sardegna</a>'
+            Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += "\nThe Nation level of this person is 'Neptunia'."
-        Nation_level_present = True
-
-    if Nation_level_present:
-        text += ' [<a href="http://t.me/{}?start=nations">?</a>]'.format(bot.username)
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Neptunia</a>'
+            Nation_level_present = True
 
     text += "\n"
     for mod in USER_INFO:
@@ -170,7 +191,9 @@ def info(bot: Bot, update: Update, args: List[str]):
         if mod_info:
             text += "\n" + mod_info
 
-    update.effective_message.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    update.effective_message.reply_text(
+        text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+    )
 
 
 @run_async
@@ -190,17 +213,21 @@ def echo(bot: Bot, update: Update):
 @run_async
 def markdown_help(bot: Bot, update: Update):
     update.effective_message.reply_text(MARKDOWN_HELP, parse_mode=ParseMode.HTML)
-    update.effective_message.reply_text("Try forwarding the following message to me, and you'll see!")
-    update.effective_message.reply_text("/save test This is a markdown test. _italics_, *bold*, `code`, "
-                                        "[URL](example.com) [button](buttonurl:github.com) "
-                                        "[button2](buttonurl://google.com:same)")
+    update.effective_message.reply_text(
+        "Try forwarding the following message to me, and you'll see!"
+    )
+    update.effective_message.reply_text(
+        "/save test This is a markdown test. _italics_, *bold*, `code`, "
+        "[URL](example.com) [button](buttonurl:github.com) "
+        "[button2](buttonurl://google.com:same)"
+    )
 
 
 @run_async
 @sudo_plus
 def stats(bot: Bot, update: Update):
     stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
-    result = re.sub(r'(\d+)', r'<code>\1</code>', stats)
+    result = re.sub(r"(\d+)", r"<code>\1</code>", stats)
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
 
 
@@ -290,4 +317,11 @@ dispatcher.add_handler(STATS_HANDLER)
 
 __mod_name__ = "Misc"
 __command_list__ = ["id", "info", "echo"]
-__handlers__ = [ID_HANDLER, GIFID_HANDLER, INFO_HANDLER, ECHO_HANDLER, MD_HELP_HANDLER, STATS_HANDLER]
+__handlers__ = [
+    ID_HANDLER,
+    GIFID_HANDLER,
+    INFO_HANDLER,
+    ECHO_HANDLER,
+    MD_HELP_HANDLER,
+    STATS_HANDLER,
+]

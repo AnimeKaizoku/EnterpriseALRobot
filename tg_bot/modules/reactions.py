@@ -37,7 +37,7 @@ reactions = [
     "((( ￣□)_／",
     "(ﾒ￣▽￣)︻┳═一",
     "ヽ( ･∀･)ﾉ_θ彡☆Σ(ノ `Д´)ノ",
-	"(*`0´)θ☆(メ°皿°)ﾉ",
+    "(*`0´)θ☆(メ°皿°)ﾉ",
     "(; -_-)――――――C<―_-)",
     "ヽ(>_<ヽ) ―⊂|=0ヘ(^‿^ )",
     "(҂` ﾛ ´)︻デ═一 ＼(º □ º l|l)/",
@@ -208,7 +208,7 @@ reactions = [
     "-●●●-ｃ(・・ )",
     "(ﾉ≧∀≦)ﾉ ‥…━━━★",
     "╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ",
-    "(∩ᄑ_ᄑ)⊃━☆ﾟ*･｡*･:≡( ε:)"
+    "(∩ᄑ_ᄑ)⊃━☆ﾟ*･｡*･:≡( ε:)",
 ]
 
 
@@ -220,8 +220,6 @@ def react(bot: Bot, update: Update):
         message.reply_to_message.reply_text(react)
     else:
         message.reply_text(react)
-
-
 
 
 REACT_HANDLER = DisableAbleCommandHandler("react", react)
