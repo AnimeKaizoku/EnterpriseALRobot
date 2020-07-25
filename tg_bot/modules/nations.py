@@ -49,10 +49,11 @@ Owner has complete bot access, including bot adminship in chats Kigyō is at.
 Report abuse or ask us more on these at [Eagle Union](https://t.me/YorktownEagleUnion).
 """
 # do not async, not a handler
-def send_Nations(update):
+def send_nations(update):
     update.effective_message.reply_text(
-        Nations, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
-    )
+        nations,
+        parse_mode=ParseMode.MARKDOWN,
+        disable_web_page_preview=True)
 
 
 @run_async

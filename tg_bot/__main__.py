@@ -142,8 +142,8 @@ def start(bot: Bot, update: Update, args: List[str]):
         if len(args) >= 1:
             if args[0].lower() == "help":
                 send_help(update.effective_chat.id, HELP_STRINGS)
-            elif args[0].lower() == "Nations":
-                IMPORTED["Nations"].send_Nations(update)
+            elif args[0].lower() == "nations":
+                IMPORTED["nations"].send_nations(update)
             elif args[0].lower().startswith("stngs_"):
                 match = re.match("stngs_(.*)", args[0].lower())
                 chat = dispatcher.bot.getChat(match.group(1))

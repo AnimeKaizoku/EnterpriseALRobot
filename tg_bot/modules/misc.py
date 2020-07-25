@@ -160,29 +160,24 @@ def info(bot: Bot, update: Update, args: List[str]):
     except BadRequest:
         pass
 
-    Nation_level_present = False
-
-    if user.id == OWNER_ID:
-        text += "\nThe Nation level of this person is 'God'."
-        Nation_level_present = True
+     if user.id == OWNER_ID:
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">God</a>'
+            Nation_level_present = True
     elif user.id in DEV_USERS:
-        text += "\nThis member is one of 'Hero Union'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Hero Union</a>'
+            Nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += "\nThe Nation level of this person is 'Royal'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Royal</a>'
+            Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += "\nThe Nation level of this person is 'Sakura'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sakura</a>'
+            Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += "\nThe Nation level of this person is 'Sardegna'."
-        Nation_level_present = True
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sardegna</a>'
+            Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += "\nThe Nation level of this person is 'Neptunia'."
-        Nation_level_present = True
-
-    if Nation_level_present:
-        text += ' [<a href="http://t.me/{}?start=nations">?</a>]'.format(bot.username)
+            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Neptunia</a>'
+            Nation_level_present = True)
 
     text += "\n"
     for mod in USER_INFO:
