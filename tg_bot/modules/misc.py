@@ -160,7 +160,7 @@ def info(bot: Bot, update: Update, args: List[str]):
     except BadRequest:
         pass
 
-     if user.id == OWNER_ID:
+    if user.id == OWNER_ID:
             text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">God</a>'
             Nation_level_present = True
     elif user.id in DEV_USERS:
