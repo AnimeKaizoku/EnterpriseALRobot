@@ -1,5 +1,6 @@
 import html
 import re
+import time
 from typing import List
 
 import requests
@@ -229,6 +230,18 @@ def stats(bot: Bot, update: Update):
     stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
     result = re.sub(r"(\d+)", r"<code>\1</code>", stats)
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
+    
+    
+@run_async
+def ping(bot: Bot, update: Update):
+    msg = update.effective_message
+    start_time = time.time()
+    message = msg.reply_text("Pinging...")
+    end_time = time.time()
+    ping_time = round((end_time - start_time) * 1000, 3)
+    message.edit_text(
+        "*Pong!!!*\n`{}ms`".format(ping_time), parse_mode=ParseMode.MARKDOWN
+    )
 
 
 __help__ = """
@@ -307,6 +320,7 @@ INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True)
 ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.group)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
 STATS_HANDLER = CommandHandler("stats", stats)
+PING_HANDLER = DisableAbleCommandHandler("ping", ping)
 
 dispatcher.add_handler(ID_HANDLER)
 dispatcher.add_handler(GIFID_HANDLER)
@@ -314,9 +328,10 @@ dispatcher.add_handler(INFO_HANDLER)
 dispatcher.add_handler(ECHO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
+dispatcher.add_handler(PING_HANDLER)
 
 __mod_name__ = "Misc"
-__command_list__ = ["id", "info", "echo"]
+__command_list__ = ["id", "info", "echo", "ping"]
 __handlers__ = [
     ID_HANDLER,
     GIFID_HANDLER,
@@ -324,4 +339,5 @@ __handlers__ = [
     ECHO_HANDLER,
     MD_HELP_HANDLER,
     STATS_HANDLER,
+    PING_HANDLER,
 ]
