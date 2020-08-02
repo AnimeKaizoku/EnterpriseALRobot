@@ -86,7 +86,6 @@ if ENV:
     AI_API_KEY = os.environ.get("AI_API_KEY", None)
     WALL_API = os.environ.get("WALL_API", None)
     LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY", None)
-    MOE_API = os.environ.get("MOE_API", "")
     spamwatch_api = os.environ.get("sw_api", None)
 
 else:
@@ -148,7 +147,6 @@ else:
     TIME_API_KEY = Config.TIME_API_KEY
     AI_API_KEY = Config.AI_API_KEY
     WALL_API = Config.WALL_API
-    MOE_API = Config.MOE_API
     LASTFM_API_KEY = Config.LASTFM_API_KEY
     spamwatch_api = Config.spamwatch_api
 SUDO_USERS.add(OWNER_ID)
