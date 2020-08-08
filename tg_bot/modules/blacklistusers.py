@@ -127,11 +127,7 @@ def bl_users(bot: Bot, update: Update):
             users.append(f"• {mention_html(user.id, user.first_name)}")
 
     message = "<b>Blacklisted Users</b>\n"
-    if not users:
-        message += "Noone is being ignored as of yet."
-    else:
-        message += "\n".join(users)
-
+    message += "\n".join(users) if users else "Noone is being ignored as of yet."
     update.effective_message.reply_text(message, parse_mode=ParseMode.HTML)
 
 
