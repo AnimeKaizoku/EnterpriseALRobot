@@ -73,10 +73,7 @@ if is_module_loaded(FILENAME):
 
             chat = update.effective_chat
             if super().check_update(update):
-                if sql.is_command_disabled(chat.id, self.friendly):
-                    return False
-                else:
-                    return True
+                return not sql.is_command_disabled(chat.id, self.friendly)
 
     class DisableAbleRegexHandler(RegexHandler):
         def __init__(self, pattern, callback, friendly="", filters=None, **kwargs):
@@ -87,10 +84,7 @@ if is_module_loaded(FILENAME):
         def check_update(self, update):
             chat = update.effective_chat
             if super().check_update(update):
-                if sql.is_command_disabled(chat.id, self.friendly):
-                    return False
-                else:
-                    return True
+                return not sql.is_command_disabled(chat.id, self.friendly)
 
     @run_async
     @connection_status
