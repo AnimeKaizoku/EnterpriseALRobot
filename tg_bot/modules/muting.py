@@ -96,6 +96,7 @@ def mute(bot: Bot, update: Update, args: List[str]) -> str:
 @loggable
 def unmute(bot: Bot, update: Update, args: List[str]) -> str:
     chat = update.effective_chat
+    user = update.effective_user
     message = update.effective_message
 
     user_id = extract_user(message, args)
@@ -107,13 +108,7 @@ def unmute(bot: Bot, update: Update, args: List[str]) -> str:
 
     member = chat.get_member(int(user_id))
 
-    if member.status in ["kicked", "left"]:
-        message.reply_text(
-            "This user isn't even in the chat, unmuting them won't make them talk more than they "
-            "already do!"
-        )
-
-    else:
+    if member.status != "kicked" and member.status != "left":
         if (
             member.can_send_messages
             and member.can_send_media_messages
@@ -135,13 +130,18 @@ def unmute(bot: Bot, update: Update, args: List[str]) -> str:
                 f"I shall allow <b>{html.escape(member.user.first_name)}</b> to text!",
                 parse_mode=ParseMode.HTML,
             )
-            user = update.effective_user
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"#UNMUTE\n"
                 f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
                 f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
             )
+    else:
+        message.reply_text(
+            "This user isn't even in the chat, unmuting them won't make them talk more than they "
+            "already do!"
+        )
+
     return ""
 
 
@@ -172,7 +172,11 @@ def temp_mute(bot: Bot, update: Update, args: List[str]) -> str:
     split_reason = reason.split(None, 1)
 
     time_val = split_reason[0].lower()
-    reason = split_reason[1] if len(split_reason) > 1 else ""
+    if len(split_reason) > 1:
+        reason = split_reason[1]
+    else:
+        reason = ""
+
     mutetime = extract_time(message, time_val)
 
     if not mutetime:
