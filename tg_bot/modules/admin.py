@@ -43,7 +43,7 @@ def promote(bot: Bot, update: Update, args: List[str]) -> str:
     except:
         return log_message
 
-    if user_member.status == "administrator" or user_member.status == "creator":
+    if user_member.status in ["administrator", "creator"]:
         message.reply_text("How am I meant to promote someone that's already an admin?")
         return log_message
 
@@ -70,11 +70,9 @@ def promote(bot: Bot, update: Update, args: List[str]) -> str:
     except BadRequest as err:
         if err.message == "User_not_mutual_contact":
             message.reply_text("I can't promote someone who isn't in the group.")
-            return log_message
         else:
             message.reply_text("An error occured while promoting.")
-            return log_message
-
+        return log_message
     bot.sendMessage(
         chat.id,
         f"Sucessfully promoted <b>{user_member.user.first_name or user_id}</b>!",
@@ -117,7 +115,7 @@ def demote(bot: Bot, update: Update, args: List[str]) -> str:
         message.reply_text("This person CREATED the chat, how would I demote them?")
         return log_message
 
-    if not user_member.status == "administrator":
+    if user_member.status != "administrator":
         message.reply_text("Can't demote what wasn't promoted!")
         return log_message
 
@@ -187,7 +185,7 @@ def set_title(bot: Bot, update: Update, args: List[str]):
         )
         return
 
-    if not user_member.status == "administrator":
+    if user_member.status != "administrator":
         message.reply_text(
             "Can't set title for non-admins!\nPromote them first to set custom title!"
         )
@@ -307,7 +305,7 @@ def invite(bot: Bot, update: Update):
 
     if chat.username:
         update.effective_message.reply_text(chat.username)
-    elif chat.type == chat.SUPERGROUP or chat.type == chat.CHANNEL:
+    elif chat.type in [chat.SUPERGROUP, chat.CHANNEL]:
         bot_member = chat.get_member(bot.id)
         if bot_member.can_invite_users:
             invitelink = bot.exportChatInviteLink(chat.id)
