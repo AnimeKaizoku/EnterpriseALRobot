@@ -25,7 +25,10 @@ INSERTION_LOCK = threading.RLock()
 def is_chat(chat_id):
     try:
         chat = SESSION.query(ChatbotChats).get(str(chat_id))
-        return bool(chat)
+        if chat:
+            return True
+        else:
+            return False
     finally:
         SESSION.close()
 

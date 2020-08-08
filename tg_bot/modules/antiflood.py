@@ -95,7 +95,7 @@ def set_flood(bot: Bot, update: Update, args: List[str]) -> str:
 
         val = args[0].lower()
 
-        if val in ["off", "no", "0"]:
+        if val == "off" or val == "no" or val == "0":
             sql.set_flood(chat.id, 0)
             message.reply_text(
                 "Antiflood has been disabled{}.".format(chat_name),
@@ -117,10 +117,13 @@ def set_flood(bot: Bot, update: Update, args: List[str]) -> str:
                     f"Disabled antiflood."
                 )
 
+                return log_message
             elif amount < 3:
                 message.reply_text(
                     "Antiflood has to be either 0 (disabled), or a number bigger than 3!"
                 )
+                return log_message
+
             else:
                 sql.set_flood(chat.id, amount)
                 message.reply_text(
@@ -136,7 +139,7 @@ def set_flood(bot: Bot, update: Update, args: List[str]) -> str:
                     f"Set antiflood to <code>{amount}</code>."
                 )
 
-            return log_message
+                return log_message
         else:
             message.reply_text(
                 "Unrecognised argument - please use a number, 'off', or 'no'."

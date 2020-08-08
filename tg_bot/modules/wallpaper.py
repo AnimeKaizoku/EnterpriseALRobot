@@ -13,10 +13,14 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 
 @run_async
 def wall(bot: Bot, update: Update, args):
+    chat_id = update.effective_chat.id
     msg = update.effective_message
     msg_id = update.effective_message.message_id
     query = " ".join(args)
-    if query:
+    if not query:
+        msg.reply_text("Please enter a query!")
+        return
+    else:
         caption = query
         term = query.replace(" ", "%20")
         json_rep = r.get(
@@ -26,12 +30,14 @@ def wall(bot: Bot, update: Update, args):
             msg.reply_text("An error occurred! Report this @YorktownEagleUnion")
         else:
             wallpapers = json_rep.get("wallpapers")
-            if wallpapers:
+            if not wallpapers:
+                msg.reply_text("No results found! Refine your search.")
+                return
+            else:
                 index = randint(0, len(wallpapers) - 1)  # Choose random index
                 wallpaper = wallpapers[index]
                 wallpaper = wallpaper.get("url_image")
                 wallpaper = wallpaper.replace("\\", "")
-                chat_id = update.effective_chat.id
                 bot.send_photo(
                     chat_id,
                     photo=wallpaper,
@@ -47,13 +53,6 @@ def wall(bot: Bot, update: Update, args):
                     reply_to_message_id=msg_id,
                     timeout=60,
                 )
-
-            else:
-                msg.reply_text("No results found! Refine your search.")
-                return
-    else:
-        msg.reply_text("Please enter a query!")
-        return
 
 
 WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, pass_args=True)
