@@ -24,7 +24,11 @@ def generate_time(to_find: str, findtype: List[str]) -> str:
                 country_zone = zone["zoneName"]
                 country_code = zone["countryCode"]
 
-                daylight_saving = "Yes" if zone["dst"] == 1 else "No"
+                if zone["dst"] == 1:
+                    daylight_saving = "Yes"
+                else:
+                    daylight_saving = "No"
+
                 date_fmt = r"%d-%m-%Y"
                 time_fmt = r"%H:%M:%S"
                 day_fmt = r"%A"

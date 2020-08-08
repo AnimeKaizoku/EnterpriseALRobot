@@ -52,6 +52,7 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 @run_async
 def get_id(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
+    chat = update.effective_chat
     msg = update.effective_message
     user_id = extract_user(msg, args)
 
@@ -80,7 +81,6 @@ def get_id(bot: Bot, update: Update, args: List[str]):
 
     else:
 
-        chat = update.effective_chat
         if chat.type == "private":
             msg.reply_text(
                 f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
@@ -116,12 +116,14 @@ def info(bot: Bot, update: Update, args: List[str]):
     elif not message.reply_to_message and not args:
         user = message.from_user
 
-    elif (
-        not message.reply_to_message
-        and len(args) >= 1
-        and not args[0].startswith("@")
-        and not args[0].isdigit()
-        and not message.parse_entities([MessageEntity.TEXT_MENTION])
+    elif not message.reply_to_message and (
+        not args
+        or (
+            len(args) >= 1
+            and not args[0].startswith("@")
+            and not args[0].isdigit()
+            and not message.parse_entities([MessageEntity.TEXT_MENTION])
+        )
     ):
         message.reply_text("I can't extract a user from this.")
         return
