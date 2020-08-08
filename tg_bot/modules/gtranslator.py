@@ -10,10 +10,7 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 @run_async
 def totranslate(bot: Bot, update: Update):
     msg = update.effective_message
-    problem_lang_code = []
-    for key in LANGUAGES:
-        if "-" in key:
-            problem_lang_code.append(key)
+    problem_lang_code = [key for key in LANGUAGES if "-" in key]
     try:
         if msg.reply_to_message and msg.reply_to_message.text:
 
@@ -42,7 +39,7 @@ def totranslate(bot: Bot, update: Update):
                         dest_lang = source_lang
                         source_lang = None
                         break
-                if dest_lang == None:
+                if dest_lang is None:
                     dest_lang = source_lang.split("-")[1]
                     source_lang = source_lang.split("-")[0]
             else:
@@ -55,7 +52,7 @@ def totranslate(bot: Bot, update: Update):
                     text = text.replace(emoji, "")
 
             trl = Translator()
-            if source_lang == None:
+            if source_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=dest_lang)
                 return message.reply_text(
@@ -97,7 +94,7 @@ def totranslate(bot: Bot, update: Update):
                         dest_lang = temp_source_lang.split("-")[1]
                         source_lang = temp_source_lang.split("-")[0]
             trl = Translator()
-            if dest_lang == None:
+            if dest_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=source_lang)
                 return message.reply_text(

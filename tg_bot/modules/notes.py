@@ -197,10 +197,10 @@ def save(bot: Bot, update: Update):
 @run_async
 @user_admin
 def clear(bot: Bot, update: Update, args: List[str]):
-    chat_id = update.effective_chat.id
     if len(args) >= 1:
         notename = args[0]
 
+        chat_id = update.effective_chat.id
         if sql.rm_note(chat_id, notename):
             update.effective_message.reply_text("Successfully removed note.")
         else:
