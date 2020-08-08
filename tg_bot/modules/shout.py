@@ -10,7 +10,8 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 @run_async
 def shout(bot: Bot, update: Update, args: List[str]):
     text = " ".join(args)
-    result = [" ".join([s for s in text])]
+    result = []
+    result.append(" ".join([s for s in text]))
     for pos, symbol in enumerate(text[1:]):
         result.append(symbol + " " + "  " * pos + symbol)
     result = list("\n".join(result))

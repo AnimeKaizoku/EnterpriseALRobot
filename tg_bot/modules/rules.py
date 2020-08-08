@@ -71,6 +71,7 @@ def send_rules(update, chat_id, from_pm=False):
 @run_async
 @user_admin
 def set_rules(bot: Bot, update: Update):
+    chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
     raw_text = msg.text
     args = raw_text.split(None, 1)  # use python's maxsplit to separate cmd and args
@@ -81,7 +82,6 @@ def set_rules(bot: Bot, update: Update):
             txt, entities=msg.parse_entities(), offset=offset
         )
 
-        chat_id = update.effective_chat.id
         sql.set_rules(chat_id, markdown_rules)
         update.effective_message.reply_text("Successfully set rules for this group.")
 

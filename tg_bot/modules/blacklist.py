@@ -40,7 +40,7 @@ def blacklist(bot: Bot, update: Update, args: List[str]):
 
     filter_list = base_blacklist_string
 
-    if args and args[0].lower() == "copy":
+    if len(args) > 0 and args[0].lower() == "copy":
         for trigger in all_blacklisted:
             filter_list += f"<code>{html.escape(trigger)}</code>\n"
     else:
@@ -72,13 +72,8 @@ def add_blacklist(bot: Bot, update: Update):
     if len(words) > 1:
         text = words[1]
         to_blacklist = list(
-            {
-                trigger.strip()
-                for trigger in text.split("\n")
-                if trigger.strip()
-            }
+            set(trigger.strip() for trigger in text.split("\n") if trigger.strip())
         )
-
 
         for trigger in to_blacklist:
             sql.add_to_blacklist(chat.id, trigger.lower())
@@ -112,13 +107,8 @@ def unblacklist(bot: Bot, update: Update):
     if len(words) > 1:
         text = words[1]
         to_unblacklist = list(
-            {
-                trigger.strip()
-                for trigger in text.split("\n")
-                if trigger.strip()
-            }
+            set(trigger.strip() for trigger in text.split("\n") if trigger.strip())
         )
-
         successful = 0
 
         for trigger in to_unblacklist:
@@ -177,7 +167,9 @@ def del_blacklist(bot: Bot, update: Update):
             try:
                 message.delete()
             except BadRequest as excp:
-                if excp.message != "Message to delete not found":
+                if excp.message == "Message to delete not found":
+                    pass
+                else:
                     LOGGER.exception("Error while deleting blacklist message.")
             break
 

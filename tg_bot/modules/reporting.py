@@ -166,7 +166,7 @@ def report(bot: Bot, update: Update) -> str:
 
             if sql.user_should_report(admin.user.id):
                 try:
-                    if chat.type != Chat.SUPERGROUP:
+                    if not chat.type == Chat.SUPERGROUP:
                         bot.send_message(
                             admin.user.id, msg + link, parse_mode=ParseMode.HTML
                         )

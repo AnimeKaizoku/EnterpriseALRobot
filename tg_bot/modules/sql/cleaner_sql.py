@@ -150,18 +150,17 @@ def is_command_ignored(chat_id, command):
     if command.lower() in GLOBAL_IGNORE_COMMANDS:
         return True
 
-    return str(
-        chat_id
-    ) in CLEANER_CHATS and command.lower() in CLEANER_CHATS.get(
-        str(chat_id)
-    ).get(
-        "commands"
-    )
+    if str(chat_id) in CLEANER_CHATS:
+        if command.lower() in CLEANER_CHATS.get(str(chat_id)).get("commands"):
+            return True
+
+    return False
 
 
 def is_enabled(chat_id):
     if str(chat_id) in CLEANER_CHATS:
-        return CLEANER_CHATS.get(str(chat_id)).get("setting")
+        settings = CLEANER_CHATS.get(str(chat_id)).get("setting")
+        return settings
 
     return False
 
