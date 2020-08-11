@@ -122,7 +122,7 @@ def new_fed(bot: Bot, update: Update):
         x = sql.new_fed(user.id, fed_name, fed_id)
         if not x:
             update.effective_message.reply_text(
-                "Can't federate! Please contact @OnePunchSupport if the problem persist."
+                "Can't federate! Please contact @YorktownEagleUnion if the problem persist."
             )
             return
 
@@ -263,7 +263,7 @@ def join_fed(bot: Bot, update: Update, args: List[str]):
         x = sql.chat_join_fed(args[0], chat.title, chat.id)
         if not x:
             message.reply_text(
-                "Failed to join federation! Please contact @OnePunchSupport should this problem persist!"
+                "Failed to join federation! Please contact @YorktownEagleUnion should this problem persist!"
             )
             return
 
@@ -639,7 +639,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
 
     if fban:
         fed_name = info["fname"]
-        # https://t.me/OnePunchSupport/41606 // https://t.me/OnePunchSupport/41619
+        # https://t.me/YorktownEagleUnion/41606 // https://t.me/YorktownEagleUnion/41619
         # starting = "The reason fban is replaced for {} in the Federation <b>{}</b>.".format(user_target, fed_name)
         # send_message(update.effective_message, starting, parse_mode=ParseMode.HTML)
 
@@ -661,7 +661,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
         )
         if not x:
             message.reply_text(
-                "Failed to ban from the federation! If this problem continues, contact @OnePunchSupport."
+                "Failed to ban from the federation! If this problem continues, contact @YorktownEagleUnion."
             )
             return
 
@@ -820,7 +820,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
     )
     if not x:
         message.reply_text(
-            "Failed to ban from the federation! If this problem continues, contact @OnePunchSupport."
+            "Failed to ban from the federation! If this problem continues, contact @YorktownEagleUnion."
         )
         return
 
@@ -1213,7 +1213,7 @@ def set_frules(bot: Bot, update: Update, args: List[str]):
         x = sql.set_frules(fed_id, markdown_rules)
         if not x:
             update.effective_message.reply_text(
-                "Whoa! There was an error while setting federation rules! If you wondered why please ask it in @OnePunchSupport !"
+                "Whoa! There was an error while setting federation rules! If you wondered why please ask it in @YorktownEagleUnion !"
             )
             return
 

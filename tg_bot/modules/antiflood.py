@@ -169,7 +169,7 @@ def flood(bot: Bot, update: Update):
         )
     else:
         update.effective_message.reply_text(
-            f"I'm currently punching users if they send "
+            f"I'm currently kicking users if they send "
             f"more than {limit} consecutive messages{chat_name}.",
             parse_mode=ParseMode.HTML,
         )
