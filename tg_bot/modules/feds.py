@@ -639,7 +639,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
 
     if fban:
         fed_name = info["fname"]
-        # https://t.me/YorktownEagleUnion/41606 // https://t.me/YorktownEagleUnion/41619
+        # 
         # starting = "The reason fban is replaced for {} in the Federation <b>{}</b>.".format(user_target, fed_name)
         # send_message(update.effective_message, starting, parse_mode=ParseMode.HTML)
 
@@ -2266,7 +2266,7 @@ def welcome_fed(bot, update):
 def __stats__():
     all_fbanned = sql.get_all_fban_users_global()
     all_feds = sql.get_all_feds_users_global()
-    return "{} The user is banned, on the {} Federation".format(
+    return "{} users banned, across {} Federations".format(
         len(all_fbanned), len(all_feds)
     )
 
