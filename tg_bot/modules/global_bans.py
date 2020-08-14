@@ -58,6 +58,7 @@ UNGBAN_ERRORS = {
     "Channel_private",
     "Chat_admin_required",
     "Peer_id_invalid",
+    "User not found",
 }
 
 
