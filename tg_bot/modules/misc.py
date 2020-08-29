@@ -17,6 +17,7 @@ from tg_bot import (
     DEV_USERS,
     SARDEGNA_USERS,
     WHITELIST_USERS,
+    sw
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -144,6 +145,17 @@ def info(bot: Bot, update: Update, args: List[str]):
         text += f"\nUsername: @{html.escape(user.username)}"
 
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
+    
+    try:
+        spamwtc = sw.get_ban(int(user.id))
+        if spamwtc:
+            text += "\n\n<b>This person is banned in Spamwatch!</b>"
+            text += f"\nReason: <pre>{spamwtc.reason}</pre>"
+            text += "\nAppeal at @SpamWatchSupport"
+        else:
+            pass
+    except:
+        pass # don't crash if api is down somehow...
 
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\nChat count: <code>{num_chats}</code>"
