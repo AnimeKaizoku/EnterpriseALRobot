@@ -161,7 +161,7 @@ else:
 
 
 updater = tg.Updater(TOKEN, workers=WORKERS)
-telethn = TelegramClient("lynda", API_ID, API_HASH)
+telethn = TelegramClient("kigyo", API_ID, API_HASH)
 dispatcher = updater.dispatcher
 
 SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
