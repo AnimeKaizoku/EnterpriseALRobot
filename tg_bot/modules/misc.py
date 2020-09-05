@@ -8,6 +8,7 @@ from telegram import Bot, Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, run_async, Filters
 from telegram.utils.helpers import mention_html
+from subprocess import Popen, PIPE
 
 from tg_bot import (
     dispatcher,
@@ -221,6 +222,34 @@ def echo(bot: Bot, update: Update):
         message.reply_text(args[1], quote=False)
 
     message.delete()
+    
+def shell(command):
+    process = Popen(command, stdout=PIPE, shell=True, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    return (stdout, stderr)
+
+@sudo_plus
+def ram(bot: Bot, update: Update):
+    cmd = "ps -o pid"
+    output = shell(cmd)[0].decode()
+    processes = output.splitlines()
+    mem = 0
+    for p in processes[1:]:
+        mem += int(
+            float(
+                shell(
+                    "ps u -p {} | awk ".format(p)
+                    + "'{sum=sum+$6}; END {print sum/1024}'"
+                )[0]
+                .decode()
+                .rstrip()
+                .replace("'", "")
+            )
+        )
+    update.message.reply_text(
+        f"RAM usage = <code>{mem} MiB</code>", parse_mode=ParseMode.HTML
+    )
+
 
 
 @run_async
@@ -311,6 +340,7 @@ ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.group)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
 STATS_HANDLER = CommandHandler("stats", stats)
 PING_HANDLER = DisableAbleCommandHandler("ping", ping)
+RAM_HANDLER = CommandHandler("ram", ram,)
 
 dispatcher.add_handler(ID_HANDLER)
 dispatcher.add_handler(GIFID_HANDLER)
@@ -319,6 +349,7 @@ dispatcher.add_handler(ECHO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
 dispatcher.add_handler(PING_HANDLER)
+dispatcher.add_handler(RAM_HANDLER)
 
 __mod_name__ = "Misc"
 __command_list__ = ["id", "info", "echo", "ping"]
