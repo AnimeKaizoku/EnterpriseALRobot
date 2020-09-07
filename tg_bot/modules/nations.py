@@ -37,7 +37,7 @@ def check_user_id(user_id: int, bot: Bot) -> Optional[str]:
 
 
 # I added extra new lines
-Nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
+nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
 \n*Eagle Union* - Devs who can access the bots server and can execute, edit, modify bot code. Can also manage other Nations
 \n*God* - Only one exists, bot owner. 
 Owner has complete bot access, including bot adminship in chats Kigyō is at.
