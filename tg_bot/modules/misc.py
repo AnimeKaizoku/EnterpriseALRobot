@@ -158,6 +158,8 @@ def info(bot: Bot, update: Update, args: List[str]):
             pass
     except:
         pass # don't crash if api is down somehow...
+    
+    Nation_level_present = False
 
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\nChat count: <code>{num_chats}</code>"
@@ -176,23 +178,27 @@ def info(bot: Bot, update: Update, args: List[str]):
         pass
 
     if user.id == OWNER_ID:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">God</a>'
+            text += f'\nThis person is my owner'
             Nation_level_present = True
     elif user.id in DEV_USERS:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Hero Union</a>'
+            text += f'\nThis Person is a part of Eagle Union'
             Nation_level_present = True
     elif user.id in SUDO_USERS:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Royal</a>'
+            text += f'\nThe Nation level of this person is Royal'
             Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sakura</a>'
+            text += f'\nThe Nation level of this person is Sakura'
             Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Sardegna</a>'
+            text += f'\nThe Nation level of this person is Sardegna'
             Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-            text += f'\nThe Nation level of this person is <a href="https://t.me/kigyorobot?start=nations">Neptunia</a>'
+            text += f'\nThe Nation level of this person is Neptunia'
             Nation_level_present = True
+            
+    if Nation_level_present:
+        text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(
+            bot.username)
 
     text += "\n"
     for mod in USER_INFO:
