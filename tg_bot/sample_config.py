@@ -28,6 +28,7 @@ class Config(object):
     LOAD = []
     NO_LOAD = ['sed']
     WEBHOOK = False
+    INFOPIC = True
     URL = None
 
     #OPTIONAL
