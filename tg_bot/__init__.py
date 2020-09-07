@@ -83,10 +83,10 @@ if ENV:
     ALLOW_EXCL = os.environ.get("ALLOW_EXCL", False)
     CASH_API_KEY = os.environ.get("CASH_API_KEY", None)
     TIME_API_KEY = os.environ.get("TIME_API_KEY", None)
-    AI_API_KEY = os.environ.get("AI_API_KEY", None)
     WALL_API = os.environ.get("WALL_API", None)
     LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY", None)
     spamwatch_api = os.environ.get("sw_api", None)
+    INFOPIC = bool(os.environ.get('INFOPIC', False))
 
 else:
     from tg_bot.config import Development as Config
@@ -145,10 +145,10 @@ else:
     ALLOW_EXCL = Config.ALLOW_EXCL
     CASH_API_KEY = Config.CASH_API_KEY
     TIME_API_KEY = Config.TIME_API_KEY
-    AI_API_KEY = Config.AI_API_KEY
     WALL_API = Config.WALL_API
     LASTFM_API_KEY = Config.LASTFM_API_KEY
     spamwatch_api = Config.spamwatch_api
+    INFOPIC = Config.INFOPIC
 SUDO_USERS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
 
