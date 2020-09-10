@@ -63,7 +63,9 @@ def check_flood(bot: Bot, update: Update) -> str:
             tag = "TBAN"
         elif getmode == 5:
             mutetime = extract_time(msg, getvalue)
-            bot.restrict_chat_member(chat.id, user.id, can_send_messages=True)
+            bot.restrict_chat_member(
+                chat.id, user.id, until_date=mutetime, can_send_messages=False
+            )
             execstrings = ("Muted for {}".format(getvalue))
             tag = "TMUTE"
         send_message(update.effective_message, "Wonderful, I like to leave flooding to natural disasters but you, "
