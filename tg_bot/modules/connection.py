@@ -258,7 +258,7 @@ def disconnect_chat(bot: Bot, update: Update):
         send_message(msg, "This command is only available in PM.")
 
 
-def connected(bot, update, chat, user_id, need_admin=True):
+def connected(bot: Bot, update: Update,  chat, user_id, need_admin=True):
     user = update.effective_user
     msg = update.effective_message
     spam = spamfilters(msg.text, msg.from_user.id, update.effective_chat.id)
