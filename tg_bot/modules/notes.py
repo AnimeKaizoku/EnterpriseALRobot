@@ -12,7 +12,7 @@ from telegram.utils.helpers import escape_markdown
 import tg_bot.modules.sql.notes_sql as sql
 from tg_bot import dispatcher, MESSAGE_DUMP, LOGGER
 from tg_bot.modules.disable import DisableAbleCommandHandler
-from tg_bot.modules.helper_funcs.chat_status import user_admin
+from tg_bot.modules.helper_funcs.chat_status import user_admin, connection_status
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from tg_bot.modules.helper_funcs.msg_types import get_note_type
 
@@ -31,6 +31,7 @@ ENUM_FUNC_MAP = {
 
 
 # Do not async
+@connection_status
 def get(bot, update, notename, show_none=True, no_format=False):
     chat_id = update.effective_chat.id
     note = sql.get_note(chat_id, notename)
@@ -139,6 +140,7 @@ def get(bot, update, notename, show_none=True, no_format=False):
 
 
 @run_async
+@connection_status
 def cmd_get(bot: Bot, update: Update, args: List[str]):
     if len(args) >= 2 and args[1].lower() == "noformat":
         get(bot, update, args[0], show_none=True, no_format=True)
@@ -149,6 +151,7 @@ def cmd_get(bot: Bot, update: Update, args: List[str]):
 
 
 @run_async
+@connection_status
 def hash_get(bot: Bot, update: Update):
     message = update.effective_message.text
     fst_word = message.split()[0]
@@ -158,6 +161,7 @@ def hash_get(bot: Bot, update: Update):
 
 @run_async
 @user_admin
+@connection_status
 def save(bot: Bot, update: Update):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -196,6 +200,7 @@ def save(bot: Bot, update: Update):
 
 @run_async
 @user_admin
+@connection_status
 def clear(bot: Bot, update: Update, args: List[str]):
     chat_id = update.effective_chat.id
     if len(args) >= 1:
@@ -208,6 +213,7 @@ def clear(bot: Bot, update: Update, args: List[str]):
 
 
 @run_async
+@connection_status
 def list_notes(bot: Bot, update: Update):
     chat_id = update.effective_chat.id
     note_list = sql.get_all_chat_notes(chat_id)
