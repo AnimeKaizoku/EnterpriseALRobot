@@ -3,6 +3,7 @@ import re
 from typing import Optional, List
 from sys import argv
 
+from pyrogram import idle, Client
 from telegram import Bot, Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (
     Unauthorized,
@@ -29,6 +30,7 @@ from tg_bot import (
     LOGGER,
     ALLOW_EXCL,
     telethn,
+    kp,
 )
 
 # needed to dynamically load modules
@@ -561,9 +563,12 @@ def main():
     else:
         telethn.run_until_disconnected()
     updater.idle()
-
+    
+    
 
 if __name__ == "__main__":
+    kp.start()
     LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
+    idle() 

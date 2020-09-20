@@ -21,3 +21,5 @@ speedtest-cli
 coffeehouse
 spamwatch
 telethon
+pyrogram
+tgcrypto
