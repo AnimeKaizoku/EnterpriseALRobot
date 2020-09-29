@@ -1,10 +1,13 @@
 import hashlib
 import os
 import math
+import re
+import requests
 import urllib.request as urllib
 
 from io import BytesIO
 from PIL import Image
+from bs4 import BeautifulSoup as bs
 
 from typing import Optional, List
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
@@ -17,6 +20,7 @@ from tg_bot import dispatcher
 
 from tg_bot.modules.disable import DisableAbleCommandHandler
 
+combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
 @run_async
 def stickerid(bot: Bot, update: Update):
@@ -31,6 +35,26 @@ def stickerid(bot: Bot, update: Update):
     else:
         update.effective_message.reply_text("Please reply to a sticker to get its ID.")
 
+
+@run_async
+def cb_sticker(bot: Bot, update: Update):
+    msg = update.effective_message
+    split = msg.text.split(' ', 1)
+    if len(split) == 1:
+        msg.reply_text('Provide some name to search for pack.')
+        return
+    text = requests.get(combot_stickers_url + split[1]).text
+    soup = bs(text, 'lxml')
+    results = soup.find_all("a", {'class': "sticker-pack__btn"})
+    titles = soup.find_all("div", "sticker-pack__title")
+    if not results:
+        msg.reply_text('No results found :(.')
+        return
+    reply = f"Stickers for *{split[1]}*:"
+    for result, title in zip(results, titles):
+        link = result['href']
+        reply += f"\n• [{title.get_text()}]({link})"
+    msg.reply_text(reply, parse_mode=ParseMode.MARKDOWN)
 
 @run_async
 def getsticker(bot: Bot, update: Update):
@@ -314,7 +338,9 @@ GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker)
 STEAL_HANDLER = DisableAbleCommandHandler(
     "steal", steal, pass_args=True, admin_ok=False
 )
+STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker)
 
 dispatcher.add_handler(STICKERID_HANDLER)
 dispatcher.add_handler(GETSTICKER_HANDLER)
 dispatcher.add_handler(STEAL_HANDLER)
+dispatcher.add_handler(STICKERS_HANDLER)

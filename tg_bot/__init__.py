@@ -5,6 +5,7 @@ import time
 import spamwatch
 import telegram.ext as tg
 from telethon import TelegramClient
+from pyrogram import Client, errors
 
 StartTime = time.time()
 
@@ -163,6 +164,8 @@ else:
 updater = tg.Updater(TOKEN, workers=WORKERS)
 telethn = TelegramClient("kigyo", API_ID, API_HASH)
 dispatcher = updater.dispatcher
+
+kp = Client("KigyoPyro", api_id=API_ID, api_hash=API_HASH, bot_token=TOKEN)
 
 SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
 DEV_USERS = list(DEV_USERS)

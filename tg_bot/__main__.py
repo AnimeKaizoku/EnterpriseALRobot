@@ -3,6 +3,7 @@ import re
 from typing import Optional, List
 from sys import argv
 
+from pyrogram import idle, Client
 from telegram import Bot, Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (
     Unauthorized,
@@ -29,6 +30,7 @@ from tg_bot import (
     LOGGER,
     ALLOW_EXCL,
     telethn,
+    kp,
 )
 
 # needed to dynamically load modules
@@ -42,10 +44,6 @@ Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 You can find the list of available commands with /help.
-
-[Kigyō's Repo](https://github.com/Dank-del/EnterpriseALRobot) 
-
-The support group chat is at @YorktownEagleUnion
 """
 
 HELP_STRINGS = """
@@ -167,16 +165,24 @@ def start(bot: Bot, update: Update, args: List[str]):
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
+                    [[
+                        InlineKeyboardButton(
+                            text="Add Kigyo to your group",
+                            url="t.me/{}?startgroup=true".format(bot.username))
+                    ],
                     [
-                        [
-                            InlineKeyboardButton(
-                                text="Add Kigyō to your group",
-                                url="t.me/{}?startgroup=true".format(bot.username),
-                            )
-                        ]
-                    ]
-                ),
-            )
+                        InlineKeyboardButton(
+                            text="Support Chat // Eagle Union",
+                            url=f"https://t.me/YorktownEagleUnion"),
+                        InlineKeyboardButton(
+                            text="Kigyo Updates Channel",
+                            url="https://t.me/KigyoUpdates")
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="Source code (Licensed under GPLv3)",
+                            url="https://github.com/Dank-del/EnterpriseALRobot")
+                    ]]))
     else:
         update.effective_message.reply_text("Hi, I'm Kigyo.")
 
@@ -561,9 +567,12 @@ def main():
     else:
         telethn.run_until_disconnected()
     updater.idle()
-
+    
+    
 
 if __name__ == "__main__":
+    kp.start()
     LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
+    idle() 
