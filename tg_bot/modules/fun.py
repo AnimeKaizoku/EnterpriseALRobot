@@ -159,6 +159,7 @@ __help__ = """
  - /stickerid: reply to a sticker to get its ID.
  - /getsticker: reply to a sticker to get the raw PNG image.
  - /steal: reply to a sticker or image to add it to your pack.
+ - /stickers: search stickers in combot sticker finder.
 """
 
 RUNS_HANDLER = DisableAbleCommandHandler("runs", runs)

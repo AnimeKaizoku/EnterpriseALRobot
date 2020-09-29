@@ -326,6 +326,8 @@ __help__ = """
  - /time <query> : Gives information about a timezone.
  - /cash : currency converter
    example syntax: /cash 1 USD INR
+ - /whois : get info about a user (uses @Pyrogram methods)
+ - /spbinfo : get info about a user from @Intellivoid's SpamProtection API
 ───────────────────────────────
 *Last.FM*
 Share what you're what listening to with the help of this module!
