@@ -44,10 +44,6 @@ Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 You can find the list of available commands with /help.
-
-[Kigyō's Repo](https://github.com/Dank-del/EnterpriseALRobot) 
-
-The support group chat is at @YorktownEagleUnion
 """
 
 HELP_STRINGS = """
@@ -169,16 +165,24 @@ def start(bot: Bot, update: Update, args: List[str]):
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
+                    [[
+                        InlineKeyboardButton(
+                            text="Add Kigyo to your group",
+                            url="t.me/{}?startgroup=true".format(bot.username))
+                    ],
                     [
-                        [
-                            InlineKeyboardButton(
-                                text="Add Kigyō to your group",
-                                url="t.me/{}?startgroup=true".format(bot.username),
-                            )
-                        ]
-                    ]
-                ),
-            )
+                        InlineKeyboardButton(
+                            text="Support Chat // Eagle Union",
+                            url=f"https://t.me/YorktownEagleUnion"),
+                        InlineKeyboardButton(
+                            text="Kigyo Updates Channel",
+                            url="https://t.me/KigyoUpdates")
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="Source code (Licensed under GPLv3)",
+                            url="https://github.com/Dank-del/EnterpriseALRobot")
+                    ]]))
     else:
         update.effective_message.reply_text("Hi, I'm Kigyo.")
 
