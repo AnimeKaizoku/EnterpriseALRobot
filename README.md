@@ -64,9 +64,9 @@ If you can't have a config.py file (EG on heroku), it is also possible to use en
 The following env variables are supported:
  - `ENV`: Setting this to ANYTHING will enable env variables
 
- - `TOKEN`: Your bot token, as a string.
- - `OWNER_ID`: An integer of consisting of your owner ID
- - `OWNER_USERNAME`: Your username
+ - `TOKEN`: Your bot token, as a string. [@BotFather](https://telegram.dog/BotFather)
+ - `OWNER_ID`: An integer of consisting of your owner ID. Get from[@userinfobot](https://telegram.dog/userinfobot)
+ - `OWNER_USERNAME`: Your username. Get from [@userinfobot](https://telegram.dog/userinfobot)
 
  - `DATABASE_URL`: Your database URL
  - `MESSAGE_DUMP`: optional: a chat where your replied saved messages are stored, to stop people deleting their old 
