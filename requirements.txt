@@ -3,7 +3,7 @@ emoji
 beautifulsoup4
 requests
 sqlalchemy
-python-telegram-bot==11.1.0
+python-telegram-bot
 psycopg2-binary
 feedparser
 pynewtonmath
@@ -16,9 +16,7 @@ aiohttp>=2.2.5
 Pillow>=4.2.0
 CurrencyConverter
 googletrans
-jikanpy
 speedtest-cli
-coffeehouse
 spamwatch
 telethon
 pyrogram
