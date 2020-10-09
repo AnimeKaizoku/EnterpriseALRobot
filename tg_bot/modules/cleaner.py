@@ -3,7 +3,7 @@ import html
 from typing import List
 
 from telegram import Bot, Update, ParseMode
-from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
+from telegram.ext import CommandHandler, MessageHandler, Filters
 
 from tg_bot import ALLOW_EXCL, dispatcher, CustomCommandHandler
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -40,7 +40,7 @@ for handler_list in dispatcher.handlers:
             command_list += handler.command
 
 
-@run_async
+
 def clean_blue_text_must_click(bot: Bot, update: Update):
 
     chat = update.effective_chat
@@ -65,7 +65,7 @@ def clean_blue_text_must_click(bot: Bot, update: Update):
                     message.delete()
 
 
-@run_async
+
 @connection_status
 @bot_can_delete
 @user_admin
@@ -105,7 +105,7 @@ def set_blue_text_must_click(bot: Bot, update: Update, args: List[str]):
         message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @user_admin
 def add_bluetext_ignore(bot: Bot, update: Update, args: List[str]):
 
@@ -128,7 +128,7 @@ def add_bluetext_ignore(bot: Bot, update: Update, args: List[str]):
         message.reply_text(reply)
 
 
-@run_async
+
 @user_admin
 def remove_bluetext_ignore(bot: Bot, update: Update, args: List[str]):
 
@@ -151,7 +151,7 @@ def remove_bluetext_ignore(bot: Bot, update: Update, args: List[str]):
         message.reply_text(reply)
 
 
-@run_async
+
 @user_admin
 def add_bluetext_ignore_global(bot: Bot, update: Update, args: List[str]):
 
@@ -173,7 +173,7 @@ def add_bluetext_ignore_global(bot: Bot, update: Update, args: List[str]):
         message.reply_text(reply)
 
 
-@run_async
+
 @dev_plus
 def remove_bluetext_ignore_global(bot: Bot, update: Update, args: List[str]):
 
@@ -195,7 +195,7 @@ def remove_bluetext_ignore_global(bot: Bot, update: Update, args: List[str]):
         message.reply_text(reply)
 
 
-@run_async
+
 @dev_plus
 def bluetext_ignore_list(bot: Bot, update: Update):
 

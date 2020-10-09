@@ -4,7 +4,7 @@ from typing import List
 
 from telegram import Bot, Update, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
+from telegram.ext import CommandHandler, MessageHandler, Filters
 
 import tg_bot.modules.sql.blacklist_sql as sql
 from tg_bot import dispatcher, LOGGER
@@ -20,7 +20,7 @@ from tg_bot.modules.helper_funcs.misc import split_message
 BLACKLIST_GROUP = 11
 
 
-@run_async
+
 @connection_status
 def blacklist(bot: Bot, update: Update, args: List[str]):
     msg = update.effective_message
@@ -61,7 +61,7 @@ def blacklist(bot: Bot, update: Update, args: List[str]):
         msg.reply_text(text, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @connection_status
 @user_admin
 def add_blacklist(bot: Bot, update: Update):
@@ -96,7 +96,7 @@ def add_blacklist(bot: Bot, update: Update):
         )
 
 
-@run_async
+
 @connection_status
 @user_admin
 def unblacklist(bot: Bot, update: Update):
@@ -149,7 +149,7 @@ def unblacklist(bot: Bot, update: Update):
         )
 
 
-@run_async
+
 @connection_status
 @user_not_admin
 def del_blacklist(bot: Bot, update: Update):

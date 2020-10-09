@@ -5,7 +5,7 @@ import os
 from typing import List, Optional
 
 from telegram import Bot, Update, ParseMode, TelegramError
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 from telegram.utils.helpers import mention_html
 
 from tg_bot import (
@@ -56,7 +56,7 @@ def send_nations(update):
         disable_web_page_preview=True)
 
 
-@run_async
+
 @dev_plus
 @gloggable
 def addsudo(bot: Bot, update: Update, args: List[str]) -> str:
@@ -115,7 +115,7 @@ def addsudo(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def addsupport(bot: Bot, update: Update, args: List[str]) -> str:
@@ -171,7 +171,7 @@ def addsupport(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def addwhitelist(bot: Bot, update: Update, args: List[str]) -> str:
@@ -227,7 +227,7 @@ def addwhitelist(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
@@ -288,7 +288,7 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @dev_plus
 @gloggable
 def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
@@ -349,7 +349,7 @@ def addSardegna(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @dev_plus
 @gloggable
 def removesudo(bot: Bot, update: Update, args: List[str]) -> str:
@@ -392,7 +392,7 @@ def removesudo(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def removesupport(bot: Bot, update: Update, args: List[str]) -> str:
@@ -435,7 +435,7 @@ def removesupport(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def removewhitelist(bot: Bot, update: Update, args: List[str]) -> str:
@@ -477,7 +477,7 @@ def removewhitelist(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @sudo_plus
 @gloggable
 def removeSardegna(bot: Bot, update: Update, args: List[str]) -> str:
@@ -519,7 +519,7 @@ def removeSardegna(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @whitelist_plus
 def whitelistlist(bot: Bot, update: Update):
     reply = "<b>Known Neptunia Nations 🐺:</b>\n"
@@ -534,7 +534,7 @@ def whitelistlist(bot: Bot, update: Update):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @whitelist_plus
 def Sardegnalist(bot: Bot, update: Update):
     reply = "<b>Known Sardegna Nations 🐯:</b>\n"
@@ -548,7 +548,7 @@ def Sardegnalist(bot: Bot, update: Update):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @whitelist_plus
 def supportlist(bot: Bot, update: Update):
     reply = "<b>Known Sakura Nations 👹:</b>\n"
@@ -562,7 +562,7 @@ def supportlist(bot: Bot, update: Update):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @whitelist_plus
 def sudolist(bot: Bot, update: Update):
     true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
@@ -577,7 +577,7 @@ def sudolist(bot: Bot, update: Update):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @whitelist_plus
 def devlist(bot: Bot, update: Update):
     true_dev = list(set(DEV_USERS) - {OWNER_ID})

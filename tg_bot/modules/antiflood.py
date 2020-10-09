@@ -11,7 +11,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql import antiflood_sql as sql
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, run_async
+from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler
 from telegram.utils.helpers import mention_html, escape_markdown
 from tg_bot import dispatcher
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin, user_admin, can_restrict
@@ -23,7 +23,7 @@ from tg_bot.modules.helper_funcs.alternate import send_message
 FLOOD_GROUP = 3
 
 @connection_status
-@run_async
+
 @loggable
 def check_flood(bot: Bot, update: Update) -> str:
     user = update.effective_user  # type: Optional[User]
@@ -84,7 +84,7 @@ def check_flood(bot: Bot, update: Update) -> str:
                "\n#INFO" \
                "\nDon't have enough permission to restrict users so automatically disabled anti-flood".format(chat.title)
 
-@run_async
+
 @user_admin_no_reply
 @bot_admin
 def flood_button(bot: Bot, update: Update):
@@ -103,7 +103,7 @@ def flood_button(bot: Bot, update: Update):
             pass
 
 
-@run_async
+
 @connection_status
 @user_admin
 @can_restrict
@@ -173,7 +173,7 @@ def set_flood(bot: Bot, update: Update, args: List[str]) -> str:
 
 
 @connection_status
-@run_async
+
 def flood(bot: Bot, update: Update):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -205,7 +205,7 @@ def flood(bot: Bot, update: Update):
         
 
 
-@run_async
+
 @user_admin
 def set_flood_mode(bot: Bot, update: Update, args: List[str]) -> str:
     chat = update.effective_chat  # type: Optional[Chat]

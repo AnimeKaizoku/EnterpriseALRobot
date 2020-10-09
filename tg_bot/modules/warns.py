@@ -14,7 +14,7 @@ from telegram import Message, Chat, Update, Bot
 from telegram.error import BadRequest
 from telegram.ext import (
     CommandHandler,
-    run_async,
+   
     DispatcherHandlerStop,
     MessageHandler,
     Filters,
@@ -140,7 +140,7 @@ def warn(
     return log_reason
 
 
-@run_async
+
 @user_admin_no_reply
 @bot_admin
 @loggable
@@ -172,7 +172,7 @@ def button(bot: Bot, update: Update) -> str:
     return ""
 
 
-@run_async
+
 @user_admin
 @can_restrict
 @loggable
@@ -202,7 +202,7 @@ def warn_user(bot: Bot, update: Update, args: List[str]) -> str:
     return ""
 
 
-@run_async
+
 @user_admin
 @bot_admin
 @loggable
@@ -228,7 +228,7 @@ def reset_warns(bot: Bot, update: Update, args: List[str]) -> str:
     return ""
 
 
-@run_async
+
 def warns(bot: Bot, update: Update, args: List[str]):
     message: Optional[Message] = update.effective_message
     chat: Optional[Chat] = update.effective_chat
@@ -327,7 +327,7 @@ def remove_warn_filter(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def list_warn_filters(bot: Bot, update: Update):
     chat: Optional[Chat] = update.effective_chat
     all_handlers = sql.get_chat_warn_triggers(chat.id)
@@ -349,7 +349,7 @@ def list_warn_filters(bot: Bot, update: Update):
         update.effective_message.reply_text(filter_list, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 @loggable
 def reply_filter(bot: Bot, update: Update) -> str:
     chat: Optional[Chat] = update.effective_chat
@@ -369,7 +369,7 @@ def reply_filter(bot: Bot, update: Update) -> str:
     return ""
 
 
-@run_async
+
 @user_admin
 @loggable
 def set_warn_limit(bot: Bot, update: Update, args: List[str]) -> str:
@@ -399,7 +399,7 @@ def set_warn_limit(bot: Bot, update: Update, args: List[str]) -> str:
     return ""
 
 
-@run_async
+
 @user_admin
 def set_warn_strength(bot: Bot, update: Update, args: List[str]):
     chat: Optional[Chat] = update.effective_chat

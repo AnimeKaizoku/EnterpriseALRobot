@@ -6,7 +6,7 @@ from typing import List
 import requests
 from telegram import Bot, Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async, Filters
+from telegram.ext import CommandHandler, Filters
 from telegram.utils.helpers import mention_html
 from subprocess import Popen, PIPE
 
@@ -52,7 +52,7 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 """
 
 
-@run_async
+
 def get_id(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     chat = update.effective_chat
@@ -95,7 +95,7 @@ def get_id(bot: Bot, update: Update, args: List[str]):
             )
 
 
-@run_async
+
 def gifid(bot: Bot, update: Update):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
@@ -107,7 +107,7 @@ def gifid(bot: Bot, update: Update):
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
 
-@run_async
+
 def info(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     chat = update.effective_chat
@@ -235,7 +235,7 @@ def info(bot: Bot, update: Update, args: List[str]):
 
 
 
-@run_async
+
 @user_admin
 def echo(bot: Bot, update: Update):
     args = update.effective_message.text.split(None, 1)
@@ -277,7 +277,7 @@ def ram(bot: Bot, update: Update):
 
 
 
-@run_async
+
 def markdown_help(bot: Bot, update: Update):
     update.effective_message.reply_text(MARKDOWN_HELP, parse_mode=ParseMode.HTML)
     update.effective_message.reply_text(
@@ -290,7 +290,7 @@ def markdown_help(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 @sudo_plus
 def stats(bot: Bot, update: Update):
     stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
@@ -298,7 +298,7 @@ def stats(bot: Bot, update: Update):
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
     
     
-@run_async
+
 def ping(bot: Bot, update: Update):
     msg = update.effective_message
     start_time = time.time()

@@ -9,7 +9,7 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     DispatcherHandlerStop,
-    run_async,
+   
 )
 from telegram.utils.helpers import escape_markdown
 
@@ -28,7 +28,7 @@ from tg_bot.modules.sql import cust_filters_sql as sql
 HANDLER_GROUP = 10
 
 
-@run_async
+
 @connection_status
 def list_handlers(bot: Bot, update: Update):
     chat = update.effective_chat
@@ -191,7 +191,7 @@ def stop_filter(bot: Bot, update: Update):
     msg.reply_text("That's not a current filter - run /filters for all active filters.")
 
 
-@run_async
+
 def reply_filter(bot: Bot, update: Update):
     chat = update.effective_chat
     message = update.effective_message

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from typing import List
 from telegram import ParseMode, InputMediaPhoto, Update, Bot, TelegramError
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -21,7 +21,7 @@ useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML
 opener.addheaders = [("User-agent", useragent)]
 
 
-@run_async
+
 def reverse(bot: Bot, update: Update, args: List[str]):
     if os.path.isfile("okgoogle.png"):
         os.remove("okgoogle.png")

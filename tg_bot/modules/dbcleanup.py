@@ -2,7 +2,7 @@ from time import sleep
 
 from telegram import Bot, Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest, Unauthorized
-from telegram.ext import CommandHandler, CallbackQueryHandler, run_async
+from telegram.ext import CommandHandler, CallbackQueryHandler
 
 import tg_bot.modules.sql.global_bans_sql as gban_sql
 import tg_bot.modules.sql.users_sql as user_sql
@@ -81,7 +81,7 @@ def get_invalid_gban(bot: Bot, update: Update, remove: bool = False):
         return ungbanned_users
 
 
-@run_async
+
 @dev_plus
 def dbcleanup(bot: Bot, update: Update):
     msg = update.effective_message
@@ -153,7 +153,7 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
         return muted_chats
 
 
-@run_async
+
 @dev_plus
 def leave_muted_chats(bot: Bot, update: Update):
     message = update.effective_message
@@ -169,7 +169,7 @@ def leave_muted_chats(bot: Bot, update: Update):
     progress_message.delete()
 
 
-@run_async
+
 def callback_button(bot: Bot, update: Update):
     query = update.callback_query
     message = query.message

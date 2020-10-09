@@ -1,7 +1,7 @@
 import random
 
 from telegram import Bot, Update, MessageEntity
-from telegram.ext import Filters, run_async
+from telegram.ext import Filters
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import (
@@ -16,7 +16,7 @@ AFK_GROUP = 7
 AFK_REPLY_GROUP = 8
 
 
-@run_async
+
 def afk(bot: Bot, update: Update):
     args = update.effective_message.text.split(None, 1)
     reason = ""
@@ -29,7 +29,7 @@ def afk(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def no_longer_afk(bot: Bot, update: Update):
     user = update.effective_user
 
@@ -54,7 +54,7 @@ def no_longer_afk(bot: Bot, update: Update):
         )
 
 
-@run_async
+
 def reply_afk(bot: Bot, update: Update):
     message = update.effective_message
     entities = message.parse_entities(

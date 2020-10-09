@@ -2,13 +2,13 @@ from typing import List
 
 import requests
 from telegram import Update, Bot, ParseMode
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
 
 
-@run_async
+
 def paste(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
 

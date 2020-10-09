@@ -3,7 +3,7 @@ from typing import Optional
 from telegram import Message, Update, Bot, User
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async, Filters
+from telegram.ext import CommandHandler, Filters
 from telegram.utils.helpers import escape_markdown
 
 import tg_bot.modules.sql.rules_sql as sql
@@ -12,7 +12,7 @@ from tg_bot.modules.helper_funcs.chat_status import user_admin
 from tg_bot.modules.helper_funcs.string_handling import markdown_parser
 
 
-@run_async
+
 def get_rules(bot: Bot, update: Update):
     chat_id = update.effective_chat.id
     send_rules(update, chat_id)
@@ -68,7 +68,7 @@ def send_rules(update, chat_id, from_pm=False):
         )
 
 
-@run_async
+
 @user_admin
 def set_rules(bot: Bot, update: Update):
     chat_id = update.effective_chat.id
@@ -86,7 +86,7 @@ def set_rules(bot: Bot, update: Update):
         update.effective_message.reply_text("Successfully set rules for this group.")
 
 
-@run_async
+
 @user_admin
 def clear_rules(bot: Bot, update: Update):
     chat_id = update.effective_chat.id

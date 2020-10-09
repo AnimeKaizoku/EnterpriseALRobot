@@ -3,7 +3,7 @@
 
 from tg_bot import dispatcher, LOGGER
 from telegram import Bot, Update
-from telegram.ext.dispatcher import run_async
+from telegram.ext.dispatcher import 
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from tg_bot.modules.helper_funcs.misc import sendMessage
 from telegram.ext import CommandHandler
@@ -17,7 +17,7 @@ def shell(command):
 
 
 @dev_plus
-@run_async
+
 def shellExecute(bot: Bot, update: Update):
     cmd = update.message.text.split(" ", maxsplit=1)
     if len(cmd) == 1:

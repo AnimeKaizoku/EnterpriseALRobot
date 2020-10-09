@@ -3,7 +3,7 @@ from typing import List
 
 from telegram import Bot, Update, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.blacklistusers_sql as sql
@@ -25,7 +25,7 @@ BLACKLISTWHITELIST = (
 BLABLEUSERS = [OWNER_ID] + DEV_USERS
 
 
-@run_async
+
 @dev_plus
 @gloggable
 def bl_user(bot: Bot, update: Update, args: List[str]) -> str:
@@ -68,7 +68,7 @@ def bl_user(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @dev_plus
 @gloggable
 def unbl_user(bot: Bot, update: Update, args: List[str]) -> str:
@@ -111,7 +111,7 @@ def unbl_user(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @dev_plus
 def bl_users(bot: Bot, update: Update):
     users = []

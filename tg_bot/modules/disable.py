@@ -15,7 +15,7 @@ FILENAME = __name__.rsplit(".", 1)[-1]
 # If module is due to be loaded, then setup all the magical handlers
 if is_module_loaded(FILENAME):
 
-    from telegram.ext.dispatcher import run_async
+    from telegram.ext.dispatcher import 
 
     from tg_bot.modules.helper_funcs.chat_status import (
         user_admin,
@@ -92,7 +92,7 @@ if is_module_loaded(FILENAME):
                 else:
                     return True
 
-    @run_async
+    
     @connection_status
     @user_admin
     def disable(bot: Bot, update: Update, args: List[str]):
@@ -114,7 +114,7 @@ if is_module_loaded(FILENAME):
         else:
             update.effective_message.reply_text("What should I disable?")
 
-    @run_async
+    
     @connection_status
     @user_admin
     def disable_module(bot: Bot, update: Update, args: List[str]):
@@ -166,7 +166,7 @@ if is_module_loaded(FILENAME):
         else:
             update.effective_message.reply_text("What should I disable?")
 
-    @run_async
+    
     @connection_status
     @user_admin
     def enable(bot: Bot, update: Update, args: List[str]):
@@ -187,7 +187,7 @@ if is_module_loaded(FILENAME):
         else:
             update.effective_message.reply_text("What should I enable?")
 
-    @run_async
+    
     @connection_status
     @user_admin
     def enable_module(bot: Bot, update: Update, args: List[str]):
@@ -239,7 +239,7 @@ if is_module_loaded(FILENAME):
         else:
             update.effective_message.reply_text("What should I enable?")
 
-    @run_async
+    
     @connection_status
     @user_admin
     def list_cmds(bot: Bot, update: Update):
@@ -265,7 +265,7 @@ if is_module_loaded(FILENAME):
             result += " - `{}`\n".format(escape_markdown(cmd))
         return "The following commands are currently restricted:\n{}".format(result)
 
-    @run_async
+    
     @connection_status
     def commands(bot: Bot, update: Update):
         chat = update.effective_chat

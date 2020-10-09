@@ -23,7 +23,7 @@ from telegram import (
     InlineKeyboardButton,
 )
 from telegram.ext import (
-    run_async,
+   
     CommandHandler,
     MessageHandler,
     Filters,
@@ -94,7 +94,7 @@ UNFBAN_ERRORS = {
 }
 
 
-@run_async
+
 def new_fed(bot: Bot, update: Update):
     chat = update.effective_chat
     user = update.effective_user
@@ -148,7 +148,7 @@ def new_fed(bot: Bot, update: Update):
         )
 
 
-@run_async
+
 def del_fed(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -194,7 +194,7 @@ def del_fed(bot: Bot, update: Update, args: List[str]):
     )
 
 
-@run_async
+
 def fed_chat(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -221,7 +221,7 @@ def fed_chat(bot: Bot, update: Update, args: List[str]):
     update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 def join_fed(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -283,7 +283,7 @@ def join_fed(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def leave_fed(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -324,7 +324,7 @@ def leave_fed(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text("Only group creators can use this command!")
 
 
-@run_async
+
 def user_join_fed(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -387,7 +387,7 @@ def user_join_fed(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text("Only federation owners can do this!")
 
 
-@run_async
+
 def user_demote_fed(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -446,7 +446,7 @@ def user_demote_fed(bot: Bot, update: Update, args: List[str]):
         return
 
 
-@run_async
+
 def fed_info(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -494,7 +494,7 @@ def fed_info(bot: Bot, update: Update, args: List[str]):
     update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 def fed_admin(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -541,7 +541,7 @@ def fed_admin(bot: Bot, update: Update, args: List[str]):
     update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 def fed_ban(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -957,7 +957,7 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def unfban(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -1178,7 +1178,7 @@ def unfban(bot: Bot, update: Update, args: List[str]):
 	"""
 
 
-@run_async
+
 def set_frules(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -1234,7 +1234,7 @@ def set_frules(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text("Please write rules to set this up!")
 
 
-@run_async
+
 def get_frules(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
 
@@ -1256,7 +1256,7 @@ def get_frules(bot: Bot, update: Update, args: List[str]):
     update.effective_message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 def fed_broadcast(bot: Bot, update: Update, args: List[str]):
     msg = update.effective_message
     user = update.effective_user
@@ -1317,7 +1317,7 @@ def fed_broadcast(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text(send_text)
 
 
-@run_async
+
 def fed_ban_list(bot: Bot, update: Update, args: List[str], chat_data):
     chat = update.effective_chat
     user = update.effective_user
@@ -1495,7 +1495,7 @@ def fed_ban_list(bot: Bot, update: Update, args: List[str], chat_data):
             )
 
 
-@run_async
+
 def fed_notif(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -1529,7 +1529,7 @@ def fed_notif(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def fed_chats(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -1592,7 +1592,7 @@ def fed_chats(bot: Bot, update: Update, args: List[str]):
             )
 
 
-@run_async
+
 def fed_import_bans(bot: Bot, update: Update, chat_data):
     chat = update.effective_chat
     user = update.effective_user
@@ -1819,7 +1819,7 @@ def fed_import_bans(bot: Bot, update: Update, chat_data):
         send_message(update.effective_message, text)
 
 
-@run_async
+
 def del_fed_button(bot, update):
     query = update.callback_query
     userid = query.message.chat.id
@@ -1841,7 +1841,7 @@ def del_fed_button(bot, update):
             )
 
 
-@run_async
+
 def fed_stat_user(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -1949,7 +1949,7 @@ def fed_stat_user(bot, update, args):
         )
 
 
-@run_async
+
 def set_fed_log(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -1989,7 +1989,7 @@ def set_fed_log(bot, update, args):
         )
 
 
-@run_async
+
 def unset_fed_log(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -2029,7 +2029,7 @@ def unset_fed_log(bot, update, args):
         )
 
 
-@run_async
+
 def subs_feds(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -2093,7 +2093,7 @@ def subs_feds(bot, update, args):
         )
 
 
-@run_async
+
 def unsubs_feds(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -2157,7 +2157,7 @@ def unsubs_feds(bot, update, args):
         )
 
 
-@run_async
+
 def get_myfedsubs(bot, update, args):
     chat = update.effective_chat
     user = update.effective_user
@@ -2207,7 +2207,7 @@ def get_myfedsubs(bot, update, args):
         send_message(update.effective_message, listfed, parse_mode="markdown")
 
 
-@run_async
+
 def get_myfeds_list(bot, update):
     chat = update.effective_chat
     user = update.effective_user
@@ -2247,7 +2247,7 @@ def is_user_fed_owner(fed_id, user_id):
         return False
 
 
-@run_async
+
 def welcome_fed(bot, update):
     chat = update.effective_chat
     user = update.effective_user
@@ -2316,7 +2316,7 @@ def get_chat(chat_id, chat_data):
         return {"status": False, "value": False}
 
 
-@run_async
+
 def fed_owner_help(bot: Bot, update: Update):
     update.effective_message.reply_text(
         """*👑 Fed Owner Only:*
@@ -2334,7 +2334,7 @@ def fed_owner_help(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def fed_admin_help(bot: Bot, update: Update):
     update.effective_message.reply_text(
         """*🔱 Fed Admins:*
@@ -2353,7 +2353,7 @@ def fed_admin_help(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def fed_user_help(bot: Bot, update: Update):
     update.effective_message.reply_text(
         """*🎩 Any user:*

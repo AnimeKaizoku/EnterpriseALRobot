@@ -13,7 +13,7 @@ from typing import Optional, List
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import TelegramError
 from telegram import Update, Bot
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 from telegram.utils.helpers import escape_markdown
 
 from tg_bot import dispatcher
@@ -22,7 +22,7 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
-@run_async
+
 def stickerid(bot: Bot, update: Update):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -36,7 +36,7 @@ def stickerid(bot: Bot, update: Update):
         update.effective_message.reply_text("Please reply to a sticker to get its ID.")
 
 
-@run_async
+
 def cb_sticker(bot: Bot, update: Update):
     msg = update.effective_message
     split = msg.text.split(' ', 1)
@@ -56,7 +56,7 @@ def cb_sticker(bot: Bot, update: Update):
         reply += f"\n• [{title.get_text()}]({link})"
     msg.reply_text(reply, parse_mode=ParseMode.MARKDOWN)
 
-@run_async
+
 def getsticker(bot: Bot, update: Update):
     msg = update.effective_message
     chat_id = update.effective_chat.id
@@ -72,7 +72,7 @@ def getsticker(bot: Bot, update: Update):
         )
 
 
-@run_async
+
 def steal(bot: Bot, update: Update, args: List[str]):
     msg = update.effective_message
     user = update.effective_user

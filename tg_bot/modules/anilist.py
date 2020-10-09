@@ -1,6 +1,6 @@
 # module to get anime info by t.me/DragSama // find him on github :  https://github.com/DragSama // he's my doraemon btw.
 
-from telegram.ext.dispatcher import run_async
+from telegram.ext.dispatcher import 
 from telegram.ext import CommandHandler
 from telegram import (
     Message,
@@ -165,7 +165,7 @@ query ($id: Int,$search: String) {
 url = "https://graphql.anilist.co"
 
 
-@run_async
+
 def airing(bot: Bot, update: Update):
     message = update.effective_message
     search_str = message.text.split(" ", 1)
@@ -188,7 +188,7 @@ def airing(bot: Bot, update: Update):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 def anime(bot: Bot, update: Update):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -259,7 +259,7 @@ def anime(bot: Bot, update: Update):
             )
 
 
-@run_async
+
 def character(bot: Bot, update: Update):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -288,7 +288,7 @@ def character(bot: Bot, update: Update):
             update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 def manga(bot: Bot, update: Update):
     message = update.effective_message
     search = message.text.split(" ", 1)

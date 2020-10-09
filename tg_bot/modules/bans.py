@@ -3,7 +3,7 @@ from typing import List
 
 from telegram import Bot, Update, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, Filters, run_async
+from telegram.ext import CommandHandler, Filters
 from telegram.utils.helpers import mention_html
 
 from tg_bot import dispatcher, LOGGER, DEV_USERS, SUDO_USERS, SARDEGNA_USERS
@@ -22,7 +22,7 @@ from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable, gloggable
 
 
-@run_async
+
 @connection_status
 @bot_admin
 @can_restrict
@@ -98,7 +98,7 @@ def ban(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @connection_status
 @bot_admin
 @can_restrict
@@ -192,7 +192,7 @@ def temp_ban(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @connection_status
 @bot_admin
 @can_restrict
@@ -252,7 +252,7 @@ def punch(bot: Bot, update: Update, args: List[str]) -> str:
     return log_message
 
 
-@run_async
+
 @bot_admin
 @can_restrict
 def punchme(bot: Bot, update: Update):
@@ -268,7 +268,7 @@ def punchme(bot: Bot, update: Update):
         update.effective_message.reply_text("Huh? I can't :/")
 
 
-@run_async
+
 @connection_status
 @bot_admin
 @can_restrict
@@ -318,7 +318,7 @@ def unban(bot: Bot, update: Update, args: List[str]) -> str:
     return log
 
 
-@run_async
+
 @connection_status
 @bot_admin
 @can_restrict

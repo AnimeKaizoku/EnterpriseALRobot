@@ -1,13 +1,13 @@
 from typing import List
 
 from telegram import Update, Bot
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
 
 
-@run_async
+
 def shout(bot: Bot, update: Update, args: List[str]):
     text = " ".join(args)
     result = []

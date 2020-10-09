@@ -6,7 +6,7 @@ from telegram import MAX_MESSAGE_LENGTH, ParseMode, InlineKeyboardMarkup
 from telegram import Message, Update, Bot
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, RegexHandler
-from telegram.ext.dispatcher import run_async
+from telegram.ext.dispatcher import 
 from telegram.utils.helpers import escape_markdown
 
 import tg_bot.modules.sql.notes_sql as sql
@@ -139,7 +139,7 @@ def get(bot, update, notename, show_none=True, no_format=False):
         message.reply_text("This note doesn't exist")
 
 
-@run_async
+
 @connection_status
 def cmd_get(bot: Bot, update: Update, args: List[str]):
     if len(args) >= 2 and args[1].lower() == "noformat":
@@ -150,7 +150,7 @@ def cmd_get(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text("Get rekt")
 
 
-@run_async
+
 @connection_status
 def hash_get(bot: Bot, update: Update):
     message = update.effective_message.text
@@ -159,7 +159,7 @@ def hash_get(bot: Bot, update: Update):
     get(bot, update, no_hash, show_none=False)
 
 
-@run_async
+
 @user_admin
 @connection_status
 def save(bot: Bot, update: Update):
@@ -198,7 +198,7 @@ def save(bot: Bot, update: Update):
         return
 
 
-@run_async
+
 @user_admin
 @connection_status
 def clear(bot: Bot, update: Update, args: List[str]):
@@ -212,7 +212,7 @@ def clear(bot: Bot, update: Update, args: List[str]):
             update.effective_message.reply_text("That's not a note in my database!")
 
 
-@run_async
+
 @connection_status
 def list_notes(bot: Bot, update: Update):
     chat_id = update.effective_chat.id

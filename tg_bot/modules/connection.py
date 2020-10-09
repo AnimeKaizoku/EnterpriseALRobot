@@ -4,7 +4,7 @@ from typing import List
 
 from telegram import Bot, Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest, Unauthorized
-from telegram.ext import CommandHandler, CallbackQueryHandler, run_async
+from telegram.ext import CommandHandler, CallbackQueryHandler
 
 import tg_bot.modules.sql.connection_sql as sql
 from tg_bot import dispatcher, SUDO_USERS, DEV_USERS, spamfilters
@@ -18,7 +18,7 @@ MEMBER_STAUS = ("member",)
 
 
 @user_admin
-@run_async
+
 def allow_connections(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
 
@@ -63,7 +63,7 @@ def allow_connections(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def connection_chat(bot: Bot, update: Update):
     chat = update.effective_chat
     user = update.effective_user
@@ -89,7 +89,7 @@ def connection_chat(bot: Bot, update: Update):
     send_message(msg, message, parse_mode="markdown")
 
 
-@run_async
+
 def connect_chat(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     user = update.effective_user
@@ -304,7 +304,7 @@ def connected(bot: Bot, update: Update,  chat, user_id, need_admin=True):
         return False
 
 
-@run_async
+
 def help_connect_chat(bot: Bot, update: Update):
     msg = update.effective_message
     spam = spamfilters(msg.text, msg.from_user.id, update.effective_chat.id)
@@ -318,7 +318,7 @@ def help_connect_chat(bot: Bot, update: Update):
         send_message(msg, "All commands", parse_mode="markdown")
 
 
-@run_async
+
 def connect_button(bot: Bot, update: Update):
     query = update.callback_query
     chat = update.effective_chat

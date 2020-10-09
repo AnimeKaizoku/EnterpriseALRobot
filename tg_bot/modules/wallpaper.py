@@ -5,13 +5,13 @@ from random import randint
 from time import sleep
 
 from telegram import Message, Chat, Update, Bot
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher, WALL_API
 from tg_bot.modules.disable import DisableAbleCommandHandler
 
 
-@run_async
+
 def wall(bot: Bot, update: Update, args):
     chat_id = update.effective_chat.id
     msg = update.effective_message

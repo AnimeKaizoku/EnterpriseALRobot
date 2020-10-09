@@ -1,98 +1,98 @@
 from typing import List
 import requests
 from telegram import Message, Update, Bot, MessageEntity
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
 import pynewtonmath as newton
 import math
 
 
-@run_async
+
 def simplify(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.simplify("{}".format(args[0])))
 
 
-@run_async
+
 def factor(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.factor("{}".format(args[0])))
 
 
-@run_async
+
 def derive(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.derive("{}".format(args[0])))
 
 
-@run_async
+
 def integrate(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.integrate("{}".format(args[0])))
 
 
-@run_async
+
 def zeroes(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.zeroes("{}".format(args[0])))
 
 
-@run_async
+
 def tangent(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.tangent("{}".format(args[0])))
 
 
-@run_async
+
 def area(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     message.reply_text(newton.area("{}".format(args[0])))
 
 
-@run_async
+
 def cos(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.cos(int(args[0])))
 
 
-@run_async
+
 def sin(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.sin(int(args[0])))
 
 
-@run_async
+
 def tan(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.tan(int(args[0])))
 
 
-@run_async
+
 def arccos(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.acos(int(args[0])))
 
 
-@run_async
+
 def arcsin(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.asin(int(args[0])))
 
 
-@run_async
+
 def arctan(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.atan(int(args[0])))
 
 
-@run_async
+
 def abs(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.fabs(int(args[0])))
 
 
-@run_async
+
 def log(bot: Bot, update: Update, args):
     message = update.effective_message
     message.reply_text(math.log(int(args[0])))

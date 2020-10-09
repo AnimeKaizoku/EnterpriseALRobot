@@ -12,7 +12,7 @@ from telegram.ext import (
     MessageHandler,
     Filters,
     CommandHandler,
-    run_async,
+   
     CallbackQueryHandler,
     JobQueue,
 )
@@ -111,7 +111,7 @@ def send(update, message, keyboard, backup_message):
     return msg
 
 
-@run_async
+
 @loggable
 def new_member(bot: Bot, update: Update, job_queue: JobQueue):
     chat = update.effective_chat
@@ -355,7 +355,7 @@ def check_not_bot(member, chat_id, message_id, bot, job):
             pass
 
 
-@run_async
+
 def left_member(bot: Bot, update: Update):
     chat = update.effective_chat
     user = update.effective_user
@@ -443,7 +443,7 @@ def left_member(bot: Bot, update: Update):
             )
 
 
-@run_async
+
 @user_admin
 def welcome(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
@@ -497,7 +497,7 @@ def welcome(bot: Bot, update: Update, args: List[str]):
             )
 
 
-@run_async
+
 @user_admin
 def goodbye(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
@@ -548,7 +548,7 @@ def goodbye(bot: Bot, update: Update, args: List[str]):
             )
 
 
-@run_async
+
 @user_admin
 @loggable
 def set_welcome(bot: Bot, update: Update) -> str:
@@ -573,7 +573,7 @@ def set_welcome(bot: Bot, update: Update) -> str:
     )
 
 
-@run_async
+
 @user_admin
 @loggable
 def reset_welcome(bot: Bot, update: Update) -> str:
@@ -593,7 +593,7 @@ def reset_welcome(bot: Bot, update: Update) -> str:
     )
 
 
-@run_async
+
 @user_admin
 @loggable
 def set_goodbye(bot: Bot, update: Update) -> str:
@@ -616,7 +616,7 @@ def set_goodbye(bot: Bot, update: Update) -> str:
     )
 
 
-@run_async
+
 @user_admin
 @loggable
 def reset_goodbye(bot: Bot, update: Update) -> str:
@@ -636,7 +636,7 @@ def reset_goodbye(bot: Bot, update: Update) -> str:
     )
 
 
-@run_async
+
 @user_admin
 @loggable
 def welcomemute(bot: Bot, update: Update, args: List[str]) -> str:
@@ -692,7 +692,7 @@ def welcomemute(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 @user_admin
 @loggable
 def clean_welcome(bot: Bot, update: Update, args: List[str]) -> str:
@@ -734,7 +734,7 @@ def clean_welcome(bot: Bot, update: Update, args: List[str]) -> str:
         return ""
 
 
-@run_async
+
 def user_button(bot: Bot, update: Update):
     chat = update.effective_chat
     user = update.effective_user
@@ -815,13 +815,13 @@ WELC_MUTE_HELP_TXT = (
 )
 
 
-@run_async
+
 @user_admin
 def welcome_help(bot: Bot, update: Update):
     update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 @user_admin
 def welcome_mute_help(bot: Bot, update: Update):
     update.effective_message.reply_text(

@@ -1,7 +1,7 @@
 from typing import List
 
 from telegram import Bot, Update
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -64,7 +64,7 @@ weebyfont = [
 ]
 
 
-@run_async
+
 def weebify(bot: Bot, update: Update, args: List[str]):
     string = "  ".join(args).lower()
     for normiecharacter in string:

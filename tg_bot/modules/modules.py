@@ -1,7 +1,7 @@
 import importlib
 
 from telegram import Bot, Update, ParseMode
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 
 from tg_bot import dispatcher
 from tg_bot.__main__ import (
@@ -18,7 +18,7 @@ from tg_bot.__main__ import (
 from tg_bot.modules.helper_funcs.chat_status import sudo_plus, dev_plus
 
 
-@run_async
+
 @dev_plus
 def load(bot: Bot, update: Update):
     message = update.effective_message
@@ -84,7 +84,7 @@ def load(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 @dev_plus
 def unload(bot: Bot, update: Update):
     message = update.effective_message
@@ -151,7 +151,7 @@ def unload(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 @sudo_plus
 def listmodules(bot: Bot, update: Update):
     message = update.effective_message

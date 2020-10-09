@@ -5,7 +5,7 @@ import telegram.ext as tg
 from telegram import Bot, Update, ParseMode, MessageEntity
 from telegram import TelegramError
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
+from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.locks_sql as sql
@@ -118,7 +118,7 @@ def unrestr_members(
             pass
 
 
-@run_async
+
 @connection_status
 def locktypes(bot: Bot, update: Update):
     update.effective_message.reply_text(
@@ -187,7 +187,7 @@ def lock(bot: Bot, update: Update, args: List[str]) -> str:
     return ""
 
 
-@run_async
+
 @connection_status
 @user_admin
 @loggable
@@ -246,7 +246,7 @@ def unlock(bot: Bot, update: Update, args: List[str]) -> str:
     return ""
 
 
-@run_async
+
 @user_not_admin
 def del_lockables(bot: Bot, update: Update):
     chat = update.effective_chat
@@ -285,7 +285,7 @@ def del_lockables(bot: Bot, update: Update):
             break
 
 
-@run_async
+
 @user_not_admin
 def rest_handler(bot: Bot, update: Update):
     msg = update.effective_message
@@ -393,7 +393,7 @@ def build_lock_message(chat_id):
     return res
 
 
-@run_async
+
 @connection_status
 @user_admin
 def list_locks(bot: Bot, update: Update):

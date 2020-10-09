@@ -2,7 +2,7 @@ import html
 from typing import List
 
 from telegram import Bot, Update, ParseMode, MAX_MESSAGE_LENGTH
-from telegram.ext.dispatcher import run_async
+from telegram.ext.dispatcher import 
 from telegram.utils.helpers import escape_markdown
 
 import tg_bot.modules.sql.userinfo_sql as sql
@@ -11,7 +11,7 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.extraction import extract_user
 
 
-@run_async
+
 def about_me(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     user_id = extract_user(message, args)
@@ -39,7 +39,7 @@ def about_me(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def set_about_me(bot: Bot, update: Update):
     message = update.effective_message
     user_id = message.from_user.id
@@ -67,7 +67,7 @@ def set_about_me(bot: Bot, update: Update):
             )
 
 
-@run_async
+
 def about_bio(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
 
@@ -95,7 +95,7 @@ def about_bio(bot: Bot, update: Update, args: List[str]):
         )
 
 
-@run_async
+
 def set_about_bio(bot: Bot, update: Update):
     message = update.effective_message
     sender_id = update.effective_user.id

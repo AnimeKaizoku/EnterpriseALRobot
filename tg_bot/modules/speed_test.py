@@ -1,6 +1,6 @@
 import speedtest
 from telegram import Update, Bot, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import run_async, CallbackQueryHandler
+from telegram.ext import CallbackQueryHandler
 
 from tg_bot import dispatcher, DEV_USERS
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -12,7 +12,7 @@ def convert(speed):
 
 
 @dev_plus
-@run_async
+
 def speedtestxyz(bot: Bot, update: Update):
     buttons = [
         [
@@ -25,7 +25,7 @@ def speedtestxyz(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def speedtestxyz_callback(bot: Bot, update: Update):
     query = update.callback_query
 

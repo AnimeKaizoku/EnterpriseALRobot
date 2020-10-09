@@ -17,7 +17,7 @@ from telegram.error import BadRequest, Unauthorized
 from telegram.ext import (
     CommandHandler,
     RegexHandler,
-    run_async,
+   
     Filters,
     CallbackQueryHandler,
 )
@@ -32,7 +32,7 @@ REPORT_GROUP = 5
 REPORT_IMMUNE_USERS = SUDO_USERS + SARDEGNA_USERS
 
 
-@run_async
+
 @user_admin
 def report_setting(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat  # type: Optional[Chat]
@@ -80,7 +80,7 @@ def report_setting(bot: Bot, update: Update, args: List[str]):
             )
 
 
-@run_async
+
 @user_not_admin
 @loggable
 def report(bot: Bot, update: Update) -> str:

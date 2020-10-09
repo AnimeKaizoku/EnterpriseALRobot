@@ -5,13 +5,13 @@ from time import sleep
 from typing import List
 
 from telegram import Bot, Update, TelegramError
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 
 from tg_bot import dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 
 
-@run_async
+
 @dev_plus
 def leave(bot: Bot, update: Update, args: List[str]):
     if args:
@@ -27,7 +27,7 @@ def leave(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text("Send a valid chat ID")
 
 
-@run_async
+
 @dev_plus
 def gitpull(bot: Bot, update: Update):
     sent_msg = update.effective_message.reply_text(
@@ -47,7 +47,7 @@ def gitpull(bot: Bot, update: Update):
     os.execv("start.bat", sys.argv)
 
 
-@run_async
+
 @dev_plus
 def restart(bot: Bot, update: Update):
     update.effective_message.reply_text(

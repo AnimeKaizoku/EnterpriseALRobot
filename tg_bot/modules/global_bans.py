@@ -6,7 +6,7 @@ from typing import List
 
 from telegram import Bot, Update, ParseMode
 from telegram.error import BadRequest, TelegramError
-from telegram.ext import CommandHandler, MessageHandler, Filters, run_async
+from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.global_bans_sql as sql
@@ -62,7 +62,7 @@ UNGBAN_ERRORS = {
 }
 
 
-@run_async
+
 @support_plus
 def gban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
@@ -260,7 +260,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         pass  # bot probably blocked by user
 
 
-@run_async
+
 @support_plus
 def ungban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
@@ -370,7 +370,7 @@ def ungban(bot: Bot, update: Update, args: List[str]):
         message.reply_text(f"Person has been un-gbanned. Took {ungban_time} sec")
 
 
-@run_async
+
 @support_plus
 def gbanlist(bot: Bot, update: Update):
     banned_users = sql.get_gban_list()
@@ -420,7 +420,7 @@ def check_and_ban(update, user_id, should_message=True):
             )
 
 
-@run_async
+
 def enforce_gban(bot: Bot, update: Update):
     # Not using @restrict handler to avoid spamming - just ignore if cant gban.
     if (
@@ -445,7 +445,7 @@ def enforce_gban(bot: Bot, update: Update):
                 check_and_ban(update, user.id, should_message=False)
 
 
-@run_async
+
 @user_admin
 def gbanstat(bot: Bot, update: Update, args: List[str]):
     if len(args) > 0:

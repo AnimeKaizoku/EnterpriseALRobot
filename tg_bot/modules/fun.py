@@ -4,7 +4,7 @@ import time
 from typing import List
 
 from telegram import Bot, Update, ParseMode
-from telegram.ext import run_async
+from telegram.ext import 
 
 import tg_bot.modules.fun_strings as fun_strings
 from tg_bot import dispatcher
@@ -13,12 +13,12 @@ from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_user
 
 
-@run_async
+
 def runs(bot: Bot, update: Update):
     update.effective_message.reply_text(random.choice(fun_strings.RUN_STRINGS))
 
 
-@run_async
+
 def slap(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     chat = update.effective_chat
@@ -73,17 +73,17 @@ def slap(bot: Bot, update: Update, args: List[str]):
     reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
+
 def roll(bot: Bot, update: Update):
     update.message.reply_text(random.choice(range(1, 7)))
 
 
-@run_async
+
 def toss(bot: Bot, update: Update):
     update.message.reply_text(random.choice(fun_strings.TOSS))
 
 
-@run_async
+
 def abuse(bot: Bot, update: Update):
     msg = update.effective_message
     reply_text = (
@@ -92,7 +92,7 @@ def abuse(bot: Bot, update: Update):
     reply_text(random.choice(fun_strings.ABUSE_STRINGS))
 
 
-@run_async
+
 def shrug(bot: Bot, update: Update):
     msg = update.effective_message
     reply_text = (
@@ -101,7 +101,7 @@ def shrug(bot: Bot, update: Update):
     reply_text(r"¯\_(ツ)_/¯")
 
 
-@run_async
+
 def bluetext(bot: Bot, update: Update):
     msg = update.effective_message
     reply_text = (
@@ -112,7 +112,7 @@ def bluetext(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def rlg(bot: Bot, update: Update):
     eyes = random.choice(fun_strings.EYES)
     mouth = random.choice(fun_strings.MOUTHS)
@@ -125,7 +125,7 @@ def rlg(bot: Bot, update: Update):
     update.message.reply_text(repl)
 
 
-@run_async
+
 def decide(bot: Bot, update: Update):
     reply_text = (
         update.effective_message.reply_to_message.reply_text
@@ -135,7 +135,7 @@ def decide(bot: Bot, update: Update):
     reply_text(random.choice(fun_strings.DECIDE))
 
 
-@run_async
+
 def table(bot: Bot, update: Update):
     reply_text = (
         update.effective_message.reply_to_message.reply_text

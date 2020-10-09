@@ -4,7 +4,7 @@ from typing import Optional, List
 from sys import argv
 
 from pyrogram import idle, Client
-from telegram import Bot, Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (
     Unauthorized,
     BadRequest,
@@ -13,8 +13,8 @@ from telegram.error import (
     ChatMigrated,
     TelegramError,
 )
-from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from telegram.ext.dispatcher import run_async, DispatcherHandlerStop
+from telegram.ext import CallbackContext CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
 
 from tg_bot import (
@@ -126,7 +126,7 @@ def send_help(chat_id, text, keyboard=None):
     )
 
 
-@run_async
+
 def test(bot: Bot, update: Update):
     # pprint(eval(str(update)))
     # update.effective_message.reply_text("Hola tester! _I_ *have* `markdown`", parse_mode=ParseMode.MARKDOWN)
@@ -134,12 +134,15 @@ def test(bot: Bot, update: Update):
     print(update.effective_message)
 
 
-@run_async
-def start(bot: Bot, update: Update, args: List[str]):
+
+def start(update: Update, context: CallbackContext):
+    args = context.args
     if update.effective_chat.type == "private":
         if len(args) >= 1:
             if args[0].lower() == "help":
                 send_help(update.effective_chat.id, HELP_STRINGS)
+            elif args[0].lower() == "markdownhelp":
+                IMPORTED["extras"].markdown_help_sender(update)
             elif args[0].lower() == "nations":
                 IMPORTED["nations"].send_nations(update)
             elif args[0].lower().startswith("stngs_"):
@@ -160,7 +163,7 @@ def start(bot: Bot, update: Update, args: List[str]):
                 KIGYO_IMG,
                 PM_START_TEXT.format(
                     escape_markdown(first_name),
-                    escape_markdown(bot.first_name),
+                    escape_markdown(context.bot.first_name),
                     OWNER_ID,
                 ),
                 parse_mode=ParseMode.MARKDOWN,
@@ -216,8 +219,8 @@ def error_callback(bot, update, error):
         # handle all other telegram related errors
 
 
-@run_async
-def help_button(bot: Bot, update: Update):
+
+def help_button(context: CallbackContext, update: Update):
     query = update.callback_query
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
     prev_match = re.match(r"help_prev\((.+?)\)", query.data)
@@ -266,15 +269,15 @@ def help_button(bot: Bot, update: Update):
                 reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
 
         # ensure no spinny white circle
-        bot.answer_callback_query(query.id)
+        context.bot.answer_callback_query(query.id)
         # query.message.delete()
 
     except BadRequest:
         pass
 
 
-@run_async
-def get_help(bot: Bot, update: Update):
+
+def get_help(context: CallbackContext, update: Update):
     chat = update.effective_chat  # type: Optional[Chat]
     args = update.effective_message.text.split(None, 1)
 
@@ -287,7 +290,7 @@ def get_help(bot: Bot, update: Update):
                 [
                     [
                         InlineKeyboardButton(
-                            text="Help", url="t.me/{}?start=help".format(bot.username)
+                            text="Help", url="t.me/{}?start=help".format(context.bot.username)
                         )
                     ]
                 ]
@@ -356,8 +359,8 @@ def send_settings(chat_id, user_id, user=False):
             )
 
 
-@run_async
-def settings_button(bot: Bot, update: Update):
+
+def settings_button(context: CallbackContext, update: Update):
     query = update.callback_query
     user = update.effective_user
     mod_match = re.match(r"stngs_module\((.+?),(.+?)\)", query.data)
@@ -368,7 +371,7 @@ def settings_button(bot: Bot, update: Update):
         if mod_match:
             chat_id = mod_match.group(1)
             module = mod_match.group(2)
-            chat = bot.get_chat(chat_id)
+            chat = context.bot.get_chat(chat_id)
             text = "*{}* has the following settings for the *{}* module:\n\n".format(
                 escape_markdown(chat.title), CHAT_SETTINGS[module].__mod_name__
             ) + CHAT_SETTINGS[module].__chat_settings__(chat_id, user.id)
@@ -390,7 +393,7 @@ def settings_button(bot: Bot, update: Update):
         elif prev_match:
             chat_id = prev_match.group(1)
             curr_page = int(prev_match.group(2))
-            chat = bot.get_chat(chat_id)
+            chat = context.bot.get_chat(chat_id)
             query.message.reply_text(
                 "Hi there! There are quite a few settings for {} - go ahead and pick what "
                 "you're interested in.".format(chat.title),
@@ -404,7 +407,7 @@ def settings_button(bot: Bot, update: Update):
         elif next_match:
             chat_id = next_match.group(1)
             next_page = int(next_match.group(2))
-            chat = bot.get_chat(chat_id)
+            chat = context.bot.get_chat(chat_id)
             query.message.reply_text(
                 "Hi there! There are quite a few settings for {} - go ahead and pick what "
                 "you're interested in.".format(chat.title),
@@ -417,7 +420,7 @@ def settings_button(bot: Bot, update: Update):
 
         elif back_match:
             chat_id = back_match.group(1)
-            chat = bot.get_chat(chat_id)
+            chat = context.bot.get_chat(chat_id)
             query.message.reply_text(
                 text="Hi there! There are quite a few settings for {} - go ahead and pick what "
                 "you're interested in.".format(escape_markdown(chat.title)),
@@ -428,7 +431,7 @@ def settings_button(bot: Bot, update: Update):
             )
 
         # ensure no spinny white circle
-        bot.answer_callback_query(query.id)
+        context.bot.answer_callback_query(query.id)
         query.message.delete()
     except BadRequest as excp:
         if excp.message == "Message is not modified":
@@ -441,8 +444,8 @@ def settings_button(bot: Bot, update: Update):
             LOGGER.exception("Exception in settings buttons. %s", str(query.data))
 
 
-@run_async
-def get_settings(bot: Bot, update: Update):
+
+def get_settings(context: CallbackContext, update: Update):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     msg = update.effective_message  # type: Optional[Message]
@@ -460,7 +463,7 @@ def get_settings(bot: Bot, update: Update):
                             InlineKeyboardButton(
                                 text="Settings",
                                 url="t.me/{}?start=stngs_{}".format(
-                                    bot.username, chat.id
+                                    context.bot.username, chat.id
                                 ),
                             )
                         ]
@@ -474,8 +477,8 @@ def get_settings(bot: Bot, update: Update):
         send_settings(chat.id, user.id, True)
 
 
-@run_async
-def donate(bot: Bot, update: Update):
+
+def donate(context: CallbackContext, update: Update):
     user = update.effective_message.from_user
     chat = update.effective_chat  # type: Optional[Chat]
 
@@ -493,7 +496,7 @@ def donate(bot: Bot, update: Update):
 
     else:
         try:
-            bot.send_message(
+            context.bot.send_message(
                 user.id,
                 DONATE_STRING,
                 parse_mode=ParseMode.MARKDOWN,
@@ -509,7 +512,7 @@ def donate(bot: Bot, update: Update):
             )
 
 
-def migrate_chats(bot: Bot, update: Update):
+def migrate_chats(context: CallbackContext, update: Update):
     msg = update.effective_message  # type: Optional[Message]
     if msg.migrate_to_chat_id:
         old_chat = update.effective_chat.id

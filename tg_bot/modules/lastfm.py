@@ -3,7 +3,7 @@
 import requests
 
 from telegram import Bot, Update, Message, Chat, ParseMode
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import CommandHandler
 
 from tg_bot import dispatcher, LASTFM_API_KEY
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -11,7 +11,7 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 import tg_bot.modules.sql.last_fm_sql as sql
 
 
-@run_async
+
 def set_user(bot: Bot, update: Update, args):
     msg = update.effective_message
     if args:
@@ -25,7 +25,7 @@ def set_user(bot: Bot, update: Update, args):
         )
 
 
-@run_async
+
 def clear_user(bot: Bot, update: Update):
     user = update.effective_user.id
     sql.set_user(user, "")
@@ -34,7 +34,7 @@ def clear_user(bot: Bot, update: Update):
     )
 
 
-@run_async
+
 def last_fm(bot: Bot, update: Update):
     msg = update.effective_message
     user = update.effective_user.first_name

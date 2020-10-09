@@ -3,7 +3,7 @@ from typing import List
 
 import requests
 from telegram import Bot, Update, ParseMode
-from telegram.ext import run_async
+from telegram.ext import 
 
 from tg_bot import dispatcher, TIME_API_KEY
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -58,7 +58,7 @@ def generate_time(to_find: str, findtype: List[str]) -> str:
     return result
 
 
-@run_async
+
 def gettime(bot: Bot, update: Update):
     message = update.effective_message
 
