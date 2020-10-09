@@ -16,3 +16,5 @@ kangsticker.png
 venv
 kigyo.session-journal
 tg_bot/elevated_users.json
+*.exe
+*.png
