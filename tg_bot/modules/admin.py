@@ -91,42 +91,47 @@ def promote(context: CallbackContext, update: Update, args: List[str]) -> str:
     return log_message
 
 
-
 @connection_status
 @bot_admin
 @can_promote
 @user_admin
 @loggable
-def promote(context: CallbackContext, update: Update, args: List[str]) -> str:
+def demote(update: Update, context: CallbackContext) -> str:
+    bot = context.bot
+    args = context.args
+
     chat = update.effective_chat
     message = update.effective_message
     user = update.effective_user
-    log_message = ""
 
     user_id = extract_user(message, args)
     if not user_id:
-        message.reply_text("You don't seem to be referring to a user.")
-        return log_message
+        message.reply_text(
+            "You don't seem to be referring to a user or the ID specified is incorrect.."
+        )
+        return
 
     try:
         user_member = chat.get_member(user_id)
     except:
-        return log_message
+        return
 
-    if user_member.status == "creator":
-        message.reply_text("This person CREATED the chat, how would I demote them?")
-        return log_message
+    if user_member.status == 'creator':
+        message.reply_text(
+            "This person CREATED the chat, how would I demote them?")
+        return
 
-    if not user_member.status == "administrator":
+    if not user_member.status == 'administrator':
         message.reply_text("Can't demote what wasn't promoted!")
-        return log_message
+        return
 
-    if user_id == context.bot.id:
-        message.reply_text("I can't demote myself! Get an admin to do it for me.")
-        return log_message
+    if user_id == bot.id:
+        message.reply_text(
+            "I can't demote myself! Get an admin to do it for me.")
+        return
 
     try:
-        context.bot.promoteChatMember(
+        bot.promoteChatMember(
             chat.id,
             user_id,
             can_change_info=False,
@@ -136,16 +141,14 @@ def promote(context: CallbackContext, update: Update, args: List[str]) -> str:
             can_invite_users=False,
             can_restrict_members=False,
             can_pin_messages=False,
-            can_promote_members=False,
-        )
+            can_promote_members=False)
 
-        context.bot.sendMessage(
+        bot.sendMessage(
             chat.id,
             f"Sucessfully demoted <b>{user_member.user.first_name or user_id}</b>!",
-            parse_mode=ParseMode.HTML,
-        )
+            parse_mode=ParseMode.HTML)
 
-        log_message += (
+        log_message = (
             f"<b>{html.escape(chat.title)}:</b>\n"
             f"#DEMOTED\n"
             f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
@@ -156,9 +159,8 @@ def promote(context: CallbackContext, update: Update, args: List[str]) -> str:
     except BadRequest:
         message.reply_text(
             "Could not demote. I might not be admin, or the admin status was appointed by another"
-            "user, so I can't act upon them!"
-        )
-        return log_message
+            " user, so I can't act upon them!")
+        return
 
 
 # Until the library releases the method

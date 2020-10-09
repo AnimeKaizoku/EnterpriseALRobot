@@ -15,8 +15,6 @@ FILENAME = __name__.rsplit(".", 1)[-1]
 # If module is due to be loaded, then setup all the magical handlers
 if is_module_loaded(FILENAME):
 
-    from telegram.ext.dispatcher import 
-
     from tg_bot.modules.helper_funcs.chat_status import (
         user_admin,
         is_user_admin,
