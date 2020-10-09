@@ -288,10 +288,10 @@ doin?
  - /stop <filter keyword>: stop that filter.
 """
 
-FILTER_HANDLER = CommandHandler("filter", filters)
-STOP_HANDLER = CommandHandler("stop", stop_filter)
-LIST_HANDLER = DisableAbleCommandHandler("filters", list_handlers, admin_ok=True)
-CUST_FILTER_HANDLER = MessageHandler(CustomFilters.has_text, reply_filter)
+FILTER_HANDLER = CommandHandler("filter", filters, run_async=True)
+STOP_HANDLER = CommandHandler("stop", stop_filter, run_async=True)
+LIST_HANDLER = DisableAbleCommandHandler("filters", list_handlers, admin_ok=True, run_async=True)
+CUST_FILTER_HANDLER = MessageHandler(CustomFilters.has_text, reply_filter, run_async=True)
 
 dispatcher.add_handler(FILTER_HANDLER)
 dispatcher.add_handler(STOP_HANDLER)

@@ -364,10 +364,10 @@ Get information about anime, manga or characters with the help of this module! A
 __mod_name__ = "AniList"
 
 
-AIRING_HANDLER = CommandHandler("airing", airing)
+AIRING_HANDLER = CommandHandler("airing", airing, run_async=True)
 ANIME_HANDLER = CommandHandler("anime", anime)
-CHARACTER_HANDLER = CommandHandler("character", character)
-MANGA_HANDLER = CommandHandler("manga", manga)
+CHARACTER_HANDLER = CommandHandler("character", character, run_async=True)
+MANGA_HANDLER = CommandHandler("manga", manga, run_async=True)
 
 dispatcher.add_handler(AIRING_HANDLER)
 dispatcher.add_handler(ANIME_HANDLER)

@@ -368,17 +368,17 @@ __help__ = """
  - /settitle: sets a custom title for an admin that the bot promoted
 """
 
-ADMINLIST_HANDLER = DisableAbleCommandHandler(["adminlist", "admins"], adminlist)
+ADMINLIST_HANDLER = DisableAbleCommandHandler(["adminlist", "admins"], adminlist, run_async=True)
 
-PIN_HANDLER = CommandHandler("pin", pin, pass_args=True, filters=Filters.group)
-UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
+PIN_HANDLER = CommandHandler("pin", pin, pass_args=True, filters=Filters.group, run_async=True)
+UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group, run_async=True)
 
-INVITE_HANDLER = DisableAbleCommandHandler("invitelink", invite, filters=Filters.group)
+INVITE_HANDLER = DisableAbleCommandHandler("invitelink", invite, filters=Filters.group, run_async=True)
 
-PROMOTE_HANDLER = CommandHandler("promote", promote, pass_args=True)
-DEMOTE_HANDLER = CommandHandler("demote", demote, pass_args=True)
+PROMOTE_HANDLER = CommandHandler("promote", promote, pass_args=True, run_async=True)
+DEMOTE_HANDLER = CommandHandler("demote", demote, pass_args=True, run_async=True)
 
-SET_TITLE_HANDLER = CommandHandler("settitle", set_title, pass_args=True)
+SET_TITLE_HANDLER = CommandHandler("settitle", set_title, pass_args=True, run_async=True)
 
 dispatcher.add_handler(ADMINLIST_HANDLER)
 dispatcher.add_handler(PIN_HANDLER)

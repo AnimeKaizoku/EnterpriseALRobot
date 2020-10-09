@@ -333,12 +333,12 @@ def makepack_internal(msg, user, png_sticker, emoji, bot, packname, packnum):
         msg.reply_text("Failed to create sticker pack.")
 
 
-STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid)
-GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker)
+STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid, run_async=True)
+GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker, run_async=True)
 STEAL_HANDLER = DisableAbleCommandHandler(
-    "steal", steal, pass_args=True, admin_ok=False
+    "steal", steal, pass_args=True, admin_ok=False, run_async=True
 )
-STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker)
+STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker, run_async=True)
 
 dispatcher.add_handler(STICKERID_HANDLER)
 dispatcher.add_handler(GETSTICKER_HANDLER)

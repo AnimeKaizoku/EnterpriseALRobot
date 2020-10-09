@@ -93,9 +93,9 @@ def last_fm(bot: Bot, update: Update):
     msg.reply_text(rep, parse_mode=ParseMode.HTML)
 
 
-SET_USER_HANDLER = CommandHandler("setuser", set_user, pass_args=True)
-CLEAR_USER_HANDLER = CommandHandler("clearuser", clear_user)
-LASTFM_HANDLER = DisableAbleCommandHandler("lastfm", last_fm)
+SET_USER_HANDLER = CommandHandler("setuser", set_user, pass_args=True, run_async=True)
+CLEAR_USER_HANDLER = CommandHandler("clearuser", clear_user, run_async=True)
+LASTFM_HANDLER = DisableAbleCommandHandler("lastfm", last_fm, run_async=True)
 
 dispatcher.add_handler(SET_USER_HANDLER)
 dispatcher.add_handler(CLEAR_USER_HANDLER)

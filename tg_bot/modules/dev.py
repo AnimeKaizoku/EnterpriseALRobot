@@ -58,9 +58,9 @@ def restart(bot: Bot, update: Update):
     os.execv("start.bat", sys.argv)
 
 
-LEAVE_HANDLER = CommandHandler("leave", leave, pass_args=True)
-GITPULL_HANDLER = CommandHandler("gitpull", gitpull)
-RESTART_HANDLER = CommandHandler("restart", restart)
+LEAVE_HANDLER = CommandHandler("leave", leave, pass_args=True, run_async=True)
+GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
+RESTART_HANDLER = CommandHandler("restart", restart, run_async=True)
 
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)

@@ -51,7 +51,7 @@ def convert(bot: Bot, update: Update):
         update.effective_message.reply_text(__help__)
 
 
-CONVERTER_HANDLER = CommandHandler("cash", convert)
+CONVERTER_HANDLER = CommandHandler("cash", convert, run_async=True)
 
 dispatcher.add_handler(CONVERTER_HANDLER)
 

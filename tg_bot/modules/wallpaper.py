@@ -55,5 +55,5 @@ def wall(bot: Bot, update: Update, args):
                 )
 
 
-WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, pass_args=True)
+WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, pass_args=True, run_async=True)
 dispatcher.add_handler(WALLPAPER_HANDLER)

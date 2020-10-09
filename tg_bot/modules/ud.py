@@ -20,7 +20,7 @@ def ud(bot: Bot, update: Update):
     message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN)
 
 
-UD_HANDLER = DisableAbleCommandHandler(["ud", "urban"], ud)
+UD_HANDLER = DisableAbleCommandHandler(["ud", "urban"], ud, run_async=True)
 
 dispatcher.add_handler(UD_HANDLER)
 

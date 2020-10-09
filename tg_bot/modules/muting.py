@@ -232,9 +232,9 @@ __help__ = """
  - /unmute <userhandle>: unmutes a user. Can also be used as a reply, muting the replied to user.
 """
 
-MUTE_HANDLER = CommandHandler("mute", mute, pass_args=True)
-UNMUTE_HANDLER = CommandHandler("unmute", unmute, pass_args=True)
-TEMPMUTE_HANDLER = CommandHandler(["tmute", "tempmute"], temp_mute, pass_args=True)
+MUTE_HANDLER = CommandHandler("mute", mute, pass_args=True, run_async=True)
+UNMUTE_HANDLER = CommandHandler("unmute", unmute, pass_args=True, run_async=True)
+TEMPMUTE_HANDLER = CommandHandler(["tmute", "tempmute"], temp_mute, pass_args=True, run_async=True)
 
 dispatcher.add_handler(MUTE_HANDLER)
 dispatcher.add_handler(UNMUTE_HANDLER)

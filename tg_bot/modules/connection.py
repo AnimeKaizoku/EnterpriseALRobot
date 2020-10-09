@@ -389,13 +389,13 @@ __help__ = """
 """
 
 CONNECT_CHAT_HANDLER = CommandHandler("connect", connect_chat, pass_args=True)
-CONNECTION_CHAT_HANDLER = CommandHandler("connection", connection_chat)
-DISCONNECT_CHAT_HANDLER = CommandHandler("disconnect", disconnect_chat)
+CONNECTION_CHAT_HANDLER = CommandHandler("connection", connection_chat, run_async=True)
+DISCONNECT_CHAT_HANDLER = CommandHandler("disconnect", disconnect_chat, run_async=True)
 ALLOW_CONNECTIONS_HANDLER = CommandHandler(
-    "allowconnect", allow_connections, pass_args=True
+    "allowconnect", allow_connections, pass_args=True, run_async=True
 )
-HELP_CONNECT_CHAT_HANDLER = CommandHandler("helpconnect", help_connect_chat)
-CONNECT_BTN_HANDLER = CallbackQueryHandler(connect_button, pattern=r"connect")
+HELP_CONNECT_CHAT_HANDLER = CommandHandler("helpconnect", help_connect_chat, run_async=True)
+CONNECT_BTN_HANDLER = CallbackQueryHandler(connect_button, pattern=r"connect", run_async=True)
 
 dispatcher.add_handler(CONNECT_CHAT_HANDLER)
 dispatcher.add_handler(CONNECTION_CHAT_HANDLER)

@@ -514,15 +514,15 @@ SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bit
 Kigyo will constantly help banning spammers off from your group automatically So, you don't have to worry about spammers storming your group.
 """
 
-GBAN_HANDLER = CommandHandler("gban", gban, pass_args=True)
-UNGBAN_HANDLER = CommandHandler("ungban", ungban, pass_args=True)
-GBAN_LIST = CommandHandler("gbanlist", gbanlist)
+GBAN_HANDLER = CommandHandler("gban", gban, pass_args=True, run_async=True)
+UNGBAN_HANDLER = CommandHandler("ungban", ungban, pass_args=True, run_async=True)
+GBAN_LIST = CommandHandler("gbanlist", gbanlist, run_async=True)
 
 GBAN_STATUS = CommandHandler(
-    "gbanstat", gbanstat, pass_args=True, filters=Filters.group
+    "gbanstat", gbanstat, pass_args=True, filters=Filters.group, run_async=True
 )
 
-GBAN_ENFORCER = MessageHandler(Filters.all & Filters.group, enforce_gban)
+GBAN_ENFORCER = MessageHandler(Filters.all & Filters.group, enforce_gban, run_async=True)
 
 dispatcher.add_handler(GBAN_HANDLER)
 dispatcher.add_handler(UNGBAN_HANDLER)

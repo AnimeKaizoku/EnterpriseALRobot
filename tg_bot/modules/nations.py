@@ -602,30 +602,30 @@ __help__ = """
  You can visit @YorktownEagleUnion to query more about these.
 """
 
-SUDO_HANDLER = CommandHandler(("addsudo", "addRoyal"), addsudo, pass_args=True)
+SUDO_HANDLER = CommandHandler(("addsudo", "addRoyal"), addsudo, pass_args=True, run_async=True)
 SUPPORT_HANDLER = CommandHandler(
-    ("addsupport", "addSakura"), addsupport, pass_args=True
+    ("addsupport", "addSakura"), addsupport, pass_args=True, run_async=True
 )
-SARDEGNA_HANDLER = CommandHandler(("addSardegna"), addSardegna, pass_args=True)
+SARDEGNA_HANDLER = CommandHandler(("addSardegna"), addSardegna, pass_args=True, run_async=True)
 WHITELIST_HANDLER = CommandHandler(
-    ("addwhitelist", "addNeptunia"), addwhitelist, pass_args=True
+    ("addwhitelist", "addNeptunia"), addwhitelist, pass_args=True, run_async=True
 )
 UNSUDO_HANDLER = CommandHandler(
-    ("removesudo", "removeRoyal"), removesudo, pass_args=True
+    ("removesudo", "removeRoyal"), removesudo, pass_args=True, run_async=True
 )
 UNSUPPORT_HANDLER = CommandHandler(
-    ("removesupport", "removeSakura"), removesupport, pass_args=True
+    ("removesupport", "removeSakura"), removesupport, pass_args=True, run_async=True
 )
-UNSARDEGNA_HANDLER = CommandHandler(("removeSardegna"), removeSardegna, pass_args=True)
+UNSARDEGNA_HANDLER = CommandHandler(("removeSardegna"), removeSardegna, pass_args=True, run_async=True)
 UNWHITELIST_HANDLER = CommandHandler(
-    ("removewhitelist", "removeNeptunia"), removewhitelist, pass_args=True
+    ("removewhitelist", "removeNeptunia"), removewhitelist, pass_args=True, run_async=True
 )
 
-WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "Neptunians"], whitelistlist)
-SARDEGNALIST_HANDLER = CommandHandler(["Sardegnas"], Sardegnalist)
-SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "Sakuras"], supportlist)
-SUDOLIST_HANDLER = CommandHandler(["sudolist", "Royals"], sudolist)
-DEVLIST_HANDLER = CommandHandler(["devlist", "Eagle"], devlist)
+WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "Neptunians"], whitelistlist, run_async=True)
+SARDEGNALIST_HANDLER = CommandHandler(["Sardegnas"], Sardegnalist, run_async=True)
+SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "Sakuras"], supportlist, run_async=True)
+SUDOLIST_HANDLER = CommandHandler(["sudolist", "Royals"], sudolist, run_async=True)
+DEVLIST_HANDLER = CommandHandler(["devlist", "Eagle"], devlist, run_async=True)
 
 dispatcher.add_handler(SUDO_HANDLER)
 dispatcher.add_handler(SUPPORT_HANDLER)

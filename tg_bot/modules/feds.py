@@ -2379,41 +2379,41 @@ Feds are now divided into 3 sections for your ease.
 
 """
 
-NEW_FED_HANDLER = CommandHandler("newfed", new_fed)
-DEL_FED_HANDLER = CommandHandler("delfed", del_fed, pass_args=True)
-JOIN_FED_HANDLER = CommandHandler("joinfed", join_fed, pass_args=True)
-LEAVE_FED_HANDLER = CommandHandler("leavefed", leave_fed, pass_args=True)
-PROMOTE_FED_HANDLER = CommandHandler("fpromote", user_join_fed, pass_args=True)
-DEMOTE_FED_HANDLER = CommandHandler("fdemote", user_demote_fed, pass_args=True)
-INFO_FED_HANDLER = CommandHandler("fedinfo", fed_info, pass_args=True)
-BAN_FED_HANDLER = DisableAbleCommandHandler(["fban", "fedban"], fed_ban, pass_args=True)
-UN_BAN_FED_HANDLER = CommandHandler("unfban", unfban, pass_args=True)
-FED_BROADCAST_HANDLER = CommandHandler("fbroadcast", fed_broadcast, pass_args=True)
-FED_SET_RULES_HANDLER = CommandHandler("setfrules", set_frules, pass_args=True)
-FED_GET_RULES_HANDLER = CommandHandler("frules", get_frules, pass_args=True)
-FED_CHAT_HANDLER = CommandHandler("chatfed", fed_chat, pass_args=True)
-FED_ADMIN_HANDLER = CommandHandler("fedadmins", fed_admin, pass_args=True)
+NEW_FED_HANDLER = CommandHandler("newfed", new_fed, run_async=True)
+DEL_FED_HANDLER = CommandHandler("delfed", del_fed, pass_args=True, run_async=True)
+JOIN_FED_HANDLER = CommandHandler("joinfed", join_fed, pass_args=True, run_async=True)
+LEAVE_FED_HANDLER = CommandHandler("leavefed", leave_fed, pass_args=True, run_async=True)
+PROMOTE_FED_HANDLER = CommandHandler("fpromote", user_join_fed, pass_args=True, run_async=True)
+DEMOTE_FED_HANDLER = CommandHandler("fdemote", user_demote_fed, pass_args=True, run_async=True)
+INFO_FED_HANDLER = CommandHandler("fedinfo", fed_info, pass_args=True, run_async=True)
+BAN_FED_HANDLER = DisableAbleCommandHandler(["fban", "fedban"], fed_ban, pass_args=True, run_async=True)
+UN_BAN_FED_HANDLER = CommandHandler("unfban", unfban, pass_args=True, run_async=True)
+FED_BROADCAST_HANDLER = CommandHandler("fbroadcast", fed_broadcast, pass_args=True, run_async=True)
+FED_SET_RULES_HANDLER = CommandHandler("setfrules", set_frules, pass_args=True, run_async=True)
+FED_GET_RULES_HANDLER = CommandHandler("frules", get_frules, pass_args=True, run_async=True)
+FED_CHAT_HANDLER = CommandHandler("chatfed", fed_chat, pass_args=True, run_async=True)
+FED_ADMIN_HANDLER = CommandHandler("fedadmins", fed_admin, pass_args=True, run_async=True)
 FED_USERBAN_HANDLER = CommandHandler(
-    "fbanlist", fed_ban_list, pass_args=True, pass_chat_data=True
+    "fbanlist", fed_ban_list, pass_args=True, pass_chat_data=True, run_async=True
 )
-FED_NOTIF_HANDLER = CommandHandler("fednotif", fed_notif, pass_args=True)
-FED_CHATLIST_HANDLER = CommandHandler("fedchats", fed_chats, pass_args=True)
+FED_NOTIF_HANDLER = CommandHandler("fednotif", fed_notif, pass_args=, run_async=True)
+FED_CHATLIST_HANDLER = CommandHandler("fedchats", fed_chats, pass_args=True, run_async=True)
 FED_IMPORTBAN_HANDLER = CommandHandler(
-    "importfbans", fed_import_bans, pass_chat_data=True
+    "importfbans", fed_import_bans, pass_chat_data=True, run_async=True
 )
 FEDSTAT_USER = DisableAbleCommandHandler(
-    ["fedstat", "fbanstat"], fed_stat_user, pass_args=True
+    ["fedstat", "fbanstat"], fed_stat_user, pass_args=True, run_async=True
 )
-SET_FED_LOG = CommandHandler("setfedlog", set_fed_log, pass_args=True)
-UNSET_FED_LOG = CommandHandler("unsetfedlog", unset_fed_log, pass_args=True)
-SUBS_FED = CommandHandler("subfed", subs_feds, pass_args=True)
-UNSUBS_FED = CommandHandler("unsubfed", unsubs_feds, pass_args=True)
-MY_SUB_FED = CommandHandler("fedsubs", get_myfedsubs, pass_args=True)
-MY_FEDS_LIST = CommandHandler("myfeds", get_myfeds_list)
-DELETEBTN_FED_HANDLER = CallbackQueryHandler(del_fed_button, pattern=r"rmfed_")
-FED_OWNER_HELP_HANDLER = CommandHandler("fedownerhelp", fed_owner_help)
-FED_ADMIN_HELP_HANDLER = CommandHandler("fedadminhelp", fed_admin_help)
-FED_USER_HELP_HANDLER = CommandHandler("feduserhelp", fed_user_help)
+SET_FED_LOG = CommandHandler("setfedlog", set_fed_log, pass_args=True, run_async=True)
+UNSET_FED_LOG = CommandHandler("unsetfedlog", unset_fed_log, pass_args=True, run_async=True)
+SUBS_FED = CommandHandler("subfed", subs_feds, pass_args=True, run_async=True)
+UNSUBS_FED = CommandHandler("unsubfed", unsubs_feds, pass_args=True, run_async=True)
+MY_SUB_FED = CommandHandler("fedsubs", get_myfedsubs, pass_args=True, run_async=True)
+MY_FEDS_LIST = CommandHandler("myfeds", get_myfeds_list, run_async=True)
+DELETEBTN_FED_HANDLER = CallbackQueryHandler(del_fed_button, pattern=r"rmfed_", run_async=True)
+FED_OWNER_HELP_HANDLER = CommandHandler("fedownerhelp", fed_owner_help, run_async=True)
+FED_ADMIN_HELP_HANDLER = CommandHandler("fedadminhelp", fed_admin_help, run_async=True)
+FED_USER_HELP_HANDLER = CommandHandler("feduserhelp", fed_user_help, run_async=True)
 
 dispatcher.add_handler(NEW_FED_HANDLER)
 dispatcher.add_handler(DEL_FED_HANDLER)

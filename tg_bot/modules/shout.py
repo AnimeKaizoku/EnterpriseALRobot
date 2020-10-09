@@ -21,7 +21,7 @@ def shout(bot: Bot, update: Update, args: List[str]):
     return update.effective_message.reply_text(msg, parse_mode="MARKDOWN")
 
 
-SHOUT_HANDLER = DisableAbleCommandHandler("shout", shout, pass_args=True)
+SHOUT_HANDLER = DisableAbleCommandHandler("shout", shout, pass_args=True, run_async=True)
 
 dispatcher.add_handler(SHOUT_HANDLER)
 

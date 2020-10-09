@@ -99,16 +99,16 @@ __help__ = """
 When marked as AFK, any mentions will be replied to with a message to say you're not available!
 """
 
-AFK_HANDLER = DisableAbleCommandHandler("afk", afk)
-AFK_REGEX_HANDLER = DisableAbleRegexHandler(r"(?i)brb", afk, friendly="afk")
+AFK_HANDLER = DisableAbleCommandHandler("afk", afk, run_async=True)
+AFK_REGEX_HANDLER = DisableAbleRegexHandler(r"(?i)brb", afk, friendly="afk", run_async=True)
 NO_AFK_HANDLER = DisableAbleMessageHandler(
-    Filters.all & Filters.group, no_longer_afk, friendly="afk"
+    Filters.all & Filters.group, no_longer_afk, friendly="afk", run_async=True
 )
 AFK_REPLY_HANDLER = DisableAbleMessageHandler(
     (Filters.entity(MessageEntity.MENTION) | Filters.entity(MessageEntity.TEXT_MENTION))
     & Filters.group,
     reply_afk,
-    friendly="afk",
+    friendly="afk", run_async=True,
 )
 
 dispatcher.add_handler(AFK_HANDLER, AFK_GROUP)

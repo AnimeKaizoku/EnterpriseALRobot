@@ -130,9 +130,9 @@ def clear(bot, update):
     send("Cleared locals.", bot, update)
 
 
-eval_handler = CommandHandler(("e", "ev", "eva", "eval"), evaluate)
-exec_handler = CommandHandler(("x", "ex", "exe", "exec", "py"), execute)
-clear_handler = CommandHandler("clearlocals", clear)
+eval_handler = CommandHandler(("e", "ev", "eva", "eval"), evaluate, run_async=True)
+exec_handler = CommandHandler(("x", "ex", "exe", "exec", "py"), execute, run_async=True)
+clear_handler = CommandHandler("clearlocals", clear, run_async=True)
 
 dispatcher.add_handler(eval_handler)
 dispatcher.add_handler(exec_handler)

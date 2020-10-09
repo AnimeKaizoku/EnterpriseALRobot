@@ -427,12 +427,12 @@ stickers, etc.
 Locking bots will stop non-admins from adding bots to the chat.
 """
 
-LOCKTYPES_HANDLER = DisableAbleCommandHandler("locktypes", locktypes)
-LOCK_HANDLER = CommandHandler("lock", lock, pass_args=True)
-UNLOCK_HANDLER = CommandHandler("unlock", unlock, pass_args=True)
-LOCKED_HANDLER = CommandHandler("locks", list_locks)
-LOCKABLE_HANDLER = MessageHandler(Filters.all & Filters.group, del_lockables)
-RESTRICTION_HANDLER = MessageHandler(Filters.all & Filters.group, rest_handler)
+LOCKTYPES_HANDLER = DisableAbleCommandHandler("locktypes", locktypes, run_async=True)
+LOCK_HANDLER = CommandHandler("lock", lock, pass_args=True, run_async=True)
+UNLOCK_HANDLER = CommandHandler("unlock", unlock, pass_args=True, run_async=True)
+LOCKED_HANDLER = CommandHandler("locks", list_locks, run_async=True)
+LOCKABLE_HANDLER = MessageHandler(Filters.all & Filters.group, del_lockables, run_async=True)
+RESTRICTION_HANDLER = MessageHandler(Filters.all & Filters.group, rest_handler, run_async=True)
 
 dispatcher.add_handler(LOCK_HANDLER)
 dispatcher.add_handler(UNLOCK_HANDLER)

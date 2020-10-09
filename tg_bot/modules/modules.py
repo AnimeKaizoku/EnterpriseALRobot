@@ -167,9 +167,9 @@ def listmodules(bot: Bot, update: Update):
     message.reply_text(module_list, parse_mode=ParseMode.HTML)
 
 
-LOAD_HANDLER = CommandHandler("load", load)
-UNLOAD_HANDLER = CommandHandler("unload", unload)
-LISTMODULES_HANDLER = CommandHandler("listmodules", listmodules)
+LOAD_HANDLER = CommandHandler("load", load, run_async=True)
+UNLOAD_HANDLER = CommandHandler("unload", unload, run_async=True)
+LISTMODULES_HANDLER = CommandHandler("listmodules", listmodules, run_async=True)
 
 dispatcher.add_handler(LOAD_HANDLER)
 dispatcher.add_handler(UNLOAD_HANDLER)

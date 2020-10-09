@@ -234,23 +234,23 @@ __help__ = """
 """
 
 SET_CLEAN_BLUE_TEXT_HANDLER = CommandHandler(
-    "cleanbluetext", set_blue_text_must_click, pass_args=True
+    "cleanbluetext", set_blue_text_must_click, pass_args=True, run_async=True
 )
 ADD_CLEAN_BLUE_TEXT_HANDLER = CommandHandler(
-    "ignorecleanbluetext", add_bluetext_ignore, pass_args=True
+    "ignorecleanbluetext", add_bluetext_ignore, pass_args=True, run_async=True
 )
 REMOVE_CLEAN_BLUE_TEXT_HANDLER = CommandHandler(
-    "unignorecleanbluetext", remove_bluetext_ignore, pass_args=True
+    "unignorecleanbluetext", remove_bluetext_ignore, pass_args=True, run_async=True
 )
 ADD_CLEAN_BLUE_TEXT_GLOBAL_HANDLER = CommandHandler(
-    "ignoreglobalcleanbluetext", add_bluetext_ignore_global, pass_args=True
+    "ignoreglobalcleanbluetext", add_bluetext_ignore_global, pass_args=True, run_async=True
 )
 REMOVE_CLEAN_BLUE_TEXT_GLOBAL_HANDLER = CommandHandler(
-    "unignoreglobalcleanbluetext", remove_bluetext_ignore_global, pass_args=True
+    "unignoreglobalcleanbluetext", remove_bluetext_ignore_global, pass_args=True, run_async=True
 )
-LIST_CLEAN_BLUE_TEXT_HANDLER = CommandHandler("listcleanbluetext", bluetext_ignore_list)
+LIST_CLEAN_BLUE_TEXT_HANDLER = CommandHandler("listcleanbluetext", bluetext_ignore_list, run_async=True)
 CLEAN_BLUE_TEXT_HANDLER = MessageHandler(
-    Filters.command & Filters.group, clean_blue_text_must_click
+    Filters.command & Filters.group, clean_blue_text_must_click, run_async=True
 )
 
 dispatcher.add_handler(SET_CLEAN_BLUE_TEXT_HANDLER)

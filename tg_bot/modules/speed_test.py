@@ -52,9 +52,9 @@ def speedtestxyz_callback(bot: Bot, update: Update):
         query.answer("You are required to join Eagle Union to use this command.")
 
 
-SPEED_TEST_HANDLER = DisableAbleCommandHandler("speedtest", speedtestxyz)
+SPEED_TEST_HANDLER = DisableAbleCommandHandler("speedtest", speedtestxyz, run_async=True)
 SPEED_TEST_CALLBACKHANDLER = CallbackQueryHandler(
-    speedtestxyz_callback, pattern="speedtest_.*"
+    speedtestxyz_callback, pattern="speedtest_.*", run_async=True
 )
 
 dispatcher.add_handler(SPEED_TEST_HANDLER)

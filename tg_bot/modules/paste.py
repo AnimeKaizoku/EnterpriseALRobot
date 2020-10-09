@@ -38,7 +38,7 @@ def paste(bot: Bot, update: Update, args: List[str]):
     )
 
 
-PASTE_HANDLER = DisableAbleCommandHandler("paste", paste, pass_args=True)
+PASTE_HANDLER = DisableAbleCommandHandler("paste", paste, pass_args=True, run_async=True)
 dispatcher.add_handler(PASTE_HANDLER)
 
 __command_list__ = ["paste"]

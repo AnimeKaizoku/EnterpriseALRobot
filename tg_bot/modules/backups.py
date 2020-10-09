@@ -82,8 +82,8 @@ that files/photos can't be imported due to telegram restrictions.
  - /export: !!! This isn't a command yet, but should be coming soon!
 """
 
-IMPORT_HANDLER = CommandHandler("import", import_data)
-EXPORT_HANDLER = CommandHandler("export", export_data)
+IMPORT_HANDLER = CommandHandler("import", import_data, run_async=True)
+EXPORT_HANDLER = CommandHandler("export", export_data, run_async=True)
 
 dispatcher.add_handler(IMPORT_HANDLER)
 dispatcher.add_handler(EXPORT_HANDLER)

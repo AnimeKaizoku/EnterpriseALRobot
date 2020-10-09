@@ -336,14 +336,14 @@ NOTE: neither of these will get triggered if used by admins
    - If in chat, toggles that chat's status.
 """
 
-REPORT_HANDLER = CommandHandler("report", report, filters=Filters.group)
-SETTING_HANDLER = CommandHandler("reports", report_setting, pass_args=True)
-ADMIN_REPORT_HANDLER = RegexHandler("(?i)@admin(s)?", report)
+REPORT_HANDLER = CommandHandler("report", report, filters=Filters.group, run_async=True)
+SETTING_HANDLER = CommandHandler("reports", report_setting, pass_args=True, run_async=True)
+ADMIN_REPORT_HANDLER = RegexHandler("(?i)@admin(s)?", report, run_async=True)
 
 cntrl_panel_user_callback_handler = CallbackQueryHandler(
-    control_panel_user, pattern=r"panel_reporting_U"
+    control_panel_user, pattern=r"panel_reporting_U", run_async=True
 )
-report_button_user_handler = CallbackQueryHandler(buttons, pattern=r"report_")
+report_button_user_handler = CallbackQueryHandler(buttons, pattern=r"report_", run_async=True)
 dispatcher.add_handler(cntrl_panel_user_callback_handler)
 dispatcher.add_handler(report_button_user_handler)
 

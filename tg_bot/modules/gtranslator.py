@@ -130,7 +130,7 @@ def totranslate(bot: Bot, update: Update):
         return
 
 
-TRANSLATE_HANDLER = DisableAbleCommandHandler("tr", totranslate)
+TRANSLATE_HANDLER = DisableAbleCommandHandler("tr", totranslate, run_async=True)
 
 dispatcher.add_handler(TRANSLATE_HANDLER)
 

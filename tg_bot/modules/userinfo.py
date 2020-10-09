@@ -161,11 +161,11 @@ __help__ = """
  - /me: will get your or another user's info
 """
 
-SET_BIO_HANDLER = DisableAbleCommandHandler("setbio", set_about_bio)
-GET_BIO_HANDLER = DisableAbleCommandHandler("bio", about_bio, pass_args=True)
+SET_BIO_HANDLER = DisableAbleCommandHandler("setbio", set_about_bio, run_async=True)
+GET_BIO_HANDLER = DisableAbleCommandHandler("bio", about_bio, pass_args=True, run_async=True)
 
-SET_ABOUT_HANDLER = DisableAbleCommandHandler("setme", set_about_me)
-GET_ABOUT_HANDLER = DisableAbleCommandHandler("me", about_me, pass_args=True)
+SET_ABOUT_HANDLER = DisableAbleCommandHandler("setme", set_about_me, run_async=True)
+GET_ABOUT_HANDLER = DisableAbleCommandHandler("me", about_me, pass_args=True, run_async=True)
 
 dispatcher.add_handler(SET_BIO_HANDLER)
 dispatcher.add_handler(GET_BIO_HANDLER)

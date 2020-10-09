@@ -360,11 +360,11 @@ To compute fractions, enter expressions as numerator(over)denominator. For examp
 
 """
 
-ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)
-GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid)
-INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True)
-ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.group)
-MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
+ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True, run_async=True)
+GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid, run_async=True)
+INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True, run_async=True)
+ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.group, run_async=True)
+MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private, run_async=True)
 STATS_HANDLER = CommandHandler("stats", stats)
 PING_HANDLER = DisableAbleCommandHandler("ping", ping)
 RAM_HANDLER = CommandHandler("ram", ram,)

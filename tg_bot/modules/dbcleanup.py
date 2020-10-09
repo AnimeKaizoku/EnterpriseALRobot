@@ -200,9 +200,9 @@ def callback_button(bot: Bot, update: Update):
             query.answer("You are not allowed to use this.")
 
 
-DB_CLEANUP_HANDLER = CommandHandler("dbcleanup", dbcleanup)
-LEAVE_MUTED_CHATS_HANDLER = CommandHandler("leavemutedchats", leave_muted_chats)
-BUTTON_HANDLER = CallbackQueryHandler(callback_button, pattern="db_.*")
+DB_CLEANUP_HANDLER = CommandHandler("dbcleanup", dbcleanup, run_async=True)
+LEAVE_MUTED_CHATS_HANDLER = CommandHandler("leavemutedchats", leave_muted_chats, run_async=True)
+BUTTON_HANDLER = CallbackQueryHandler(callback_button, pattern="db_.*", run_async=True)
 
 dispatcher.add_handler(DB_CLEANUP_HANDLER)
 dispatcher.add_handler(LEAVE_MUTED_CHATS_HANDLER)
