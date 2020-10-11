@@ -371,13 +371,13 @@ def selfunban(context: CallbackContext, update: Update) -> str:
 
 
 __help__ = """
- - /kickme: punchs the user who issued the command
+ - /kickme: kicks the user who issued the command
 
 *Admin only:*
  - /ban <userhandle>: bans a user. (via handle, or reply)
  - /tban <userhandle> x(m/h/d): bans a user for x time. (via handle, or reply). m = minutes, h = hours, d = days.
  - /unban <userhandle>: unbans a user. (via handle, or reply)
- - /punch <userhandle>: Punches a user out of the group, (via handle, or reply)
+ - /kick <userhandle>: kick a user out of the group, (via handle, or reply)
 """
 
 BAN_HANDLER = CommandHandler("ban", ban, pass_args=True, run_async=True)
