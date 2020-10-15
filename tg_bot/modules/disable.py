@@ -1,317 +1,550 @@
-import importlib
-from typing import Union, List
+import re
+from html import escape
 
-from future.utils import string_types
-from telegram import Bot, Update, ParseMode
-from telegram.ext import CommandHandler, RegexHandler, MessageHandler
-from telegram.utils.helpers import escape_markdown
+import telegram
+from telegram import ParseMode, InlineKeyboardMarkup, Message
+from telegram.error import BadRequest
+from telegram.ext import (
+    CommandHandler,
+    MessageHandler,
+    DispatcherHandlerStop,
+    Filters,
+)
+from telegram.utils.helpers import mention_html, escape_markdown
 
-from tg_bot import dispatcher
-from tg_bot.modules.helper_funcs.handlers import CMD_STARTERS, CustomCommandHandler
-from tg_bot.modules.helper_funcs.misc import is_module_loaded
+from tg_bot import dispatcher, LOGGER
+from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot.modules.helper_funcs.chat_status import user_admin
+from tg_bot.modules.helper_funcs.extraction import extract_text
+from tg_bot.modules.helper_funcs.filters import CustomFilters
+from tg_bot.modules.helper_funcs.misc import build_keyboard_parser
+from tg_bot.modules.helper_funcs.msg_types import get_filter_type
+from tg_bot.modules.helper_funcs.string_handling import (
+    split_quotes,
+    button_markdown_parser,
+    escape_invalid_curly_brackets,
+    markdown_to_html,
+)
+from tg_bot.modules.sql import cust_filters_sql as sql
 
-FILENAME = __name__.rsplit(".", 1)[-1]
+from tg_bot.modules.connection import connected
 
-# If module is due to be loaded, then setup all the magical handlers
-if is_module_loaded(FILENAME):
+from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 
-    from tg_bot.modules.helper_funcs.chat_status import (
-        user_admin,
-        is_user_admin,
-        connection_status,
-    )
-    from tg_bot.modules.sql import disable_sql as sql
+HANDLER_GROUP = 10
 
-    DISABLE_CMDS = []
-    DISABLE_OTHER = []
-    ADMIN_CMDS = []
+ENUM_FUNC_MAP = {
+    sql.Types.TEXT.value: dispatcher.bot.send_message,
+    sql.Types.BUTTON_TEXT.value: dispatcher.bot.send_message,
+    sql.Types.STICKER.value: dispatcher.bot.send_sticker,
+    sql.Types.DOCUMENT.value: dispatcher.bot.send_document,
+    sql.Types.PHOTO.value: dispatcher.bot.send_photo,
+    sql.Types.AUDIO.value: dispatcher.bot.send_audio,
+    sql.Types.VOICE.value: dispatcher.bot.send_voice,
+    sql.Types.VIDEO.value: dispatcher.bot.send_video,
+    # sql.Types.VIDEO_NOTE.value: dispatcher.bot.send_video_note
+}
 
-    class DisableAbleCommandHandler(CustomCommandHandler):
-        def __init__(self, command, callback, admin_ok=False, filters=None, **kwargs):
-            super().__init__(command, callback, **kwargs)
-            self.admin_ok = admin_ok
-            self.filters = filters
-            if isinstance(command, string_types):
-                DISABLE_CMDS.append(command)
-                if admin_ok:
-                    ADMIN_CMDS.append(command)
-            else:
-                DISABLE_CMDS.extend(command)
-                if admin_ok:
-                    ADMIN_CMDS.extend(command)
 
-        def check_update(self, update):
-            chat = update.effective_chat
-            user = update.effective_user
+@typing_action
+def list_handlers(update, context):
+    chat = update.effective_chat
+    user = update.effective_user
 
-            if super().check_update(update):
-
-                # Should be safe since check_update passed.
-                command = update.effective_message.text_html.split(None, 1)[0][
-                    1:
-                ].split("@")[0]
-
-                # disabled, admincmd, user admin
-                if sql.is_command_disabled(chat.id, command):
-                    if command in ADMIN_CMDS and is_user_admin(chat, user.id):
-                        return True
-
-                # not disabled
-                else:
-                    return True
-
-    class DisableAbleMessageHandler(MessageHandler):
-        def __init__(self, filters, callback, friendly, **kwargs):
-            super().__init__(filters, callback, **kwargs)
-            DISABLE_OTHER.append(friendly)
-            self.friendly = friendly
-            self.filters = filters
-
-        def check_update(self, update):
-
-            chat = update.effective_chat
-            if super().check_update(update):
-                if sql.is_command_disabled(chat.id, self.friendly):
-                    return False
-                else:
-                    return True
-
-    class DisableAbleRegexHandler(RegexHandler):
-        def __init__(self, pattern, callback, friendly="", filters=None, **kwargs):
-            super().__init__(pattern, callback, filters, **kwargs)
-            DISABLE_OTHER.append(friendly)
-            self.friendly = friendly
-
-        def check_update(self, update):
-            chat = update.effective_chat
-            if super().check_update(update):
-                if sql.is_command_disabled(chat.id, self.friendly):
-                    return False
-                else:
-                    return True
-
-    
-    @connection_status
-    @user_admin
-    def disable(bot: Bot, update: Update, args: List[str]):
-        chat = update.effective_chat
-        if len(args) >= 1:
-            disable_cmd = args[0]
-            if disable_cmd.startswith(CMD_STARTERS):
-                disable_cmd = disable_cmd[1:]
-
-            if disable_cmd in set(DISABLE_CMDS + DISABLE_OTHER):
-                sql.disable_command(chat.id, str(disable_cmd).lower())
-                update.effective_message.reply_text(
-                    f"Disabled the use of `{disable_cmd}`",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
-            else:
-                update.effective_message.reply_text("That command can't be disabled")
-
+    conn = connected(context.bot, update, chat, user.id, need_admin=False)
+    if not conn is False:
+        chat_id = conn
+        chat_name = dispatcher.bot.getChat(conn).title
+        filter_list = "*Filter in {}:*\n"
+    else:
+        chat_id = update.effective_chat.id
+        if chat.type == "private":
+            chat_name = "Local filters"
+            filter_list = "*local filters:*\n"
         else:
-            update.effective_message.reply_text("What should I disable?")
+            chat_name = chat.title
+            filter_list = "*Filters in {}*:\n"
 
-    
-    @connection_status
-    @user_admin
-    def disable_module(bot: Bot, update: Update, args: List[str]):
-        chat = update.effective_chat
-        if len(args) >= 1:
-            disable_module = "tg_bot.modules." + args[0].rsplit(".", 1)[0]
+    all_handlers = sql.get_chat_triggers(chat_id)
 
-            try:
-                module = importlib.import_module(disable_module)
-            except:
-                update.effective_message.reply_text("Does that module even exist?")
-                return
+    if not all_handlers:
+        send_message(update.effective_message,
+                     "No filters saved in {}!".format(chat_name))
+        return
 
-            try:
-                command_list = module.__command_list__
-            except:
-                update.effective_message.reply_text(
-                    "Module does not contain command list!"
-                )
-                return
-
-            disabled_cmds = []
-            failed_disabled_cmds = []
-
-            for disable_cmd in command_list:
-                if disable_cmd.startswith(CMD_STARTERS):
-                    disable_cmd = disable_cmd[1:]
-
-                if disable_cmd in set(DISABLE_CMDS + DISABLE_OTHER):
-                    sql.disable_command(chat.id, str(disable_cmd).lower())
-                    disabled_cmds.append(disable_cmd)
-                else:
-                    failed_disabled_cmds.append(disable_cmd)
-
-            if disabled_cmds:
-                disabled_cmds_string = ", ".join(disabled_cmds)
-                update.effective_message.reply_text(
-                    f"Disabled the uses of `{disabled_cmds_string}`",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
-
-            if failed_disabled_cmds:
-                failed_disabled_cmds_string = ", ".join(failed_disabled_cmds)
-                update.effective_message.reply_text(
-                    f"Commands `{failed_disabled_cmds_string}` can't be disabled",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
-
-        else:
-            update.effective_message.reply_text("What should I disable?")
-
-    
-    @connection_status
-    @user_admin
-    def enable(bot: Bot, update: Update, args: List[str]):
-
-        chat = update.effective_chat
-        if len(args) >= 1:
-            enable_cmd = args[0]
-            if enable_cmd.startswith(CMD_STARTERS):
-                enable_cmd = enable_cmd[1:]
-
-            if sql.enable_command(chat.id, enable_cmd):
-                update.effective_message.reply_text(
-                    f"Enabled the use of `{enable_cmd}`", parse_mode=ParseMode.MARKDOWN
-                )
-            else:
-                update.effective_message.reply_text("Is that even disabled?")
-
-        else:
-            update.effective_message.reply_text("What should I enable?")
-
-    
-    @connection_status
-    @user_admin
-    def enable_module(bot: Bot, update: Update, args: List[str]):
-        chat = update.effective_chat
-
-        if len(args) >= 1:
-            enable_module = "tg_bot.modules." + args[0].rsplit(".", 1)[0]
-
-            try:
-                module = importlib.import_module(enable_module)
-            except:
-                update.effective_message.reply_text("Does that module even exist?")
-                return
-
-            try:
-                command_list = module.__command_list__
-            except:
-                update.effective_message.reply_text(
-                    "Module does not contain command list!"
-                )
-                return
-
-            enabled_cmds = []
-            failed_enabled_cmds = []
-
-            for enable_cmd in command_list:
-                if enable_cmd.startswith(CMD_STARTERS):
-                    enable_cmd = enable_cmd[1:]
-
-                if sql.enable_command(chat.id, enable_cmd):
-                    enabled_cmds.append(enable_cmd)
-                else:
-                    failed_enabled_cmds.append(enable_cmd)
-
-            if enabled_cmds:
-                enabled_cmds_string = ", ".join(enabled_cmds)
-                update.effective_message.reply_text(
-                    f"Enabled the uses of `{enabled_cmds_string}`",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
-
-            if failed_enabled_cmds:
-                failed_enabled_cmds_string = ", ".join(failed_enabled_cmds)
-                update.effective_message.reply_text(
-                    f"Are the commands `{failed_enabled_cmds_string}` even disabled?",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
-
-        else:
-            update.effective_message.reply_text("What should I enable?")
-
-    
-    @connection_status
-    @user_admin
-    def list_cmds(bot: Bot, update: Update):
-        if DISABLE_CMDS + DISABLE_OTHER:
-            result = ""
-            for cmd in set(DISABLE_CMDS + DISABLE_OTHER):
-                result += f" - `{escape_markdown(cmd)}`\n"
-            update.effective_message.reply_text(
-                f"The following commands are toggleable:\n{result}",
-                parse_mode=ParseMode.MARKDOWN,
+    for keyword in all_handlers:
+        entry = " • `{}`\n".format(escape_markdown(keyword))
+        if len(entry) + len(filter_list) > telegram.MAX_MESSAGE_LENGTH:
+            send_message(
+                update.effective_message,
+                filter_list.format(chat_name),
+                parse_mode=telegram.ParseMode.MARKDOWN,
             )
+            filter_list = entry
         else:
-            update.effective_message.reply_text("No commands can be disabled.")
+            filter_list += entry
 
-    # do not async
-    def build_curr_disabled(chat_id: Union[str, int]) -> str:
-        disabled = sql.get_all_disabled(chat_id)
-        if not disabled:
-            return "No commands are disabled!"
+    send_message(
+        update.effective_message,
+        filter_list.format(chat_name),
+        parse_mode=telegram.ParseMode.MARKDOWN,
+    )
 
-        result = ""
-        for cmd in disabled:
-            result += " - `{}`\n".format(escape_markdown(cmd))
-        return "The following commands are currently restricted:\n{}".format(result)
 
-    
-    @connection_status
-    def commands(bot: Bot, update: Update):
-        chat = update.effective_chat
-        update.effective_message.reply_text(
-            build_curr_disabled(chat.id), parse_mode=ParseMode.MARKDOWN
+# NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
+@user_admin
+@typing_action
+def filters(update, context):
+    chat = update.effective_chat
+    user = update.effective_user
+    msg = update.effective_message
+    args = msg.text.split(
+        None,
+        1)  # use python's maxsplit to separate Cmd, keyword, and reply_text
+
+    conn = connected(context.bot, update, chat, user.id)
+    if not conn is False:
+        chat_id = conn
+        chat_name = dispatcher.bot.getChat(conn).title
+    else:
+        chat_id = update.effective_chat.id
+        if chat.type == "private":
+            chat_name = "local filters"
+        else:
+            chat_name = chat.title
+
+    if not msg.reply_to_message and len(args) < 2:
+        send_message(
+            update.effective_message,
+            "Please provide keyboard keyword for this filter to reply with!",
         )
+        return
 
-    def __stats__():
-        return f"{sql.num_disabled()} disabled items, across {sql.num_chats()} chats."
+    if msg.reply_to_message:
+        if len(args) < 2:
+            send_message(
+                update.effective_message,
+                "Please provide keyword for this filter to reply with!",
+            )
+            return
+        else:
+            keyword = args[1]
+    else:
+        extracted = split_quotes(args[1])
+        if len(extracted) < 1:
+            return
+        # set trigger -> lower, so as to avoid adding duplicate filters with different cases
+        keyword = extracted[0].lower()
 
-    def __migrate__(old_chat_id, new_chat_id):
-        sql.migrate_chat(old_chat_id, new_chat_id)
+    # Add the filter
+    # Note: perhaps handlers can be removed somehow using sql.get_chat_filters
+    for handler in dispatcher.handlers.get(HANDLER_GROUP, []):
+        if handler.filters == (keyword, chat_id):
+            dispatcher.remove_handler(handler, HANDLER_GROUP)
 
-    def __chat_settings__(chat_id, user_id):
-        return build_curr_disabled(chat_id)
+    text, file_type, file_id = get_filter_type(msg)
+    if not msg.reply_to_message and len(extracted) >= 2:
+        offset = len(extracted[1]) - len(
+            msg.text)  # set correct offset relative to command + notename
+        text, buttons = button_markdown_parser(
+            extracted[1], entities=msg.parse_entities(), offset=offset)
+        text = text.strip()
+        if not text:
+            send_message(
+                update.effective_message,
+                "There is no note message - You can't JUST have buttons, you need a message to go with it!",
+            )
+            return
 
-    DISABLE_HANDLER = CommandHandler("disable", disable, pass_args=True, run_async=True)
-    DISABLE_MODULE_HANDLER = CommandHandler(
-        "disablemodule", disable_module, pass_args=True, run_async=True
+    elif msg.reply_to_message and len(args) >= 2:
+        if msg.reply_to_message.text:
+            text_to_parsing = msg.reply_to_message.text
+        elif msg.reply_to_message.caption:
+            text_to_parsing = msg.reply_to_message.caption
+        else:
+            text_to_parsing = ""
+        offset = len(text_to_parsing
+                    )  # set correct offset relative to command + notename
+        text, buttons = button_markdown_parser(
+            text_to_parsing, entities=msg.parse_entities(), offset=offset)
+        text = text.strip()
+
+    elif not text and not file_type:
+        send_message(
+            update.effective_message,
+            "Please provide keyword for this filter reply with!",
+        )
+        return
+
+    elif msg.reply_to_message:
+        if msg.reply_to_message.text:
+            text_to_parsing = msg.reply_to_message.text
+        elif msg.reply_to_message.caption:
+            text_to_parsing = msg.reply_to_message.caption
+        else:
+            text_to_parsing = ""
+        offset = len(text_to_parsing
+                    )  # set correct offset relative to command + notename
+        text, buttons = button_markdown_parser(
+            text_to_parsing, entities=msg.parse_entities(), offset=offset)
+        text = text.strip()
+        if (msg.reply_to_message.text or
+                msg.reply_to_message.caption) and not text:
+            send_message(
+                update.effective_message,
+                "There is no note message - You can't JUST have buttons, you need a message to go with it!",
+            )
+            return
+
+    else:
+        send_message(update.effective_message, "Invalid filter!")
+        return
+
+    sql.new_add_filter(chat_id, keyword, text, file_type, file_id, buttons)
+    # This is an old method
+    # sql.add_filter(chat_id, keyword, content, is_sticker, is_document, is_image, is_audio, is_voice, is_video, buttons)
+
+    send_message(
+        update.effective_message,
+        "Saved filter '{}' in *{}*!".format(keyword, chat_name),
+        parse_mode=telegram.ParseMode.MARKDOWN,
     )
-    ENABLE_HANDLER = CommandHandler("enable", enable, pass_args=True, run_async=True)
-    ENABLE_MODULE_HANDLER = CommandHandler(
-        "enablemodule", enable_module, pass_args=True, run_async=True
+    raise DispatcherHandlerStop
+
+
+# NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
+@user_admin
+@typing_action
+def stop_filter(update, context):
+    chat = update.effective_chat
+    user = update.effective_user
+    args = update.effective_message.text.split(None, 1)
+
+    conn = connected(context.bot, update, chat, user.id)
+    if not conn is False:
+        chat_id = conn
+        chat_name = dispatcher.bot.getChat(conn).title
+    else:
+        chat_id = update.effective_chat.id
+        if chat.type == "private":
+            chat_name = "Local filters"
+        else:
+            chat_name = chat.title
+
+    if len(args) < 2:
+        send_message(update.effective_message, "What should i stop?")
+        return
+
+    chat_filters = sql.get_chat_triggers(chat_id)
+
+    if not chat_filters:
+        send_message(update.effective_message, "No filters active here!")
+        return
+
+    for keyword in chat_filters:
+        if keyword == args[1]:
+            sql.remove_filter(chat_id, args[1])
+            send_message(
+                update.effective_message,
+                "Okay, I'll stop replying to that filter in *{}*.".format(
+                    chat_name),
+                parse_mode=telegram.ParseMode.MARKDOWN,
+            )
+            raise DispatcherHandlerStop
+
+    send_message(
+        update.effective_message,
+        "That's not a filter - Click: /filters to get currently active filters.",
     )
-    COMMANDS_HANDLER = CommandHandler(["cmds", "disabled"], commands, run_async=True)
-    TOGGLE_HANDLER = CommandHandler("listcmds", list_cmds, run_async=True)
 
-    dispatcher.add_handler(DISABLE_HANDLER)
-    dispatcher.add_handler(DISABLE_MODULE_HANDLER)
-    dispatcher.add_handler(ENABLE_HANDLER)
-    dispatcher.add_handler(ENABLE_MODULE_HANDLER)
-    dispatcher.add_handler(COMMANDS_HANDLER)
-    dispatcher.add_handler(TOGGLE_HANDLER)
 
-    __help__ = """
-    - /cmds: check the current status of disabled commands
+def reply_filter(update, context):
+    chat = update.effective_chat  # type: Optional[Chat]
+    message = update.effective_message  # type: Optional[Message]
 
-    *Admin only:*
-    - /enable <cmd name>: enable that command
-    - /disable <cmd name>: disable that command
-    - /enablemodule <module name>: enable all commands in that module
-    - /disablemodule <module name>: disable all commands in that module
-    - /listcmds: list all possible toggleable commands
-    """
+    to_match = extract_text(message)
+    if not to_match:
+        return
 
-    __mod_name__ = "Command disabling"
+    chat_filters = sql.get_chat_triggers(chat.id)
+    for keyword in chat_filters:
+        pattern = r"( |^|[^\w])" + re.escape(keyword) + r"( |$|[^\w])"
+        if re.search(pattern, to_match, flags=re.IGNORECASE):
+            filt = sql.get_filter(chat.id, keyword)
+            if filt.reply == "there is should be a new reply":
+                buttons = sql.get_buttons(chat.id, filt.keyword)
+                keyb = build_keyboard_parser(context.bot, chat.id, buttons)
+                keyboard = InlineKeyboardMarkup(keyb)
 
-else:
-    DisableAbleCommandHandler = CommandHandler
-    DisableAbleRegexHandler = RegexHandler
-    DisableAbleMessageHandler = MessageHandler
+                VALID_WELCOME_FORMATTERS = [
+                    "first",
+                    "last",
+                    "fullname",
+                    "username",
+                    "id",
+                    "chatname",
+                    "mention",
+                ]
+                if filt.reply_text:
+                    valid_format = escape_invalid_curly_brackets(
+                        filt.reply_text, VALID_WELCOME_FORMATTERS)
+                    if valid_format:
+                        filtext = valid_format.format(
+                            first=escape(message.from_user.first_name),
+                            last=escape(message.from_user.last_name or
+                                        message.from_user.first_name),
+                            fullname=" ".join(
+                                [
+                                    escape(message.from_user.first_name),
+                                    escape(message.from_user.last_name),
+                                ] if message.from_user.last_name else
+                                [escape(message.from_user.first_name)]),
+                            username="@" + escape(message.from_user.username)
+                            if message.from_user.username else mention_html(
+                                message.from_user.id,
+                                message.from_user.first_name),
+                            mention=mention_html(message.from_user.id,
+                                                 message.from_user.first_name),
+                            chatname=escape(message.chat.title)
+                            if message.chat.type != "private" else escape(
+                                message.from_user.first_name),
+                            id=message.from_user.id,
+                        )
+                    else:
+                        filtext = ""
+                else:
+                    filtext = ""
+
+                if filt.file_type in (sql.Types.BUTTON_TEXT, sql.Types.TEXT):
+                    try:
+                        context.bot.send_message(
+                            chat.id,
+                            markdown_to_html(filtext),
+                            reply_to_message_id=message.message_id,
+                            parse_mode=ParseMode.HTML,
+                            disable_web_page_preview=True,
+                            reply_markup=keyboard,
+                        )
+                    except BadRequest as excp:
+                        error_catch = get_exception(excp, filt, chat)
+                        if error_catch == "noreply":
+                            try:
+                                context.bot.send_message(
+                                    chat.id,
+                                    markdown_to_html(filtext),
+                                    parse_mode=ParseMode.HTML,
+                                    disable_web_page_preview=True,
+                                    reply_markup=keyboard,
+                                )
+                            except BadRequest as excp:
+                                LOGGER.exception("Error in filters: " +
+                                                 excp.message)
+                                send_message(
+                                    update.effective_message,
+                                    get_exception(excp, filt, chat),
+                                )
+                        else:
+                            try:
+                                send_message(
+                                    update.effective_message,
+                                    get_exception(excp, filt, chat),
+                                )
+                            except BadRequest as excp:
+                                LOGGER.exception("Failed to send message: " +
+                                                 excp.message)
+                                pass
+                else:
+                    ENUM_FUNC_MAP[filt.file_type](
+                        chat.id,
+                        filt.file_id,
+                        caption=markdown_to_html(filtext),
+                        reply_to_message_id=message.message_id,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
+                        reply_markup=keyboard,
+                    )
+                break
+            else:
+                if filt.is_sticker:
+                    message.reply_sticker(filt.reply)
+                elif filt.is_document:
+                    message.reply_document(filt.reply)
+                elif filt.is_image:
+                    message.reply_photo(filt.reply)
+                elif filt.is_audio:
+                    message.reply_audio(filt.reply)
+                elif filt.is_voice:
+                    message.reply_voice(filt.reply)
+                elif filt.is_video:
+                    message.reply_video(filt.reply)
+                elif filt.has_markdown:
+                    buttons = sql.get_buttons(chat.id, filt.keyword)
+                    keyb = build_keyboard_parser(context.bot, chat.id, buttons)
+                    keyboard = InlineKeyboardMarkup(keyb)
+
+                    try:
+                        send_message(
+                            update.effective_message,
+                            filt.reply,
+                            parse_mode=ParseMode.MARKDOWN,
+                            disable_web_page_preview=True,
+                            reply_markup=keyboard,
+                        )
+                    except BadRequest as excp:
+                        if excp.message == "Unsupported url protocol":
+                            try:
+                                send_message(
+                                    update.effective_message,
+                                    "You seem to be trying to use an unsupported url protocol. "
+                                    "Telegram doesn't support buttons for some protocols, such as tg://. Please try "
+                                    "again...",
+                                )
+                            except BadRequest as excp:
+                                LOGGER.exception("Error in filters: " +
+                                                 excp.message)
+                                pass
+                        elif excp.message == "Reply message not found":
+                            try:
+                                context.bot.send_message(
+                                    chat.id,
+                                    filt.reply,
+                                    parse_mode=ParseMode.MARKDOWN,
+                                    disable_web_page_preview=True,
+                                    reply_markup=keyboard,
+                                )
+                            except BadRequest as excp:
+                                LOGGER.exception("Error in filters: " +
+                                                 excp.message)
+                                pass
+                        else:
+                            try:
+                                send_message(
+                                    update.effective_message,
+                                    "This message couldn't be sent as it's incorrectly formatted.",
+                                )
+                            except BadRequest as excp:
+                                LOGGER.exception("Error in filters: " +
+                                                 excp.message)
+                                pass
+                            LOGGER.warning("Message %s could not be parsed",
+                                           str(filt.reply))
+                            LOGGER.exception(
+                                "Could not parse filter %s in chat %s",
+                                str(filt.keyword),
+                                str(chat.id),
+                            )
+
+                else:
+                    # LEGACY - all new filters will have has_markdown set to True.
+                    try:
+                        send_message(update.effective_message, filt.reply)
+                    except BadRequest as excp:
+                        LOGGER.exception("Error in filters: " + excp.message)
+                        pass
+                break
+
+
+
+@user_admin
+@typing_action
+def rmall_filters(update, context):
+    chat = update.effective_chat
+    user = update.effective_user
+    msg = update.effective_message
+
+    usermem = chat.get_member(user.id)
+    if not usermem.status == "creator":
+        msg.reply_text("This command can be only used by chat OWNER!")
+        return
+
+    allfilters = sql.get_chat_triggers(chat.id)
+
+    if not allfilters:
+        msg.reply_text("No filters in this chat, nothing to stop!")
+        return
+
+    count = 0
+    filterlist = []
+    for x in allfilters:
+        count += 1
+        filterlist.append(x)
+
+    for i in filterlist:
+        sql.remove_filter(chat.id, i)
+
+    return msg.reply_text(f"Cleaned {count} filters in {chat.title}")
+
+
+# NOT ASYNC NOT A HANDLER
+def get_exception(excp, filt, chat):
+    if excp.message == "Unsupported url protocol":
+        return "You seem to be trying to use the URL protocol which is not supported. Telegram does not support key for multiple protocols, such as tg: //. Please try again!"
+    elif excp.message == "Reply message not found":
+        return "noreply"
+    else:
+        LOGGER.warning("Message %s could not be parsed", str(filt.reply))
+        LOGGER.exception("Could not parse filter %s in chat %s",
+                         str(filt.keyword), str(chat.id))
+        return "This data could not be sent because it is incorrectly formatted."
+
+
+def __stats__():
+    return "• {} filters, across {} chats.".format(sql.num_filters(),
+                                                   sql.num_chats())
+
+
+def __import_data__(chat_id, data):
+    # set chat filters
+    filters = data.get("filters", {})
+    for trigger in filters:
+        sql.add_to_blacklist(chat_id, trigger)
+
+
+def __migrate__(old_chat_id, new_chat_id):
+    sql.migrate_chat(old_chat_id, new_chat_id)
+
+
+def __chat_settings__(chat_id, user_id):
+    cust_filters = sql.get_chat_triggers(chat_id)
+    return "There are `{}` custom filters here.".format(len(cust_filters))
+
+
+__help__ = """
+ • `/filters`*:* List all active filters saved in the chat.
+
+*Admin only:*
+ • `/filter <keyword> <reply message>`*:* Add a filter to this chat. The bot will now reply that message whenever 'keyword'\
+is mentioned. If you reply to a sticker with a keyword, the bot will reply with that sticker. NOTE: all filter \
+keywords are in lowercase. If you want your keyword to be a sentence, use quotes. eg: /filter "hey there" How you \
+doin?
+ • `/stop <filter keyword>`*:* Stop that filter.
+
+*Chat creator only:*
+ • `/removeallfilters`*:* Remove all chat filters at once.
+
+*Note*: Filters also support markdown formatters like: {first}, {last} etc.. and buttons.
+Check `/markdownhelp` to know more!
+
+"""
+
+__mod_name__ = "Filters"
+
+FILTER_HANDLER = CommandHandler("filter", filters)
+STOP_HANDLER = CommandHandler("stop", stop_filter)
+RMALLFILTER_HANDLER = CommandHandler(
+    "removeallfilters", rmall_filters, filters=Filters.group, run_async=True)
+LIST_HANDLER = DisableAbleCommandHandler(
+    "filters", list_handlers, admin_ok=True, run_async=True)
+CUST_FILTER_HANDLER = MessageHandler(
+    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter, run_async=True)
+
+dispatcher.add_handler(FILTER_HANDLER)
+dispatcher.add_handler(STOP_HANDLER)
+dispatcher.add_handler(LIST_HANDLER)
+dispatcher.add_handler(CUST_FILTER_HANDLER, HANDLER_GROUP)
+dispatcher.add_handler(RMALLFILTER_HANDLER)
+
+__handlers__ = [
+    FILTER_HANDLER, STOP_HANDLER, LIST_HANDLER,
+    (CUST_FILTER_HANDLER, HANDLER_GROUP, RMALLFILTER_HANDLER)
+]

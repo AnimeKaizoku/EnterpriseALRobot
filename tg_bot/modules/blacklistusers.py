@@ -135,7 +135,7 @@ def __user_info__(user_id):
         return ""
     if user_id == dispatcher.bot.id:
         return ""
-    if int(user_id) in SUDO_USERS + TIGER_USERS + WHITELIST_USERS:
+    if int(user_id) in SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS:
         return ""
     if is_blacklisted:
         text = text.format("Yes")

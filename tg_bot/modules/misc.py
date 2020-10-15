@@ -315,7 +315,6 @@ __help__ = """
  - /gifid: reply to a gif to me to tell you its file ID.
  - /info: get information about a user.
  - /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
- - /reverse: Does a reverse image search of the media which it was replied to.
  - /ud <word>: Type the word or expression you want to search use.
  - /urban <word>: Same as /ud
  - /paste - Do a paste at `neko.bin`
