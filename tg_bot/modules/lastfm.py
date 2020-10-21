@@ -2,8 +2,8 @@
 
 import requests
 
-from telegram import Bot, Update, Message, Chat, ParseMode
-from telegram.ext import CommandHandler
+from telegram import Update, ParseMode
+from telegram.ext import CommandHandler, CallbackContext
 
 from tg_bot import dispatcher, LASTFM_API_KEY
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -12,7 +12,8 @@ import tg_bot.modules.sql.last_fm_sql as sql
 
 
 
-def set_user(bot: Bot, update: Update, args):
+def set_user(update: Update, context: CallbackContext):
+    args = context.args
     msg = update.effective_message
     if args:
         user = update.effective_user.id
@@ -21,21 +22,19 @@ def set_user(bot: Bot, update: Update, args):
         msg.reply_text(f"Username set as {username}!")
     else:
         msg.reply_text(
-            "That's not how this works...\nRun /setuser followed by your username!"
-        )
+            "That's not how this works...\nRun /setuser followed by your username!")
 
 
 
-def clear_user(bot: Bot, update: Update):
+def clear_user(update: Update, _):
     user = update.effective_user.id
     sql.set_user(user, "")
     update.effective_message.reply_text(
-        "Last.fm username successfully cleared from my database!"
-    )
+        "Last.fm username successfully cleared from my database!")
 
 
 
-def last_fm(bot: Bot, update: Update):
+def last_fm(update: Update, _):
     msg = update.effective_message
     user = update.effective_user.first_name
     user_id = update.effective_user.id
@@ -46,12 +45,10 @@ def last_fm(bot: Bot, update: Update):
 
     base_url = "http://ws.audioscrobbler.com/2.0"
     res = requests.get(
-        f"{base_url}?method=user.getrecenttracks&limit=3&extended=1&user={username}&api_key={LASTFM_API_KEY}&format=json"
-    )
-    if not res.status_code == 200:
+        f"{base_url}?method=user.getrecenttracks&limit=3&extended=1&user={username}&api_key={LASTFM_API_KEY}&format=json")
+    if res.status_code != 200:
         msg.reply_text(
-            "Hmm... something went wrong.\nPlease ensure that you've set the correct username!"
-        )
+            "Hmm... something went wrong.\nPlease ensure that you've set the correct username!")
         return
 
     try:
@@ -61,7 +58,8 @@ def last_fm(bot: Bot, update: Update):
         return
     if first_track.get("@attr"):
         # Ensures the track is now playing
-        image = first_track.get("image")[3].get("#text")  # Grab URL of 300x300 image
+        image = first_track.get("image")[3].get(
+            "#text")  # Grab URL of 300x300 image
         artist = first_track.get("artist").get("name")
         song = first_track.get("name")
         loved = int(first_track.get("loved"))
@@ -74,24 +72,20 @@ def last_fm(bot: Bot, update: Update):
             rep += f"<a href='{image}'>\u200c</a>"
     else:
         tracks = res.json().get("recenttracks").get("track")
-        track_dict = {
-            tracks[i].get("artist").get("name"): tracks[i].get("name") for i in range(3)
-        }
+        track_dict = {tracks[i].get("artist").get(
+            "name"): tracks[i].get("name") for i in range(3)}
         rep = f"{user} was listening to:\n"
         for artist, song in track_dict.items():
             rep += f"🎧  <code>{artist} - {song}</code>\n"
-        last_user = (
-            requests.get(
-                f"{base_url}?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json"
-            )
-            .json()
-            .get("user")
-        )
+        last_user = requests.get(
+            f"{base_url}?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json").json().get("user")
         scrobbles = last_user.get("playcount")
         rep += f"\n(<code>{scrobbles}</code> scrobbles so far)"
 
     msg.reply_text(rep, parse_mode=ParseMode.HTML)
 
+
+__mod_name__ = "Last.FM"
 
 SET_USER_HANDLER = CommandHandler("setuser", set_user, pass_args=True, run_async=True)
 CLEAR_USER_HANDLER = CommandHandler("clearuser", clear_user, run_async=True)

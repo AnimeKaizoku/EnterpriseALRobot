@@ -4,9 +4,9 @@ import time
 from typing import List
 
 import requests
-from telegram import Bot, Update, MessageEntity, ParseMode
+from telegram import Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, Filters
+from telegram.ext import CommandHandler, Filters, CallbackContext
 from telegram.utils.helpers import mention_html
 from subprocess import Popen, PIPE
 
@@ -53,9 +53,10 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 
 
 
-def get_id(bot: Bot, update: Update, args: List[str]):
+def get_id(update: Update, context: CallbackContext):
+    args = context.args
+    bot = context.bot
     message = update.effective_message
-    chat = update.effective_chat
     msg = update.effective_message
     user_id = extract_user(msg, args)
 
@@ -96,19 +97,20 @@ def get_id(bot: Bot, update: Update, args: List[str]):
 
 
 
-def gifid(bot: Bot, update: Update):
+def gifid(update: Update, _):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
         update.effective_message.reply_text(
             f"Gif ID:\n<code>{msg.reply_to_message.animation.file_id}</code>",
-            parse_mode=ParseMode.HTML,
-        )
+            parse_mode=ParseMode.HTML)
     else:
-        update.effective_message.reply_text("Please reply to a gif to get its ID.")
+        update.effective_message.reply_text(
+            "Please reply to a gif to get its ID.")
 
 
-
-def info(bot: Bot, update: Update, args: List[str]):
+def info(update: Update, context: CallbackContext):
+    bot = context.bot
+    args = context.args
     message = update.effective_message
     chat = update.effective_chat
     user_id = extract_user(update.effective_message, args)
@@ -237,7 +239,7 @@ def info(bot: Bot, update: Update, args: List[str]):
 
 
 @user_admin
-def echo(bot: Bot, update: Update):
+def echo(update: Update, _):
     args = update.effective_message.text.split(None, 1)
     message = update.effective_message
 
@@ -247,6 +249,7 @@ def echo(bot: Bot, update: Update):
         message.reply_text(args[1], quote=False)
 
     message.delete()
+
     
 def shell(command):
     process = Popen(command, stdout=PIPE, shell=True, stderr=PIPE)
@@ -254,7 +257,7 @@ def shell(command):
     return (stdout, stderr)
 
 @sudo_plus
-def ram(bot: Bot, update: Update):
+def ram(update: Update, _):
     cmd = "ps -o pid"
     output = shell(cmd)[0].decode()
     processes = output.splitlines()
@@ -278,36 +281,34 @@ def ram(bot: Bot, update: Update):
 
 
 
-def markdown_help(bot: Bot, update: Update):
-    update.effective_message.reply_text(MARKDOWN_HELP, parse_mode=ParseMode.HTML)
+def markdown_help(update: Update, _):
     update.effective_message.reply_text(
-        "Try forwarding the following message to me, and you'll see!"
-    )
+        MARKDOWN_HELP, parse_mode=ParseMode.HTML)
+    update.effective_message.reply_text(
+        "Try forwarding the following message to me, and you'll see!")
     update.effective_message.reply_text(
         "/save test This is a markdown test. _italics_, *bold*, `code`, "
         "[URL](example.com) [button](buttonurl:github.com) "
-        "[button2](buttonurl://google.com:same)"
-    )
+        "[button2](buttonurl://google.com:same)")
 
 
 
 @sudo_plus
-def stats(bot: Bot, update: Update):
+def stats(update: Update, _):
     stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
     result = re.sub(r"(\d+)", r"<code>\1</code>", stats)
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
     
     
 
-def ping(bot: Bot, update: Update):
+def ping(update: Update, _):
     msg = update.effective_message
     start_time = time.time()
     message = msg.reply_text("Pinging...")
     end_time = time.time()
     ping_time = round((end_time - start_time) * 1000, 3)
-    message.edit_text(
-        "*Pong!!!*\n`{}ms`".format(ping_time), parse_mode=ParseMode.MARKDOWN
-    )
+    message.edit_text("*Pong!!!*\n`{}ms`".format(ping_time),
+                    parse_mode=ParseMode.MARKDOWN)
 
 
 __help__ = """
@@ -320,7 +321,6 @@ __help__ = """
  - /paste - Do a paste at `neko.bin`
  - /react: Reacts with a random reaction
  - /weebify <text>: returns a weebified text
- - /lyrics <song>: returns the lyrics of that song.
  - /tr (language code) as reply to a long message.
  - /time <query> : Gives information about a timezone.
  - /cash : currency converter
@@ -364,10 +364,9 @@ GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid, run_async=True)
 INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True, run_async=True)
 ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.group, run_async=True)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private, run_async=True)
-STATS_HANDLER = CommandHandler("stats", stats)
-PING_HANDLER = DisableAbleCommandHandler("ping", ping)
-RAM_HANDLER = CommandHandler("ram", ram,)
-
+STATS_HANDLER = CommandHandler("stats", stats, run_async=True)
+PING_HANDLER = DisableAbleCommandHandler("ping", ping, run_async=True)
+RAM_HANDLER = CommandHandler("ram", ram, run_async=True)
 dispatcher.add_handler(ID_HANDLER)
 dispatcher.add_handler(GIFID_HANDLER)
 dispatcher.add_handler(INFO_HANDLER)

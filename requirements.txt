@@ -21,3 +21,4 @@ spamwatch
 telethon
 pyrogram
 tgcrypto
+alphabet_detector

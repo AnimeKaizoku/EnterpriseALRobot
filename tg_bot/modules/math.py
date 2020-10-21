@@ -1,101 +1,116 @@
-from typing import List
-import requests
-from telegram import Message, Update, Bot, MessageEntity
-from telegram.ext import CommandHandler
-from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
-import pynewtonmath as newton
 import math
 
+import pynewtonmath as newton
+from tg_bot import dispatcher
+from tg_bot.modules.disable import DisableAbleCommandHandler
+from telegram import Update
+from telegram.ext import CallbackContext
 
 
-def simplify(bot: Bot, update: Update, args: List[str]):
+
+def simplify(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.simplify("{}".format(args[0])))
+    message.reply_text(newton.simplify('{}'.format(args[0])))
 
 
 
-def factor(bot: Bot, update: Update, args: List[str]):
+def factor(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.factor("{}".format(args[0])))
+    message.reply_text(newton.factor('{}'.format(args[0])))
 
 
 
-def derive(bot: Bot, update: Update, args: List[str]):
+def derive(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.derive("{}".format(args[0])))
+    message.reply_text(newton.derive('{}'.format(args[0])))
 
 
 
-def integrate(bot: Bot, update: Update, args: List[str]):
+def integrate(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.integrate("{}".format(args[0])))
+    message.reply_text(newton.integrate('{}'.format(args[0])))
 
 
 
-def zeroes(bot: Bot, update: Update, args: List[str]):
+def zeroes(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.zeroes("{}".format(args[0])))
+    message.reply_text(newton.zeroes('{}'.format(args[0])))
 
 
 
-def tangent(bot: Bot, update: Update, args: List[str]):
+def tangent(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.tangent("{}".format(args[0])))
+    message.reply_text(newton.tangent('{}'.format(args[0])))
 
 
-
-def area(bot: Bot, update: Update, args: List[str]):
+def area(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
-    message.reply_text(newton.area("{}".format(args[0])))
+    message.reply_text(newton.area('{}'.format(args[0])))
 
 
 
-def cos(bot: Bot, update: Update, args):
+def cos(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.cos(int(args[0])))
 
 
 
-def sin(bot: Bot, update: Update, args):
+def sin(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.sin(int(args[0])))
 
 
 
-def tan(bot: Bot, update: Update, args):
+def tan(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.tan(int(args[0])))
 
 
 
-def arccos(bot: Bot, update: Update, args):
+def arccos(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.acos(int(args[0])))
 
 
 
-def arcsin(bot: Bot, update: Update, args):
+def arcsin(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.asin(int(args[0])))
 
 
 
-def arctan(bot: Bot, update: Update, args):
+def arctan(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.atan(int(args[0])))
 
 
 
-def abs(bot: Bot, update: Update, args):
+def abs(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.fabs(int(args[0])))
 
 
 
-def log(bot: Bot, update: Update, args):
+def log(update: Update, context: CallbackContext):
+    args = context.args
     message = update.effective_message
     message.reply_text(math.log(int(args[0])))
+
+
 
 
 SIMPLIFY_HANDLER = DisableAbleCommandHandler("math", simplify, pass_args=True, run_async=True)
