@@ -1,24 +1,25 @@
 from emoji import UNICODE_EMOJI
-from googletrans import Translator, LANGUAGES
-from telegram import Bot, Update, ParseMode
-from telegram.ext import 
-
+from googletrans import LANGUAGES, Translator
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
 
 
-
-def totranslate(bot: Bot, update: Update):
+def totranslate(update: Update, context: CallbackContext):
     msg = update.effective_message
     problem_lang_code = []
     for key in LANGUAGES:
         if "-" in key:
             problem_lang_code.append(key)
     try:
-        if msg.reply_to_message and msg.reply_to_message.text:
-
+        if msg.reply_to_message:
             args = update.effective_message.text.split(None, 1)
-            text = msg.reply_to_message.text
+            if msg.reply_to_message.text:
+                text = msg.reply_to_message.text
+            elif msg.reply_to_message.caption:
+                text = msg.reply_to_message.caption
+
             message = update.effective_message
             dest_lang = None
 
@@ -27,7 +28,7 @@ def totranslate(bot: Bot, update: Update):
             except:
                 source_lang = "en"
 
-            if source_lang.count("-") == 2:
+            if source_lang.count('-') == 2:
                 for lang in problem_lang_code:
                     if lang in source_lang:
                         if source_lang.startswith(lang):
@@ -36,13 +37,13 @@ def totranslate(bot: Bot, update: Update):
                         else:
                             dest_lang = source_lang.split("-", 1)[1]
                             source_lang = source_lang.split("-", 1)[0]
-            elif source_lang.count("-") == 1:
+            elif source_lang.count('-') == 1:
                 for lang in problem_lang_code:
                     if lang in source_lang:
                         dest_lang = source_lang
                         source_lang = None
                         break
-                if dest_lang == None:
+                if dest_lang is None:
                     dest_lang = source_lang.split("-")[1]
                     source_lang = source_lang.split("-")[0]
             else:
@@ -52,22 +53,20 @@ def totranslate(bot: Bot, update: Update):
             exclude_list = UNICODE_EMOJI.keys()
             for emoji in exclude_list:
                 if emoji in text:
-                    text = text.replace(emoji, "")
+                    text = text.replace(emoji, '')
 
             trl = Translator()
-            if source_lang == None:
+            if source_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=dest_lang)
                 return message.reply_text(
                     f"Translated from `{detection.lang}` to `{dest_lang}`:\n`{tekstr.text}`",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
+                    parse_mode=ParseMode.MARKDOWN)
             else:
                 tekstr = trl.translate(text, dest=dest_lang, src=source_lang)
                 message.reply_text(
                     f"Translated from `{source_lang}` to `{dest_lang}`:\n`{tekstr.text}`",
-                    parse_mode=ParseMode.MARKDOWN,
-                )
+                    parse_mode=ParseMode.MARKDOWN)
         else:
             args = update.effective_message.text.split(None, 2)
             message = update.effective_message
@@ -76,10 +75,10 @@ def totranslate(bot: Bot, update: Update):
             exclude_list = UNICODE_EMOJI.keys()
             for emoji in exclude_list:
                 if emoji in text:
-                    text = text.replace(emoji, "")
+                    text = text.replace(emoji, '')
             dest_lang = None
             temp_source_lang = source_lang
-            if temp_source_lang.count("-") == 2:
+            if temp_source_lang.count('-') == 2:
                 for lang in problem_lang_code:
                     if lang in temp_source_lang:
                         if temp_source_lang.startswith(lang):
@@ -88,7 +87,7 @@ def totranslate(bot: Bot, update: Update):
                         else:
                             dest_lang = temp_source_lang.split("-", 1)[1]
                             source_lang = temp_source_lang.split("-", 1)[0]
-            elif temp_source_lang.count("-") == 1:
+            elif temp_source_lang.count('-') == 1:
                 for lang in problem_lang_code:
                     if lang in temp_source_lang:
                         dest_lang = None
@@ -97,42 +96,44 @@ def totranslate(bot: Bot, update: Update):
                         dest_lang = temp_source_lang.split("-")[1]
                         source_lang = temp_source_lang.split("-")[0]
             trl = Translator()
-            if dest_lang == None:
+            if dest_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=source_lang)
                 return message.reply_text(
                     "Translated from `{}` to `{}`:\n`{}`".format(
-                        detection.lang, source_lang, tekstr.text
-                    ),
-                    parse_mode=ParseMode.MARKDOWN,
-                )
+                        detection.lang, source_lang, tekstr.text),
+                    parse_mode=ParseMode.MARKDOWN)
             else:
                 tekstr = trl.translate(text, dest=dest_lang, src=source_lang)
                 message.reply_text(
                     "Translated from `{}` to `{}`:\n`{}`".format(
-                        source_lang, dest_lang, tekstr.text
-                    ),
-                    parse_mode=ParseMode.MARKDOWN,
-                )
+                        source_lang, dest_lang, tekstr.text),
+                    parse_mode=ParseMode.MARKDOWN)
 
     except IndexError:
         update.effective_message.reply_text(
             "Reply to messages or write messages from other languages ​​for translating into the intended language\n\n"
-            "Example: `/tr en ml` to translate from English to Malayalam\n"
-            "Or use: `/tr ml` for automatic detection and translating it into Malayalam.\n"
-            "See [List of Language Codes](t.me/OnePunchSupport/12823) for a list of language codes.",
+            "Example: `/tr en-ml` to translate from English to Malayalam\n"
+            "Or use: `/tr ml` for automatic detection and translating it into Malayalam.",
             parse_mode="markdown",
-            disable_web_page_preview=True,
-        )
+            disable_web_page_preview=True)
     except ValueError:
-        update.effective_message.reply_text("The intended language is not found!")
+        update.effective_message.reply_text(
+            "The intended language is not found!")
     else:
         return
 
 
-TRANSLATE_HANDLER = DisableAbleCommandHandler("tr", totranslate, run_async=True)
+__help__ = """
+• `/tr` or `/tl` (language code) as reply to a long message.
+*Example:* `/tr en`*:* translates something to english. 
+         `/tr hi-en`*:* translates hindi to english.
+"""
+
+TRANSLATE_HANDLER = DisableAbleCommandHandler(["tr", "tl"], totranslate, run_async=True)
 
 dispatcher.add_handler(TRANSLATE_HANDLER)
 
-__command_list__ = ["tr"]
+__mod_name__ = "Translator"
+__command_list__ = ["tr", "tl"]
 __handlers__ = [TRANSLATE_HANDLER]
