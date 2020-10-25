@@ -414,7 +414,7 @@ def kaizoku(update: Update, _):
 
 
 @run_async
-def kayo(update: Update, context: CallbackContext):
+def kayo(update: Update):
     site_search(update, "kayo")
 
 
