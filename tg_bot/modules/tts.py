@@ -24,7 +24,7 @@ def tts(bot: Bot, update: Update, args):
     update.message.chat.send_action(ChatAction.RECORD_AUDIO)
     lang="ml"
     
-    tts.save("k.mp3")
+    
     with open("k.mp3", "rb") as f:
         linelist = list(f)
         linecount = len(linelist)
