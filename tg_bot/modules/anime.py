@@ -6,7 +6,7 @@ import bs4
 import jikanpy
 import requests
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
-from CallbackContext import run_async, telegram.ext
+from telegram.ext import run_async, CallbackContext
 
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
