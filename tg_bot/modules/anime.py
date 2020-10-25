@@ -8,8 +8,8 @@ import requests
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
 from telegram.ext import run_async, CallbackContext
 
-from lynda import dispatcher
-from lynda.modules.disable import DisableAbleCommandHandler
+from tg_bot import dispatcher
+from tg_bot.modules.disable import DisableAbleCommandHandler
 
 info_btn = "More Information"
 kaizoku_btn = "Kaizoku ☠️"
