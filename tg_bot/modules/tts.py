@@ -1,5 +1,5 @@
 from telegram import ChatAction
-from gtts import gTTS
+
 import html
 import urllib.request
 import re
