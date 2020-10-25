@@ -349,7 +349,7 @@ def upcoming(update: Update, _):
             break
         upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
 
-    update.effective_message.reply_text(upcoming_message)
+    
 
 
 def site_search(update: Update, site: str):
