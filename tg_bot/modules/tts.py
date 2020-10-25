@@ -30,7 +30,7 @@ def tts(bot: Bot, update: Update, args):
         
  
        
-        lang = "en"
+        
         tts = gTTS(reply, lang)
         tts.save("k.mp3")
     with open("k.mp3", "rb") as speech:
