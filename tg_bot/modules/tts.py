@@ -32,9 +32,9 @@ def tts(bot: Bot, update: Update, args):
        
         
         
-        tts.save("k.mp3")
-    with open("k.mp3", "rb") as speech:
-        update.message.reply_voice(speech, quote=False)
+        
+   
+        
 
 
     __help__ = """ Text to speech
