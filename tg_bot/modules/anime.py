@@ -337,7 +337,7 @@ def user(update: Update, _):
 
 
 @run_async
-def upcoming(update: Update, _):
+def upcoming(bot: Bot, update: Update):
     jikan = jikanpy.jikan.Jikan()
     upcoming = jikan.top('anime', page=1, subtype="upcoming")
 
@@ -350,6 +350,8 @@ def upcoming(update: Update, _):
         upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
 
     update.effective_message.reply_text(upcoming_message)
+
+
 
 
 def site_search(update: Update, site: str):
