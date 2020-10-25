@@ -27,7 +27,7 @@ def tts(bot: Bot, update: Update, args):
     
    
         
-        linecount = len(linelist)
+        
     if linecount == 1:
         update.message.chat.send_action(ChatAction.RECORD_AUDIO)
         lang = "en"
