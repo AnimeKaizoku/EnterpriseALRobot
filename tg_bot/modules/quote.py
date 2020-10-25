@@ -276,7 +276,7 @@ async def drawer(width, height):
         return top, middle, bottom
 
 async def fontTest(letter):
-        test = TTFont("resources/Roboto-Medium.ttf")
+        test = ("resources/Roboto-Medium.ttf")
         for table in test['cmap'].tables:
             if ord(letter) in table.cmap.keys():
                 return True
