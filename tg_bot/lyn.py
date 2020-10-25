@@ -2,7 +2,7 @@ from telethon import events
 from tg_bot import telethn
 
 
-def lyndabot(**args):
+def tg_botbot(**args):
     """New message."""
     pattern = args.get("pattern", None)
     r_pattern = r"^[/!]"
