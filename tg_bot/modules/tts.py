@@ -29,7 +29,7 @@ def tts(bot: Bot, update: Update, args):
         
         
  
-        update.message.chat.send_action(ChatAction.RECORD_AUDIO)
+       
         lang = "en"
         tts = gTTS(reply, lang)
         tts.save("k.mp3")
