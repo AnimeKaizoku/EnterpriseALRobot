@@ -9,8 +9,8 @@ from telegram import Bot, Update, InlineKeyboardButton, InlineKeyboardMarkup, Pa
 from telegram.ext import CallbackQueryHandler, run_async
 
 # This module is adapted from: github.com/AnimeKaizoku/SaitamaRobot
-from chizuru import OWNER_ID, SUDO_USERS, dispatcher
-from chizuru.modules.disable import DisableAbleCommandHandler
+from tg_bot import OWNER_ID, SUDO_USERS, dispatcher
+from tg_bot.modules.disable import DisableAbleCommandHandler
 
 info_btn = "More Information"
 kaizoku_btn = "Kaizoku ☠️"
