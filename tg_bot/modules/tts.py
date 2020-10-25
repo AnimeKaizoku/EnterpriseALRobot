@@ -25,7 +25,7 @@ def tts(bot: Bot, update: Update, args):
     lang="ml"
     
     
-    with open("k.mp3", "rb") as f:
+   
         linelist = list(f)
         linecount = len(linelist)
     if linecount == 1:
