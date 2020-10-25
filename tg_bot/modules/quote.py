@@ -279,7 +279,7 @@ async def fontTest(letter):
         test = ("resources/Roboto-Medium.ttf")
         
             
-                return True
+                
 
 async def get_entity(msg):
         bold = {0: 0}
