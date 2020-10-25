@@ -41,7 +41,7 @@ from tg_bot.modules.helper_funcs.misc import paginate_modules
 
 PM_START_TEXT = """
 Hi {}, my name is {}! 
-I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
+I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/ec3e5aec2ef8fbc9ccdcb.jpg)
 
 You can find the list of available commands with /help.
 """
@@ -66,7 +66,7 @@ And the following:
 )
 
 
-KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
+CHIZURU_IMG = "https://telegra.ph/file/ec3e5aec2ef8fbc9ccdcb.jpg"
 
 DONATE_STRING = """I'm free for everyone!! """
 
@@ -167,21 +167,19 @@ def start(bot: Bot, update: Update, args: List[str]):
                 reply_markup=InlineKeyboardMarkup(
                     [[
                         InlineKeyboardButton(
-                            text="Add Kigyo to your group",
+                            text="Add Mizuhara to your group",
                             url="t.me/{}?startgroup=true".format(bot.username))
                     ],
                     [
                         InlineKeyboardButton(
-                            text="Support Chat // Eagle Union",
-                            url=f"https://t.me/YorktownEagleUnion"),
+                            text="Support Group",
+                            url=f"https://t.me/xbotgroup"),
                         InlineKeyboardButton(
-                            text="Kigyo Updates Channel",
-                            url="https://t.me/KigyoUpdates")
+                            text="Subs my channel",
+                            url="https://t.me/xpianimevideo")
                     ],
                     [
-                        InlineKeyboardButton(
-                            text="Source code (Licensed under GPLv3)",
-                            url="https://github.com/Dank-del/EnterpriseALRobot")
+                       
                     ]]))
     else:
         update.effective_message.reply_text("Hi, I'm Kigyo.")
