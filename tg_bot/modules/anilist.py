@@ -353,6 +353,21 @@ def manga(bot: Bot, update: Update):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
 
+@run_async
+def upcoming(update: Update, _):
+    jikan = jikanpy.jikan.Jikan()
+    upcoming = jikan.top('anime', page=1, subtype="upcoming")
+
+    upcoming_list = [entry['title'] for entry in upcoming['top']]
+    upcoming_message = ""
+
+    for entry_num in range(len(upcoming_list)):
+        if entry_num == 10:
+            break
+        upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
+
+    update.effective_message.reply_text(upcoming_message)
+
 __help__ = """
 *AniList*
 Get information about anime, manga or characters with the help of this module! All data is fetched from [AniList](anilist.co).
@@ -361,6 +376,7 @@ Get information about anime, manga or characters with the help of this module! A
  - /character <character>: returns information about the character.
  - /manga <manga>: returns information about the manga.
 """
+
 __mod_name__ = "AniList"
 
 
@@ -368,6 +384,7 @@ AIRING_HANDLER = CommandHandler("airing", airing)
 ANIME_HANDLER = CommandHandler("anime", anime)
 CHARACTER_HANDLER = CommandHandler("character", character)
 MANGA_HANDLER = CommandHandler("manga", manga)
+UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
 
 dispatcher.add_handler(AIRING_HANDLER)
 dispatcher.add_handler(ANIME_HANDLER)
