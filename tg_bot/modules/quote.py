@@ -278,7 +278,7 @@ async def drawer(width, height):
 async def fontTest(letter):
         test = ("resources/Roboto-Medium.ttf")
         
-            if ord(letter) in table.cmap.keys():
+            
                 return True
 
 async def get_entity(msg):
