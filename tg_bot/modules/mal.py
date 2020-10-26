@@ -3,7 +3,7 @@ import aiohttp
 from urllib.parse import quote as urlencode
 
 
-from .utils.disable import disableable_dec
+tg_bot.modules.utils
 from .utils.message import need_args_dec, get_args_str
 
 @register(cmds='sanime')
