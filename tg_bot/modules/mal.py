@@ -1,7 +1,7 @@
 import aiohttp
 
 from urllib.parse import quote as urlencode
-from tg_bot import bot
+from tg_bot import tg_botbot
 from tg_bot.decorator import register
 from .utils.disable import disableable_dec
 from .utils.message import need_args_dec, get_args_str
