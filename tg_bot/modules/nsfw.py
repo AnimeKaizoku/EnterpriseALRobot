@@ -1,5 +1,5 @@
 import requests
-import nekos
+
 from PIL import Image
 import os
 
