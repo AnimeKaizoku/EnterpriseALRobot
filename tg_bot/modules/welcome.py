@@ -180,8 +180,8 @@ def new_member(bot: Bot, update: Update, job_queue: JobQueue):
             # Welcome yourself
             elif new_mem.id == bot.id:
                 update.effective_message.reply_text("Hey 😍 {}, I'm {}! Thank you for adding me to {}".format(
-                        user.first_name, context.bot.first_name, chat_name
-                 )
+                        user.first_name, context.bot.first_name, chat_name)
+                 
 
             else:
                 # If welcome message is media, send with appropriate function
