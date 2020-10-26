@@ -100,7 +100,7 @@ def lesbian(bot: Bot, update: Update):
 def wallpaper(bot: Bot, update: Update):
     msg = update.effective_message
     target = "wallpaper"
-    msg.reply_photo(nekos.img(target))
+    
 
 
 @run_async
