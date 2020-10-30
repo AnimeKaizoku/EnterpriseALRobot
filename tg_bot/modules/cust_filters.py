@@ -47,7 +47,6 @@ ENUM_FUNC_MAP = {
 
 
 
-
 @typing_action
 def list_handlers(update, context):
     chat = update.effective_chat
@@ -91,6 +90,7 @@ def list_handlers(update, context):
         filter_list.format(chat_name),
         parse_mode=telegram.ParseMode.MARKDOWN,
     )
+
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
 @user_admin
@@ -214,29 +214,49 @@ def filters(update, context):
 
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
-@connection_status
 @user_admin
-def stop_filter(bot: Bot, update: Update):
+@typing_action
+def stop_filter(update, context):
     chat = update.effective_chat
-    msg = update.effective_message
-    args = msg.text.split(None, 1)
+    user = update.effective_user
+    args = update.effective_message.text.split(None, 1)
+
+    conn = connected(context.bot, update, chat, user.id)
+    if not conn is False:
+        chat_id = conn
+        chat_name = dispatcher.bot.getChat(conn).title
+    else:
+        chat_id = update.effective_chat.id
+        if chat.type == "private":
+            chat_name = "Local filters"
+        else:
+            chat_name = chat.title
 
     if len(args) < 2:
+        send_message(update.effective_message, "What should i stop?")
         return
 
-    chat_filters = sql.get_chat_triggers(chat.id)
+    chat_filters = sql.get_chat_triggers(chat_id)
 
     if not chat_filters:
-        msg.reply_text("No filters are active here!")
+        send_message(update.effective_message, "No filters active here!")
         return
 
     for keyword in chat_filters:
         if keyword == args[1]:
-            sql.remove_filter(chat.id, args[1])
-            msg.reply_text("Yep, I'll stop replying to that.")
+            sql.remove_filter(chat_id, args[1])
+            send_message(
+                update.effective_message,
+                "Okay, I'll stop replying to that filter in *{}*.".format(
+                    chat_name),
+                parse_mode=telegram.ParseMode.MARKDOWN,
+            )
             raise DispatcherHandlerStop
 
-    msg.reply_text("That's not a current filter - run /filters for all active filters.")
+    send_message(
+        update.effective_message,
+        "That's not a filter - Click: /filters to get currently active filters.",
+    )
 
 
 
@@ -424,6 +444,9 @@ def reply_filter(update, context):
                         LOGGER.exception("Error in filters: " + excp.message)
                         pass
                 break
+
+
+
 @user_admin
 @typing_action
 def rmall_filters(update, context):
@@ -487,6 +510,7 @@ def __chat_settings__(chat_id, user_id):
     cust_filters = sql.get_chat_triggers(chat_id)
     return "There are `{}` custom filters here.".format(len(cust_filters))
 
+
 __help__ = """
  • `/filters`*:* List all active filters saved in the chat.
 
@@ -526,4 +550,3 @@ __handlers__ = [
     FILTER_HANDLER, STOP_HANDLER, LIST_HANDLER,
     (CUST_FILTER_HANDLER, HANDLER_GROUP, RMALLFILTER_HANDLER)
 ]
-
