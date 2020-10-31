@@ -241,9 +241,11 @@ def set_title(context: CallbackContext, update: Update, args: List[str]):
 @can_pin
 @user_admin
 @loggable
-def pin(context: CallbackContext, update: Update, args: List[str]) -> str:
+def pin(update, context):
+    args = context.args
     user = update.effective_user
     chat = update.effective_chat
+    message = update.effective_message
 
     is_group = chat.type != "private" and chat.type != "channel"
     prev_message = update.effective_message.reply_to_message
