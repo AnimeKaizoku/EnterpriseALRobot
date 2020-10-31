@@ -220,7 +220,7 @@ def error_callback(bot, update, error):
 
 
 
-def help_button(context: CallbackContext, update: Update):
+def help_button(update, context):
     query = update.callback_query
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
     prev_match = re.match(r"help_prev\((.+?)\)", query.data)
@@ -277,7 +277,7 @@ def help_button(context: CallbackContext, update: Update):
 
 
 
-def get_help(context: CallbackContext, update: Update):
+def get_help(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     args = update.effective_message.text.split(None, 1)
 
