@@ -39,6 +39,7 @@ def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
         chat.type == "private"
         or user_id in SUDO_USERS
         or user_id in DEV_USERS
+        or user_id in [777000, 1087968824]
         or chat.all_members_are_administrators
     ):
         return True
@@ -70,6 +71,7 @@ def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -
         or user_id in DEV_USERS
         or user_id in WHITELIST_USERS
         or user_id in SARDEGNA_USERS
+        or user_id in [777000, 1087968824]
         or chat.all_members_are_administrators
     ):
         return True
@@ -120,7 +122,7 @@ def sudo_plus(func):
             update.effective_message.delete()
         else:
             update.effective_message.reply_text(
-                "Who dis non-admin telling me what to do? You want a punch?"
+                "Who dis non-admin telling me what to do? "
             )
 
     return is_sudo_plus_func
@@ -170,7 +172,7 @@ def user_admin(func):
             update.effective_message.delete()
         else:
             update.effective_message.reply_text(
-                "Who dis non-admin telling me what to do? You want a punch?"
+                "Who dis non-admin telling me what to do? "
             )
 
     return is_admin

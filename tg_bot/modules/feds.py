@@ -607,7 +607,10 @@ def fed_ban(bot: Bot, update: Update, args: List[str]):
     if int(user_id) in WHITELIST_USERS:
         message.reply_text("Neptunians cannot be fed banned!")
         return
-
+    
+    if int(user_id) in (777000, 1087968824):
+        message.reply_text("I'm not fbanning Telegram bots.")
+        
     try:
         user_chat = bot.get_chat(user_id)
         isvalid = True
