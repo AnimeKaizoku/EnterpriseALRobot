@@ -19,3 +19,4 @@ tg_bot/elevated_users.json
 *.exe
 *.png
 env/
+*.session-journal
