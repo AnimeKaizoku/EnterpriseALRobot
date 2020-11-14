@@ -17,3 +17,4 @@ venv
 env
 kigyo.session-journal
 tg_bot/elevated_users.json
+*.exe
