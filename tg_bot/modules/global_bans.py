@@ -101,9 +101,13 @@ def gban(bot: Bot, update: Update, args: List[str]):
     if int(user_id) in WHITELIST_USERS:
         message.reply_text("That's a Neptunia! They cannot be banned!")
         return
-
+    
+    if int(user_id) in (777000, 1087968824):
+        message.reply_text("Huh, why would I gban Telegram bots?")
+        return
+    
     if user_id == bot.id:
-        message.reply_text("You uhh...want me to punch myself?")
+        message.reply_text("You uhh...want me to kill myself?")
         return
 
     try:
@@ -477,6 +481,10 @@ def __stats__():
 
 
 def __user_info__(user_id):
+    if user_id in (777000, 1087968824):
+        return ""
+
+
     is_gbanned = sql.is_user_gbanned(user_id)
 
     text = "Globally banned: <b>{}</b>"
