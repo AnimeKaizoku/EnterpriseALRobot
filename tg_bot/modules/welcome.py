@@ -544,7 +544,7 @@ def welcome(update: Update, context: CallbackContext):
                     caption=welcome_m,
                     reply_markup=keyboard,
                     parse_mode=ParseMode.MARKDOWN,
-                    disable_web_page_preview=True,
+                    
                 )
 
     elif len(args) >= 1:

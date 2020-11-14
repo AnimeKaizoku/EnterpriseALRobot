@@ -500,7 +500,7 @@ def donate(context: CallbackContext, update: Update):
                 user.id,
                 DONATE_STRING,
                 parse_mode=ParseMode.MARKDOWN,
-                disable_web_page_preview=True,
+                
             )
 
             update.effective_message.reply_text(
