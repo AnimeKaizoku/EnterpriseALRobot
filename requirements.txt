@@ -19,9 +19,10 @@ CurrencyConverter
 googletrans
 speedtest-cli
 spamwatch
-telethon
+telethon==1.16.4
 pyrogram
 tgcrypto
 alphabet_detector
 pyrate-limiter
 bleach
+cachetools
