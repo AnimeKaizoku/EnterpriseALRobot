@@ -54,9 +54,9 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 
 
 def get_id(update: Update, context: CallbackContext):
-    args = context.args
-    bot = context.bot
+    bot, args = context.bot, context.args
     message = update.effective_message
+    chat = update.effective_chat
     msg = update.effective_message
     user_id = extract_user(msg, args)
 
@@ -68,32 +68,29 @@ def get_id(update: Update, context: CallbackContext):
             user2 = message.reply_to_message.forward_from
 
             msg.reply_text(
-                f"The original sender, {html.escape(user2.first_name)},"
-                f" has an ID of <code>{user2.id}</code>.\n"
-                f"The forwarder, {html.escape(user1.first_name)},"
-                f" has an ID of <code>{user1.id}</code>.",
-                parse_mode=ParseMode.HTML,
-            )
+                f"<b>Telegram ID:</b>,"
+                f"• {html.escape(user2.first_name)} - <code>{user2.id}</code>.\n"
+                f"• {html.escape(user1.first_name)} - <code>{user1.id}</code>.",
+                parse_mode=ParseMode.HTML)
 
         else:
 
             user = bot.get_chat(user_id)
             msg.reply_text(
                 f"{html.escape(user.first_name)}'s id is <code>{user.id}</code>.",
-                parse_mode=ParseMode.HTML,
-            )
+                parse_mode=ParseMode.HTML)
 
     else:
 
         if chat.type == "private":
             msg.reply_text(
-                f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
+                f"Your id is <code>{chat.id}</code>.",
+                parse_mode=ParseMode.HTML)
 
         else:
             msg.reply_text(
-                f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
+                f"This group's id is <code>{chat.id}</code>.",
+                parse_mode=ParseMode.HTML)
 
 
 
