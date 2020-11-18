@@ -5,9 +5,8 @@ import time
 from functools import partial
 
 import tg_bot.modules.sql.welcome_sql as sql
-from tg_bot import (DEV_USERS, LOGGER, OWNER_ID, SUDO_USERS,
-                          SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS, sw,
-                          dispatcher)
+from tg_bot import (DEV_USERS, LOGGER, OWNER_ID, SUDO_USERS, SUPPORT_USERS, SARDEGNA_USERS,
+                          WHITELIST_USERS, sw, dispatcher)
 from tg_bot.modules.helper_funcs.chat_status import (
     is_user_ban_protected,
     user_admin,
@@ -34,6 +33,7 @@ from telegram.ext import (
     CommandHandler,
     Filters,
     MessageHandler,
+    run_async,
 )
 from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
 
@@ -60,6 +60,8 @@ ENUM_FUNC_MAP = {
 }
 
 VERIFIED_USER_WAITLIST = {}
+
+JOIN_LOGGER= -1001159890779
 
 
 # do not async
@@ -112,6 +114,8 @@ def send(update, message, keyboard, backup_message):
             LOGGER.warning(message)
             LOGGER.warning(keyboard)
             LOGGER.exception("Could not parse! got invalid url host errors")
+        elif excp.message == "Have no rights to send a message":
+            return
         else:
             msg = update.effective_message.reply_text(
                 markdown_parser(backup_message +
@@ -121,7 +125,6 @@ def send(update, message, keyboard, backup_message):
                 reply_to_message_id=reply,
             )
             LOGGER.exception()
-
     return msg
 
 
@@ -155,44 +158,88 @@ def new_member(update: Update, context: CallbackContext):
                 return
 
         if should_welc:
-    
+
+            reply = update.message.message_id
+            cleanserv = sql.clean_service(chat.id)
+            # Clean service welcome
+            if cleanserv:
+                try:
+                    dispatcher.bot.delete_message(chat.id,
+                                                  update.message.message_id)
+                except BadRequest:
+                    pass
+                reply = False
+
             # Give the owner a special welcome
             if new_mem.id == OWNER_ID:
                 update.effective_message.reply_text(
-                    "Oh, Genos? Let's get this moving.")
+                    "Oh hi, my creator.",
+                    reply_to_message_id=reply)
                 welcome_log = (f"{html.escape(chat.title)}\n"
-                            f"#USER_JOINED\n"
-                            f"Bot Owner just joined the chat")
+                               f"#USER_JOINED\n"
+                               f"Bot Owner just joined the chat")
+                continue
 
             # Welcome Devs
             elif new_mem.id in DEV_USERS:
                 update.effective_message.reply_text(
-                    "Whoa! A member of the Eagle Union just joined!")
+                    "Whoa! A member of the Eagle Union just joined!",
+                    reply_to_message_id=reply,
+                )
+                continue
 
             # Welcome Sudos
             elif new_mem.id in SUDO_USERS:
                 update.effective_message.reply_text(
-                    "Huh! A Royal Nation just joined! Stay Alert!")
+                    "Huh! A Royal Nation just joined! Stay Alert!",
+                    reply_to_message_id=reply,
+                )
+                continue
 
             # Welcome Support
             elif new_mem.id in SUPPORT_USERS:
                 update.effective_message.reply_text(
-                    "Huh! Someone with a Sakura Nation level just joined!")
+                    "Huh! Someone with a Sakura Nation level just joined!",
+                    reply_to_message_id=reply,
+                )
+                continue
 
             # Welcome Whitelisted
             elif new_mem.id in SARDEGNA_USERS:
                 update.effective_message.reply_text(
-                    "Oof! A Sardegna Nation just joined!")
+                    "Oof! A Sadegna Nation just joined!",
+                    reply_to_message_id=reply)
+                continue
 
-            # Welcome Sardegnas
+            # Welcome SARDEGNA_USERS
             elif new_mem.id in WHITELIST_USERS:
                 update.effective_message.reply_text(
-                    "Oof! A Neptunia Nation just joined!")
+                    "Oof! A Neptuia Nation just joined!",
+                    reply_to_message_id=reply)
+                continue
 
             # Welcome yourself
             elif new_mem.id == bot.id:
-                update.effective_message.reply_text("Thanks for adding me! Join our support chat @YorkTownEagleUnion for support.. <3")
-
+                creator = None
+                for x in bot.bot.get_chat_administrators(
+                        update.effective_chat.id):
+                    if x.status == 'creator':
+                        creator = x.user
+                        break
+                if creator:
+                    bot.send_message(
+                        JOIN_LOGGER,
+                        "#NEW_GROUP\n<b>Group name:</b> {}\n<b>ID:</b> <code>{}</code>\n<b>Creator:</b> <code>{}</code>"
+                        .format(chat.title, chat.id, creator),
+                        parse_mode=ParseMode.HTML)
+                else:
+                    bot.send_message(
+                        JOIN_LOGGER,
+                        "#NEW_GROUP\n<b>Group name:</b> {}\n<b>ID:</b> <code>{}</code>"
+                        .format(chat.title, chat.id),
+                        parse_mode=ParseMode.HTML)
+                update.effective_message.reply_text(
+                    "Thanks for adding me! Join @YorkTownEagleUnion for support.", reply_to_message_id=reply)
                 continue
 
             else:
@@ -436,7 +483,7 @@ def left_member(update: Update, context: CallbackContext):
             # Give the owner a special goodbye
             if left_mem.id == OWNER_ID:
                 update.effective_message.reply_text(
-                    "Oi! Genos! He left..", reply_to_message_id=reply)
+                    "Sorry to see you leave :(", reply_to_message_id=reply)
                 return
 
             # Give the devs a special goodbye
@@ -544,7 +591,7 @@ def welcome(update: Update, context: CallbackContext):
                     caption=welcome_m,
                     reply_markup=keyboard,
                     parse_mode=ParseMode.MARKDOWN,
-                    
+                    disable_web_page_preview=True,
                 )
 
     elif len(args) >= 1:
@@ -948,45 +995,45 @@ def __chat_settings__(chat_id, user_id):
             "It's goodbye preference is `{}`.".format(welcome_pref,
                                                       goodbye_pref))
 
+
 __help__ = """
-{}
+*Admins only:*
+ • `/welcome <on/off>`*:* enable/disable welcome messages.
+ • `/welcome`*:* shows current welcome settings.
+ • `/welcome noformat`*:* shows current welcome settings, without the formatting - useful to recycle your welcome messages!
+ • `/goodbye`*:* same usage and args as `/welcome`.
+ • `/setwelcome <sometext>`*:* set a custom welcome message. If used replying to media, uses that media.
+ • `/setgoodbye <sometext>`*:* set a custom goodbye message. If used replying to media, uses that media.
+ • `/resetwelcome`*:* reset to the default welcome message.
+ • `/resetgoodbye`*:* reset to the default goodbye message.
+ • `/cleanwelcome <on/off>`*:* On new member, try to delete the previous welcome message to avoid spamming the chat.
+ • `/welcomemutehelp`*:* gives information about welcome mutes.
+ • `/cleanservice <on/off`*:* deletes telegrams welcome/left service messages. 
+ *Example:*
+user joined chat, user left chat.
 
-*Admin only:*
- - /welcome <on/off>: enable/disable welcome messages.
- - /welcome: shows current welcome settings.
- - /welcome noformat: shows current welcome settings, without the formatting - useful to recycle your welcome messages!
- - /goodbye -> same usage and args as /welcome.
- - /setwelcome <sometext>: set a custom welcome message. If used replying to media, uses that media.
- - /setgoodbye <sometext>: set a custom goodbye message. If used replying to media, uses that media.
- - /resetwelcome: reset to the default welcome message.
- - /resetgoodbye: reset to the default goodbye message.
- - /cleanwelcome <on/off>: On new member, try to delete the previous welcome message to avoid spamming the chat.
- - /welcomemutehelp: gives information about welcome mutes.
- - /welcomehelp: view more formatting information for custom welcome/goodbye messages.
-""".format(
-    WELC_HELP_TXT
-)
+*Welcome markdown:* 
+ • `/welcomehelp`*:* view more formatting information for custom welcome/goodbye messages.
+"""
 
-NEW_MEM_HANDLER = MessageHandler(
-    Filters.status_update.new_chat_members, new_member, pass_job_queue=True, run_async=True
-)
-LEFT_MEM_HANDLER = MessageHandler(Filters.status_update.left_chat_member, left_member, run_async=True)
-WELC_PREF_HANDLER = CommandHandler(
-    "welcome", welcome, pass_args=True, filters=Filters.group, run_async=True
-)
-GOODBYE_PREF_HANDLER = CommandHandler(
-    "goodbye", goodbye, pass_args=True, filters=Filters.group, run_async=True
-)
+NEW_MEM_HANDLER = MessageHandler(Filters.status_update.new_chat_members,
+                                 new_member, run_async=True)
+LEFT_MEM_HANDLER = MessageHandler(Filters.status_update.left_chat_member,
+                                  left_member, run_async=True)
+WELC_PREF_HANDLER = CommandHandler("welcome", welcome, filters=Filters.group, run_async=True)
+GOODBYE_PREF_HANDLER = CommandHandler("goodbye", goodbye, filters=Filters.group, run_async=True)
 SET_WELCOME = CommandHandler("setwelcome", set_welcome, filters=Filters.group, run_async=True)
 SET_GOODBYE = CommandHandler("setgoodbye", set_goodbye, filters=Filters.group, run_async=True)
-RESET_WELCOME = CommandHandler("resetwelcome", reset_welcome, filters=Filters.group, run_async=True)
-RESET_GOODBYE = CommandHandler("resetgoodbye", reset_goodbye, filters=Filters.group, run_async=True)
+RESET_WELCOME = CommandHandler(
+    "resetwelcome", reset_welcome, filters=Filters.group, run_async=True)
+RESET_GOODBYE = CommandHandler(
+    "resetgoodbye", reset_goodbye, filters=Filters.group, run_async=True)
 WELCOMEMUTE_HANDLER = CommandHandler(
-    "welcomemute", welcomemute, pass_args=True, filters=Filters.group, run_async=True
-)
+    "welcomemute", welcomemute, filters=Filters.group, run_async=True)
+CLEAN_SERVICE_HANDLER = CommandHandler(
+    "cleanservice", cleanservice, filters=Filters.group, run_async=True)
 CLEAN_WELCOME = CommandHandler(
-    "cleanwelcome", clean_welcome, pass_args=True, filters=Filters.group, run_async=True
-)
+    "cleanwelcome", clean_welcome, filters=Filters.group, run_async=True)
 WELCOME_HELP = CommandHandler("welcomehelp", welcome_help, run_async=True)
 WELCOME_MUTE_HELP = CommandHandler("welcomemutehelp", welcome_mute_help, run_async=True)
 BUTTON_VERIFY_HANDLER = CallbackQueryHandler(user_button, pattern=r"user_join_", run_async=True)
@@ -1002,22 +1049,12 @@ dispatcher.add_handler(RESET_GOODBYE)
 dispatcher.add_handler(CLEAN_WELCOME)
 dispatcher.add_handler(WELCOME_HELP)
 dispatcher.add_handler(WELCOMEMUTE_HANDLER)
+dispatcher.add_handler(CLEAN_SERVICE_HANDLER)
 dispatcher.add_handler(BUTTON_VERIFY_HANDLER)
 dispatcher.add_handler(WELCOME_MUTE_HELP)
 
 __mod_name__ = "Greetings"
-__command_list__ = [
-    "welcome",
-    "goodbye",
-    "setwelcome",
-    "setgoodbye",
-    "resetwelcome",
-    "resetgoodbye",
-    "welcomemute",
-    "cleanwelcome",
-    "welcomehelp",
-    "welcomemutehelp",
-]
+__command_list__ = []
 __handlers__ = [
     NEW_MEM_HANDLER,
     LEFT_MEM_HANDLER,
@@ -1030,6 +1067,7 @@ __handlers__ = [
     CLEAN_WELCOME,
     WELCOME_HELP,
     WELCOMEMUTE_HANDLER,
+    CLEAN_SERVICE_HANDLER,
     BUTTON_VERIFY_HANDLER,
     WELCOME_MUTE_HELP,
 ]
