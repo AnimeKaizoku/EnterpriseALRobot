@@ -1,8 +1,7 @@
 import tg_bot.modules.sql.blacklistusers_sql as sql
 from tg_bot import ALLOW_EXCL
-from tg_bot import (DEV_USERS, SUDO_USERS, SUPPORT_USERS, SARDEGNA_USERS,
-                          WHITELIST_USERS)
-
+from tg_bot import (DEV_USERS, SUDO_USERS, SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS)
+from telegram.ext.handler import Handler
 from telegram import MessageEntity, Update
 from telegram.ext import CommandHandler, MessageHandler, RegexHandler, Filters
 from time import sleep
@@ -49,6 +48,27 @@ class AntiSpam:
 
 SpamChecker = AntiSpam()
 
+class CustomHandler(Handler):
+    def __init__(
+        self,
+        callback,
+        pass_update_queue: bool = False,
+        pass_job_queue: bool = False,
+        pass_user_data: bool = False,
+        pass_chat_data: bool = False,
+        run_async: bool = True,
+    ):
+
+        super().__init__(
+            callback,
+            pass_update_queue=pass_update_queue,
+            pass_job_queue=pass_job_queue,
+            pass_user_data=pass_user_data,
+            pass_chat_data=pass_chat_data,
+            run_async = True,
+        )
+
+
 
 class CustomCommandHandler(CommandHandler):
 
@@ -56,9 +76,10 @@ class CustomCommandHandler(CommandHandler):
                  command,
                  callback,
                  admin_ok=False,
+                 run_async=True,
                  allow_edit=False,
                  **kwargs):
-        super().__init__(command, callback, **kwargs)
+        super().__init__(command, callback, run_async=run_async, **kwargs)
 
         if allow_edit is False:
             self.filters &= ~(
@@ -130,9 +151,10 @@ class CustomMessageHandler(MessageHandler):
                  filters,
                  callback,
                  friendly="",
+                 run_async=True,
                  allow_edit=False,
                  **kwargs):
-        super().__init__(filters, callback, **kwargs)
+        super().__init__(filters, callback, run_async=run_async, **kwargs)
         if allow_edit is False:
             self.filters &= ~(
                 Filters.update.edited_message
