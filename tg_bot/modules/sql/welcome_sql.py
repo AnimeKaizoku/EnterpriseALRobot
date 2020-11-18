@@ -75,7 +75,7 @@ DEFAULT_WELCOME_MESSAGES = [
     "Welcome you are",
     "Welcome {first}, your princess is in another castle.",
     "Hi {first}, welcome to the dark side.",
-    "Hola {first}, beware of people with disaster levels",
+    "Hola {first}, beware of people with nation levels",
     "Hey {first}, we have the droids you are looking for.",
     "Hi {first}\nThis isn't a strange place, this is my home, it's the people who are strange.",
     "Oh, hey {first} what's the password?",
@@ -87,7 +87,6 @@ DEFAULT_WELCOME_MESSAGES = [
     "Hey {first}, Do you wanna know how I got these scars?",
     "Welcome {first}, drop your weapons and proceed to the spy scanner.",
     "Stay safe {first}, Keep 3 meters social distances between your messages.",  #Corona memes lmao
-    "Hey {first}, Do you know I once One-punched a meteorite?",
     "You’re here now {first}, Resistance is futile",
     "{first} just arrived, the force is strong with this one.",
     "{first} just joined on president’s orders.",

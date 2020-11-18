@@ -78,7 +78,7 @@ def new_fed(update: Update, context: CallbackContext):
         x = sql.new_fed(user.id, fed_name, fed_id)
         if not x:
             update.effective_message.reply_text(
-                "Can't federate! Please contact @OnePunchSupport if the problem persist."
+                "Can't federate! Please contact @YorkTownEagleUnion if the problem persist."
             )
             return
 
@@ -232,7 +232,7 @@ def join_fed(update: Update, context: CallbackContext):
         x = sql.chat_join_fed(args[0], chat.title, chat.id)
         if not x:
             message.reply_text(
-                "Failed to join federation! Please contact @OnePunchSupport should this problem persist!"
+                "Failed to join federation! Please contact @YorkTownEagleUnion should this problem persist!"
             )
             return
 
@@ -544,11 +544,11 @@ def fed_ban(update: Update, context: CallbackContext):
         return
 
     if user_id == OWNER_ID:
-        message.reply_text("Disaster level God cannot be fed banned!")
+        message.reply_text("God cannot be fed banned!")
         return
 
     if int(user_id) in SUDO_USERS:
-        message.reply_text("Dragons cannot be fed banned!")
+        message.reply_text("Royals cannot be fed banned!")
         return
 
     if int(user_id) in SARDEGNA_USERS:
@@ -556,7 +556,7 @@ def fed_ban(update: Update, context: CallbackContext):
         return
 
     if int(user_id) in WHITELIST_USERS:
-        message.reply_text("Wolves cannot be fed banned!")
+        message.reply_text("Neptunians cannot be fed banned!")
         return
 
     try:
@@ -605,7 +605,7 @@ def fed_ban(update: Update, context: CallbackContext):
                           fban_user_uname, reason, int(time.time()))
         if not x:
             message.reply_text(
-                "Failed to ban from the federation! If this problem continues, contact @OnePunchSupport."
+                "Failed to ban from the federation! If this problem continues, contact @YorkTownEagleUnion."
             )
             return
 
@@ -719,7 +719,7 @@ def fed_ban(update: Update, context: CallbackContext):
                       fban_user_uname, reason, int(time.time()))
     if not x:
         message.reply_text(
-            "Failed to ban from the federation! If this problem continues, contact @OnePunchSupport."
+            "Failed to ban from the federation! If this problem continues, contact @YorkTownEagleUnion."
         )
         return
 
@@ -1041,7 +1041,7 @@ def set_frules(update: Update, context: CallbackContext):
         x = sql.set_frules(fed_id, markdown_rules)
         if not x:
             update.effective_message.reply_text(
-                "Whoa! There was an error while setting federation rules! If you wondered why please ask it in @OnePunchSupport !"
+                "Whoa! There was an error while setting federation rules! If you wondered why please ask it in @YorkTownEagleUnion !"
             )
             return
 
@@ -1132,7 +1132,7 @@ def fed_broadcast(update: Update, context: CallbackContext):
                     failed += 1
                     sql.chat_leave_fed(chat)
                     LOGGER.info(
-                        "Chat {} has left fed {} because I was punched".format(
+                        "Chat {} has left fed {} because I was Kicked".format(
                             chat, fedinfo['fname']))
                     continue
                 failed += 1
