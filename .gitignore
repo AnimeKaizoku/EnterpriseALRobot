@@ -20,3 +20,4 @@ tg_bot/elevated_users.json
 *.png
 env/
 *.session-journal
+config.ini

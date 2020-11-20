@@ -4,9 +4,6 @@
 
 ![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-green) [![Join Support!](https://img.shields.io/badge/Support%20Chat-EagleUnion-red)](https://t.me/YorktownEagleUnion) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseALRobot&amp;utm_campaign=Badge_Grade)
 
-A modular telegram Python bot running on python3 with an sqlalchemy database.
-Concept taken from [Saitama Robot](https://github.com/AnimeKaizoku/SaitamaRobot)
-
 Originally a marie fork - Kigyō has evolved further and was built to be more useful for Anime Chats. 
 
 Can be found on telegram as [Kigyōbot](https://t.me/kigyorobot).
@@ -32,36 +29,8 @@ This is because markdown parsing is done by iterating through a dict, which are 
 
   ### Configuration
 
-There are two possible ways of configuring your bot: a config.py file, or ENV variables.
+   copy sample_config.ini and make a config.ini, satisfy the values in it.
 
-The prefered version is to use a `config.py` file, as it makes it easier to see all your settings grouped together.
-This file should be placed in your `tg_bot` folder, alongside the `__main__.py` file . 
-This is where your bot token will be loaded from, as well as your database URI (if you're using a database), and most of 
-your other settings.
-
-It is recommended to import sample_config and extend the Config class, as this will ensure your config contains all 
-defaults set in the sample_config, hence making it easier to upgrade.
-
-An example `config.py` file could be:
-```
-from tg_bot.sample_config import Config
-
-
-class Development(Config):
-    OWNER_ID = 254318997  # your telegram ID
-    OWNER_USERNAME = "SonOfLars"  # your telegram username
-    API_KEY = "your bot api key"  # your api key, as provided by the @botfather
-    SQLALCHEMY_DATABASE_URI = 'postgresql://username:password@localhost:5432/database'  # sample db credentials
-    MESSAGE_DUMP = '-1234567890' # some group chat that your bot is a member of
-    USE_MESSAGE_DUMP = True
-    SUDO_USERS = [18673980, 83489514]  # List of id's for users which have sudo access to the bot.
-    LOAD = []
-    NO_LOAD = ['translation']
-```
-
-If you can't have a config.py file (EG on heroku), it is also possible to use environment variables.
-The following env variables are supported:
- - `ENV`: Setting this to ANYTHING will enable env variables
 
  - `TOKEN`: Your bot token, as a string.
  - `OWNER_ID`: An integer of consisting of your owner ID
