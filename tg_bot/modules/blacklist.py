@@ -38,6 +38,7 @@ def blacklist(update, context):
         else:
             chat_id = update.effective_chat.id
             chat_name = chat.title
+    chat_name = html.escape(chat_name)
 
     filter_list = "Current blacklisted words in <b>{}</b>:\n".format(chat_name)
 
@@ -84,6 +85,7 @@ def add_blacklist(update, context):
             return
         else:
             chat_name = chat.title
+    chat_name = html.escape(chat_name)
 
     if len(words) > 1:
         text = words[1]
@@ -137,6 +139,7 @@ def unblacklist(update, context):
             return
         else:
             chat_name = chat.title
+    chat_name = html.escape(chat_name)
 
     if len(words) > 1:
         text = words[1]
@@ -218,6 +221,7 @@ def blacklist_mode(update, context):
         chat = update.effective_chat
         chat_id = update.effective_chat.id
         chat_name = update.effective_message.chat.title
+    chat_name = html.escape(chat_name)
 
     if args:
         if (args[0].lower() == "off" or args[0].lower() == "nothing" or
