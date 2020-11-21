@@ -56,15 +56,15 @@ def list_handlers(update, context):
     if not conn is False:
         chat_id = conn
         chat_name = dispatcher.bot.getChat(conn).title
-        filter_list = "*Filter in {}:*\n"
+        filter_list = "<b>Filter in {}:</b>\n"
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
             chat_name = "Local filters"
-            filter_list = "*local filters:*\n"
+            filter_list = "<b>Local filters:</b>\n"
         else:
             chat_name = chat.title
-            filter_list = "*Filters in {}*:\n"
+            filter_list = "<b>Filters in {}</b>:\n"
 
     all_handlers = sql.get_chat_triggers(chat_id)
 
@@ -73,13 +73,14 @@ def list_handlers(update, context):
                      "No filters saved in {}!".format(chat_name))
         return
 
+    chat_name = escape(chat_name)
     for keyword in all_handlers:
-        entry = " • `{}`\n".format(escape_markdown(keyword))
+        entry = " • <code>{}</code>\n".format(escape(keyword))
         if len(entry) + len(filter_list) > telegram.MAX_MESSAGE_LENGTH:
             send_message(
                 update.effective_message,
                 filter_list.format(chat_name),
-                parse_mode=telegram.ParseMode.MARKDOWN,
+                parse_mode=telegram.ParseMode.HTML,
             )
             filter_list = entry
         else:
@@ -88,7 +89,7 @@ def list_handlers(update, context):
     send_message(
         update.effective_message,
         filter_list.format(chat_name),
-        parse_mode=telegram.ParseMode.MARKDOWN,
+        parse_mode=telegram.ParseMode.HTML,
     )
 
 
@@ -110,7 +111,7 @@ def filters(update, context):
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
-            chat_name = "local filters"
+            chat_name = "Local filters"
         else:
             chat_name = chat.title
 
@@ -207,7 +208,7 @@ def filters(update, context):
 
     send_message(
         update.effective_message,
-        "Saved filter '{}' in *{}*!".format(keyword, chat_name),
+        "Saved filter '{}' in *{}*!".format(escape_markdown(keyword), chat_name),
         parse_mode=telegram.ParseMode.MARKDOWN,
     )
     raise DispatcherHandlerStop
@@ -324,7 +325,6 @@ def reply_filter(update, context):
                             markdown_to_html(filtext),
                             reply_to_message_id=message.message_id,
                             parse_mode=ParseMode.HTML,
-                            
                             reply_markup=keyboard,
                         )
                     except BadRequest as excp:
@@ -335,7 +335,6 @@ def reply_filter(update, context):
                                     chat.id,
                                     markdown_to_html(filtext),
                                     parse_mode=ParseMode.HTML,
-                                    
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
@@ -362,7 +361,6 @@ def reply_filter(update, context):
                         caption=markdown_to_html(filtext),
                         reply_to_message_id=message.message_id,
                         parse_mode=ParseMode.HTML,
-                        
                         reply_markup=keyboard,
                     )
                 break
@@ -389,7 +387,6 @@ def reply_filter(update, context):
                             update.effective_message,
                             filt.reply,
                             parse_mode=ParseMode.MARKDOWN,
-                            
                             reply_markup=keyboard,
                         )
                     except BadRequest as excp:
@@ -411,7 +408,6 @@ def reply_filter(update, context):
                                     chat.id,
                                     filt.reply,
                                     parse_mode=ParseMode.MARKDOWN,
-                                    
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
@@ -455,7 +451,7 @@ def rmall_filters(update, context):
     msg = update.effective_message
 
     usermem = chat.get_member(user.id)
-    if not usermem.status == "creator":
+    if usermem.status != "creator":
         msg.reply_text("This command can be only used by chat OWNER!")
         return
 
@@ -474,7 +470,7 @@ def rmall_filters(update, context):
     for i in filterlist:
         sql.remove_filter(chat.id, i)
 
-    return msg.reply_text(f"Cleaned {count} filters in {chat.title}")
+    return msg.reply_text(f"Cleaned {count} filters in {chat.title}", parse_mode=None)
 
 
 # NOT ASYNC NOT A HANDLER
