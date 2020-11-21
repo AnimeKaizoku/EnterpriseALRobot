@@ -1,3 +1,4 @@
+import html
 import random
 
 from telegram import Update, MessageEntity
@@ -64,7 +65,7 @@ def no_longer_afk(update: Update, context: CallbackContext):
                 'Welcome back! {}', 'Where is {}?\nIn the chat!'
             ]
             chosen_option = random.choice(options)
-            update.effective_message.reply_text(chosen_option.format(firstname))
+            update.effective_message.reply_text(chosen_option.format(firstname), parse_mode=None)
         except:
             return
 
@@ -120,18 +121,16 @@ def reply_afk(update: Update, context: CallbackContext):
 
 
 def check_afk(update, context, user_id, fst_name, userc_id):
-    if sql.is_afk(user_id):
-        user = sql.check_afk_status(user_id)
-        if not user.reason:
-            if int(userc_id) == int(user_id):
-                return
+    if int(userc_id) == int(user_id):
+        return
+    is_afk, reason = sql.check_afk_status(user_id)
+    if is_afk:
+        if not reason:
             res = "{} is afk".format(fst_name)
-            update.effective_message.reply_text(res)
+            update.effective_message.reply_text(res, parse_mode=None)
         else:
-            if int(userc_id) == int(user_id):
-                return
             res = "{} is afk.\nReason: <code>{}</code>".format(
-                fst_name, user.reason)
+                html.escape(fst_name), html.escape(reason))
             update.effective_message.reply_text(res, parse_mode="html")
 
 def __gdpr__(user_id):
