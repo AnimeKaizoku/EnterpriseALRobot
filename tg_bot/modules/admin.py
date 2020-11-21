@@ -52,7 +52,7 @@ def promote(update: Update, context: CallbackContext) -> str:
     except:
         return
 
-    if user_member.status == 'administrator' or user_member.status == 'creator':
+    if user_member.status in ('administrator', 'creator'):
         message.reply_text(
             "How am I meant to promote someone that's already an admin?")
         return
