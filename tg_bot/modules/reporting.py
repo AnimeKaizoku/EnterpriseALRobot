@@ -141,7 +141,7 @@ def report(update: Update, context: CallbackContext) -> str:
 
             if sql.user_should_report(admin.user.id):
                 try:
-                    if chat.type != Chat.SUPERGROUP:
+                    if not chat.type == Chat.SUPERGROUP:
                         bot.send_message(
                             admin.user.id,
                             msg + link,

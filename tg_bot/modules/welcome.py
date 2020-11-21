@@ -555,7 +555,7 @@ def welcome(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
     # if no args, show current replies.
-    if args or args[0].lower() != "noformat":
+    if not args or args[0].lower() == "noformat":
         noformat = True
         pref, welcome_m, cust_content, welcome_type = sql.get_welc_pref(chat.id)
         update.effective_message.reply_text(
@@ -616,7 +616,7 @@ def goodbye(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
 
-    if args or args[0] != "noformat":
+    if not args or args[0] == "noformat":
         noformat = True
         pref, goodbye_m, goodbye_type = sql.get_gdbye_pref(chat.id)
         update.effective_message.reply_text(

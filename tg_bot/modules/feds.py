@@ -66,7 +66,7 @@ def new_fed(update: Update, context: CallbackContext):
                      "Please write the name of the federation!")
         return
     fednam = message.text.split(None, 1)[1]
-    if fednam != '':
+    if not fednam == '':
         fed_id = str(uuid.uuid4())
         fed_name = fednam
         LOGGER.info(fed_id)

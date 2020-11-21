@@ -131,7 +131,7 @@ def demote(update: Update, context: CallbackContext) -> str:
             "This person CREATED the chat, how would I demote them?")
         return
 
-    if user_member.status != 'administrator':
+    if not user_member.status == 'administrator':
         message.reply_text("Can't demote what wasn't promoted!")
         return
 
@@ -209,7 +209,7 @@ def set_title(update: Update, context: CallbackContext):
             "This person CREATED the chat, how can i set custom title for him?")
         return
 
-    if user_member.status != 'administrator':
+    if not user_member.status == 'administrator':
         message.reply_text(
             "Can't set title for non-admins!\nPromote them first to set custom title!"
         )
@@ -261,7 +261,7 @@ def pin(update: Update, context: CallbackContext) -> str:
 
     is_silent = True
     if len(args) >= 1:
-        is_silent = (args[0].lower() != 'notify' or args[0].lower()
+        is_silent = not (args[0].lower() == 'notify' or args[0].lower()
                          == 'loud' or args[0].lower() == 'violent')
 
     if prev_message and is_group:
