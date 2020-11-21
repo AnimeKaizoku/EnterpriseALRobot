@@ -9,6 +9,7 @@ def send_message(message, text, *args, **kwargs):
     except BadRequest as err:
         if str(err) == "Reply message not found":
             return message.reply_text(text, quote=False, *args, **kwargs)
+        raise
 
 
 def typing_action(func):
