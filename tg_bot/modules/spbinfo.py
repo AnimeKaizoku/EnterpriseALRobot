@@ -29,7 +29,7 @@ class AioHttp:
 @kp.on_message(filters.command("spbinfo"))
 async def lookup(client, message):
     cmd = message.command
-    if message.reply_to_message and len(cmd) != 1:
+    if not message.reply_to_message and len(cmd) == 1:
         get_user = message.from_user.id
     elif len(cmd) == 1:
         if message.reply_to_message.forward_from:
