@@ -75,7 +75,7 @@ SUDO_USERS.append(OWNER_ID)
 DEV_USERS.append(OWNER_ID)
 
 # SpamWatch
-if spamwatch_api == "None":
+if spamwatch_api is None:
     sw = None
     LOGGER.warning("SpamWatch API key is missing! Check your config.env.")
 else:
