@@ -2,17 +2,18 @@ import re
 from html import escape
 
 import telegram
-from telegram import ParseMode, InlineKeyboardMarkup, Message
+from telegram import ParseMode, InlineKeyboardMarkup, Message, InlineKeyboardButton
 from telegram.error import BadRequest
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
     DispatcherHandlerStop,
+    CallbackQueryHandler,
     Filters,
 )
 from telegram.utils.helpers import mention_html, escape_markdown
 
-from tg_bot import dispatcher, LOGGER
+from tg_bot import dispatcher, LOGGER, SUDO_USERS
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_text
@@ -56,15 +57,15 @@ def list_handlers(update, context):
     if not conn is False:
         chat_id = conn
         chat_name = dispatcher.bot.getChat(conn).title
-        filter_list = "<b>Filter in {}:</b>\n"
+        filter_list = "*Filter in {}:*\n"
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
             chat_name = "Local filters"
-            filter_list = "<b>Local filters:</b>\n"
+            filter_list = "*local filters:*\n"
         else:
             chat_name = chat.title
-            filter_list = "<b>Filters in {}</b>:\n"
+            filter_list = "*Filters in {}*:\n"
 
     all_handlers = sql.get_chat_triggers(chat_id)
 
@@ -73,14 +74,13 @@ def list_handlers(update, context):
                      "No filters saved in {}!".format(chat_name))
         return
 
-    chat_name = escape(chat_name)
     for keyword in all_handlers:
-        entry = " • <code>{}</code>\n".format(escape(keyword))
+        entry = " • `{}`\n".format(escape_markdown(keyword))
         if len(entry) + len(filter_list) > telegram.MAX_MESSAGE_LENGTH:
             send_message(
                 update.effective_message,
                 filter_list.format(chat_name),
-                parse_mode=telegram.ParseMode.HTML,
+                parse_mode=telegram.ParseMode.MARKDOWN,
             )
             filter_list = entry
         else:
@@ -89,7 +89,7 @@ def list_handlers(update, context):
     send_message(
         update.effective_message,
         filter_list.format(chat_name),
-        parse_mode=telegram.ParseMode.HTML,
+        parse_mode=telegram.ParseMode.MARKDOWN,
     )
 
 
@@ -111,7 +111,7 @@ def filters(update, context):
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
-            chat_name = "Local filters"
+            chat_name = "local filters"
         else:
             chat_name = chat.title
 
@@ -202,15 +202,17 @@ def filters(update, context):
         send_message(update.effective_message, "Invalid filter!")
         return
 
-    sql.new_add_filter(chat_id, keyword, text, file_type, file_id, buttons)
+    add = addnew_filter(update, chat_id, keyword, text, file_type, file_id,
+                        buttons)
     # This is an old method
     # sql.add_filter(chat_id, keyword, content, is_sticker, is_document, is_image, is_audio, is_voice, is_video, buttons)
 
-    send_message(
-        update.effective_message,
-        "Saved filter '{}' in *{}*!".format(escape_markdown(keyword), chat_name),
-        parse_mode=telegram.ParseMode.MARKDOWN,
-    )
+    if add == True:
+        send_message(
+            update.effective_message,
+            "Saved filter '{}' in *{}*!".format(keyword, chat_name),
+            parse_mode=telegram.ParseMode.MARKDOWN,
+        )
     raise DispatcherHandlerStop
 
 
@@ -265,6 +267,8 @@ def reply_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
 
+    if not update.effective_user or update.effective_user.id == 777000:
+        return
     to_match = extract_text(message)
     if not to_match:
         return
@@ -325,6 +329,7 @@ def reply_filter(update, context):
                             markdown_to_html(filtext),
                             reply_to_message_id=message.message_id,
                             parse_mode=ParseMode.HTML,
+                            disable_web_page_preview=True,
                             reply_markup=keyboard,
                         )
                     except BadRequest as excp:
@@ -335,6 +340,7 @@ def reply_filter(update, context):
                                     chat.id,
                                     markdown_to_html(filtext),
                                     parse_mode=ParseMode.HTML,
+                                    disable_web_page_preview=True,
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
@@ -355,14 +361,20 @@ def reply_filter(update, context):
                                                  excp.message)
                                 pass
                 else:
-                    ENUM_FUNC_MAP[filt.file_type](
+                    if ENUM_FUNC_MAP[filt.file_type] == dispatcher.bot.send_sticker:
+                        ENUM_FUNC_MAP[filt.file_type](
+                        chat.id,
+                        filt.file_id,
+                        reply_to_message_id=message.message_id,
+                        reply_markup=keyboard)
+                    else:
+                        ENUM_FUNC_MAP[filt.file_type](
                         chat.id,
                         filt.file_id,
                         caption=markdown_to_html(filtext),
                         reply_to_message_id=message.message_id,
                         parse_mode=ParseMode.HTML,
-                        reply_markup=keyboard,
-                    )
+                        reply_markup=keyboard)
                 break
             else:
                 if filt.is_sticker:
@@ -387,6 +399,7 @@ def reply_filter(update, context):
                             update.effective_message,
                             filt.reply,
                             parse_mode=ParseMode.MARKDOWN,
+                            disable_web_page_preview=True,
                             reply_markup=keyboard,
                         )
                     except BadRequest as excp:
@@ -408,6 +421,7 @@ def reply_filter(update, context):
                                     chat.id,
                                     filt.reply,
                                     parse_mode=ParseMode.MARKDOWN,
+                                    disable_web_page_preview=True,
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
@@ -443,34 +457,63 @@ def reply_filter(update, context):
 
 
 
-@user_admin
-@typing_action
 def rmall_filters(update, context):
     chat = update.effective_chat
     user = update.effective_user
+    member = chat.get_member(user.id)
+    if member.status != "creator" and user.id not in SUDO_USERS:
+        update.effective_message.reply_text(
+            "Only the chat owner can clear all notes at once.")
+    else:
+        buttons = InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                text="Stop all filters", callback_data="filters_rmall")
+        ], [
+            InlineKeyboardButton(text="Cancel", callback_data="filters_cancel")
+        ]])
+        update.effective_message.reply_text(
+            f"Are you sure you would like to stop ALL filters in {chat.title}? This action cannot be undone.",
+            reply_markup=buttons,
+            parse_mode=ParseMode.MARKDOWN)
+
+
+
+def rmall_callback(update, context):
+    query = update.callback_query
+    chat = update.effective_chat
     msg = update.effective_message
+    member = chat.get_member(query.from_user.id)
+    if query.data == 'filters_rmall':
+        if member.status == "creator" or query.from_user.id in SUDO_USERS:
+            allfilters = sql.get_chat_triggers(chat.id)
+            if not allfilters:
+                msg.edit_text("No filters in this chat, nothing to stop!")
+                return
 
-    usermem = chat.get_member(user.id)
-    if usermem.status != "creator":
-        msg.reply_text("This command can be only used by chat OWNER!")
-        return
+            count = 0
+            filterlist = []
+            for x in allfilters:
+                count += 1
+                filterlist.append(x)
 
-    allfilters = sql.get_chat_triggers(chat.id)
+            for i in filterlist:
+                sql.remove_filter(chat.id, i)
 
-    if not allfilters:
-        msg.reply_text("No filters in this chat, nothing to stop!")
-        return
+            msg.edit_text(f"Cleaned {count} filters in {chat.title}")
 
-    count = 0
-    filterlist = []
-    for x in allfilters:
-        count += 1
-        filterlist.append(x)
+        if member.status == "administrator":
+            query.answer("Only owner of the chat can do this.")
 
-    for i in filterlist:
-        sql.remove_filter(chat.id, i)
-
-    return msg.reply_text(f"Cleaned {count} filters in {chat.title}", parse_mode=None)
+        if member.status == "member":
+            query.answer("You need to be admin to do this.")
+    elif query.data == 'filters_cancel':
+        if member.status == "creator" or query.from_user.id in SUDO_USERS:
+            msg.edit_text("Clearing of all filters has been cancelled.")
+            return
+        if member.status == "administrator":
+            query.answer("Only owner of the chat can do this.")
+        if member.status == "member":
+            query.answer("You need to be admin to do this.")
 
 
 # NOT ASYNC NOT A HANDLER
@@ -484,6 +527,18 @@ def get_exception(excp, filt, chat):
         LOGGER.exception("Could not parse filter %s in chat %s",
                          str(filt.keyword), str(chat.id))
         return "This data could not be sent because it is incorrectly formatted."
+
+
+# NOT ASYNC NOT A HANDLER
+def addnew_filter(update, chat_id, keyword, text, file_type, file_id, buttons):
+    msg = update.effective_message
+    totalfilt = sql.get_chat_triggers(chat_id)
+    if len(totalfilt) >= 150:  # Idk why i made this like function....
+        msg.reply_text("This group has reached its max filters limit of 150.")
+        return False
+    else:
+        sql.new_add_filter(chat_id, keyword, text, file_type, file_id, buttons)
+        return True
 
 
 def __stats__():
@@ -530,17 +585,20 @@ __mod_name__ = "Filters"
 FILTER_HANDLER = CommandHandler("filter", filters)
 STOP_HANDLER = CommandHandler("stop", stop_filter)
 RMALLFILTER_HANDLER = CommandHandler(
-    "removeallfilters", rmall_filters, filters=Filters.group, run_async=True)
+    "removeallfilters", rmall_filters, filters=Filters.group)
+RMALLFILTER_CALLBACK = CallbackQueryHandler(
+    rmall_callback, pattern=r"filters_.*")
 LIST_HANDLER = DisableAbleCommandHandler(
-    "filters", list_handlers, admin_ok=True, run_async=True)
+    "filters", list_handlers, admin_ok=True)
 CUST_FILTER_HANDLER = MessageHandler(
-    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter, run_async=True)
+    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter)
 
 dispatcher.add_handler(FILTER_HANDLER)
 dispatcher.add_handler(STOP_HANDLER)
 dispatcher.add_handler(LIST_HANDLER)
 dispatcher.add_handler(CUST_FILTER_HANDLER, HANDLER_GROUP)
 dispatcher.add_handler(RMALLFILTER_HANDLER)
+dispatcher.add_handler(RMALLFILTER_CALLBACK)
 
 __handlers__ = [
     FILTER_HANDLER, STOP_HANDLER, LIST_HANDLER,
