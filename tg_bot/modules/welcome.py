@@ -989,8 +989,8 @@ def __migrate__(old_chat_id, new_chat_id):
 
 
 def __chat_settings__(chat_id, user_id):
-    welcome_pref, _, _ = sql.get_welc_pref(chat_id)
-    goodbye_pref, _, _ = sql.get_gdbye_pref(chat_id)
+    welcome_pref = sql.get_welc_pref(chat_id)[0]
+    goodbye_pref = sql.get_gdbye_pref(chat_id)[0]
     return ("This chat has it's welcome preference set to `{}`.\n"
             "It's goodbye preference is `{}`.".format(welcome_pref,
                                                       goodbye_pref))
@@ -1008,11 +1008,11 @@ __help__ = """
  • `/resetgoodbye`*:* reset to the default goodbye message.
  • `/cleanwelcome <on/off>`*:* On new member, try to delete the previous welcome message to avoid spamming the chat.
  • `/welcomemutehelp`*:* gives information about welcome mutes.
- • `/cleanservice <on/off`*:* deletes telegrams welcome/left service messages. 
+ • `/cleanservice <on/off`*:* deletes telegrams welcome/left service messages.
  *Example:*
 user joined chat, user left chat.
 
-*Welcome markdown:* 
+*Welcome markdown:*
  • `/welcomehelp`*:* view more formatting information for custom welcome/goodbye messages.
 """
 
