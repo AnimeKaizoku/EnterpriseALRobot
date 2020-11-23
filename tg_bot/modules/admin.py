@@ -16,7 +16,9 @@ from tg_bot.modules.helper_funcs.extraction import (extract_user,
                                                           extract_user_and_text)
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.helper_funcs.alternate import send_message
-
+from tg_bot import kp
+from pyrogram import Client, filters
+from pyrogram.types import Chat, User
 
 
 @connection_status
@@ -334,117 +336,81 @@ def invite(update: Update, context: CallbackContext):
             "I can only give you invite links for supergroups and channels, sorry!"
         )
 
-
-
-@connection_status
-def adminlist(update, context):
-    chat = update.effective_chat  # type: Optional[Chat]
-    user = update.effective_user  # type: Optional[User]
-    args = context.args
-    bot = context.bot
-
-    if update.effective_message.chat.type == "private":
-        send_message(update.effective_message,
-                     "This command only works in Groups.")
-        return
-
-    chat = update.effective_chat
-    chat_id = update.effective_chat.id
-    chat_name = update.effective_message.chat.title
-
-    try:
-        msg = update.effective_message.reply_text(
-            'Fetching group admins...', parse_mode=ParseMode.HTML)
-    except BadRequest:
-        msg = update.effective_message.reply_text(
-            'Fetching group admins...', quote=False, parse_mode=ParseMode.HTML)
-
-    administrators = bot.getChatAdministrators(chat_id)
-    text = "Admins in <b>{}</b>:".format(update.effective_chat.title)
-
-    bot_admin_list = []
-
-    for admin in administrators:
-        user = admin.user
-        status = admin.status
-        custom_title = admin.custom_title
-
-        if user.first_name == '':
-            name = "☠ Deleted Account"
-        else:
-            name = "{}".format(
-                mention_html(
-                    user.id,
-                    html.escape(user.first_name + " " +
-                                (user.last_name or ""))))
-
-        if user.is_bot:
-            bot_admin_list.append(name)
-            administrators.remove(admin)
-            continue
-
-        #if user.username:
-        #    name = escape_markdown("@" + user.username)
-        if status == "creator":
-            text += "\n 👑 Creator:"
-            text += "\n<code> • </code>{}\n".format(name)
-
-            if custom_title:
-                text += f"<code> ┗━ {html.escape(custom_title)}<code>\n"
-
-    text += "\n🔱 Admins:"
-
-    custom_admin_list = {}
-    normal_admin_list = []
-
-    for admin in administrators:
-        user = admin.user
-        status = admin.status
-        custom_title = admin.custom_title
-
-        if user.first_name == '':
-            name = "☠ Deleted Account"
-        else:
-            name = "{}".format(
-                mention_html(
-                    user.id,
-                    html.escape(user.first_name + " " +
-                                (user.last_name or ""))))
-        #if user.username:
-        #    name = escape_markdown("@" + user.username)
-        if status == "administrator":
-            if custom_title:
-                try:
-                    custom_admin_list[custom_title].append(name)
-                except KeyError:
-                    custom_admin_list.update({custom_title: [name]})
+apps = []
+apps.append(kp)
+async def get_entity(client, entity):
+    entity_client = client
+    if not isinstance(entity, Chat):
+        try:
+            entity = int(entity)
+        except ValueError:
+            pass
+        except TypeError:
+            entity = entity.id
+        try:
+            entity = await client.get_chat(entity)
+        except (PeerIdInvalid, ChannelInvalid):
+            for kp in apps:
+                if kp != client:
+                    try:
+                        entity = await app.get_chat(entity)
+                    except (PeerIdInvalid, ChannelInvalid):
+                        pass
+                    else:
+                        entity_client = kp
+                        break
             else:
-                normal_admin_list.append(name)
+                entity = await kp.get_chat(entity)
+                entity_client = kp
+    return entity, entity_client
 
-    for admin in normal_admin_list:
-        text += "\n<code> • </code>{}".format(admin)
+ZWS = '\u200B'
+def _generate_sexy(entity, ping):
+    text = entity.first_name
+    if entity.last_name:
+        text += f' {entity.last_name}'
+    sexy_text = '<code>[DELETED]</code>' if entity.is_deleted else html.escape(text or 'Empty???')
+    if not entity.is_deleted:
+        if ping:
+            sexy_text = f'<a href="tg://user?id={entity.id}">{sexy_text}</a>'
+        elif entity.username:
+            sexy_text = f'<a href="https://t.me/{entity.username}">{sexy_text}</a>'
+        elif not ping:
+            sexy_text = sexy_text.replace('@', f'@{ZWS}')
+    if entity.is_bot:
+        sexy_text += ' <code>[BOT]</code>'
+    if entity.is_verified:
+        sexy_text += ' <code>[VERIFIED]</code>'
+    if entity.is_support:
+        sexy_text += ' <code>[SUPPORT]</code>'
+    if entity.is_scam:
+        sexy_text += ' <code>[SCAM]</code>'
+    return sexy_text
 
-    for admin_group in custom_admin_list.copy():
-        if len(custom_admin_list[admin_group]) == 1:
-            text += "\n<code> • </code>{} | <code>{}</code>".format(
-                custom_admin_list[admin_group][0], html.escape(admin_group))
-            custom_admin_list.pop(admin_group)
+@kp.on_message(filters.command(['admin', 'admins'], prefixes=['/', '!']))
+async def admins(client, message):
+    chat, entity_client = message.chat, client
+    command = message.command
+    command.pop(0)
+    if command:
+        chat = ' '.join(command)
+        try:
+            chat = int(chat)
+        except ValueError:
+            pass
+        chat, entity_client = await get_entity(client, chat)
+    text_unping = text_ping = ''
+    async for i in entity_client.iter_chat_members(chat.id, filter='administrators'):
+        text_unping += f'\n[<code>{i.user.id}</code>] {_generate_sexy(i.user, False)}'
+        text_ping += f'\n[<code>{i.user.id}</code>] {_generate_sexy(i.user, True)}'
+        if i.title:
+            text_unping += f' // {html.escape(i.title.replace("@", "@" + ZWS))}'
+            text_ping += f' // {html.escape(i.title)}'
+    reply = await message.reply_text(text_unping, disable_web_page_preview=True)
+    await reply.edit_text(text_ping, disable_web_page_preview=True)
 
-    text += "\n"
-    for admin_group in custom_admin_list:
-        text += "\n🚨 <code>{}</code>".format(admin_group)
-        for admin in custom_admin_list[admin_group]:
-            text += "\n<code> • </code>{}".format(admin)
-        text += "\n"
 
-    text += "\n🤖 Bots:"
-    for each_bot in bot_admin_list:
-        text += "\n<code> • </code>{}".format(each_bot)
 
-    try:
-        msg.edit_text(text, parse_mode=ParseMode.HTML)
-    except BadRequest:  # if original message is deleted
-        return
 
 
 __help__ = """
@@ -459,8 +425,6 @@ __help__ = """
  • `/title <title here>`*:* sets a custom title for an admin that the bot promoted
 """
 
-ADMINLIST_HANDLER = DisableAbleCommandHandler("admins", adminlist, run_async=True)
-
 PIN_HANDLER = CommandHandler("pin", pin, filters=Filters.group, run_async=True)
 UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group, run_async=True)
 
@@ -473,7 +437,6 @@ SET_TITLE_HANDLER = CommandHandler("title", set_title, run_async=True)
 ADMIN_REFRESH_HANDLER = CommandHandler("admincache", refresh_admin, run_async=True)
 
 
-dispatcher.add_handler(ADMINLIST_HANDLER)
 dispatcher.add_handler(PIN_HANDLER)
 dispatcher.add_handler(UNPIN_HANDLER)
 dispatcher.add_handler(INVITE_HANDLER)
@@ -484,7 +447,6 @@ dispatcher.add_handler(ADMIN_REFRESH_HANDLER)
 
 
 __mod_name__ = "Admin"
-__command_list__ = ["adminlist", "admins", "invitelink", "promote", "demote", "admincache"]
-__handlers__ = [
-    ADMINLIST_HANDLER, PIN_HANDLER, UNPIN_HANDLER, INVITE_HANDLER,
+__command_list__ = ["invitelink", "promote", "demote", "admincache"]
+__handlers__ = [PIN_HANDLER, UNPIN_HANDLER, INVITE_HANDLER,
     PROMOTE_HANDLER, DEMOTE_HANDLER, SET_TITLE_HANDLER, ADMIN_REFRESH_HANDLER]
