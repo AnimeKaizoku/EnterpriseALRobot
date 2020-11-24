@@ -2,38 +2,34 @@ import os
 import subprocess
 import sys
 from time import sleep
-from typing import List
-
-from telegram import Bot, Update, TelegramError
-from telegram.ext import CommandHandler, run_async
 
 from tg_bot import dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
+from telegram import TelegramError, Update
+from telegram.ext import CallbackContext, CommandHandler
 
 
-@run_async
 @dev_plus
-def leave(bot: Bot, update: Update, args: List[str]):
+def leave(update: Update, context: CallbackContext):
+    bot = context.bot
+    args = context.args
     if args:
         chat_id = str(args[0])
         try:
             bot.leave_chat(int(chat_id))
-            update.effective_message.reply_text("Beep boop, I left that soup!.")
+            update.effective_message.reply_text("Left chat.")
         except TelegramError:
             update.effective_message.reply_text(
-                "Beep boop, I could not leave that group(dunno why tho)."
-            )
+                "Failed to leave chat for some reason.")
     else:
         update.effective_message.reply_text("Send a valid chat ID")
 
 
-@run_async
 @dev_plus
-def gitpull(bot: Bot, update: Update):
+def gitpull(update: Update, context: CallbackContext):
     sent_msg = update.effective_message.reply_text(
-        "Pulling all changes from remote and then attempting to restart."
-    )
-    subprocess.Popen("git pull", stdout=subprocess.PIPE, shell=True)
+        "Pulling all changes from remote and then attempting to restart.")
+    subprocess.Popen('git pull', stdout=subprocess.PIPE, shell=True)
 
     sent_msg_text = sent_msg.text + "\n\nChanges pulled...I guess.. Restarting in "
 
@@ -43,24 +39,22 @@ def gitpull(bot: Bot, update: Update):
 
     sent_msg.edit_text("Restarted.")
 
-    os.system("restart.bat")
-    os.execv("start.bat", sys.argv)
+    os.system('restart.bat')
+    os.execv('start.bat', sys.argv)
 
 
-@run_async
 @dev_plus
-def restart(bot: Bot, update: Update):
+def restart(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
-        "Starting a new instance and shutting down this one"
-    )
+        "Starting a new instance and shutting down this one")
 
-    os.system("restart.bat")
-    os.execv("start.bat", sys.argv)
+    os.system('restart.bat')
+    os.execv('start.bat', sys.argv)
 
 
-LEAVE_HANDLER = CommandHandler("leave", leave, pass_args=True)
-GITPULL_HANDLER = CommandHandler("gitpull", gitpull)
-RESTART_HANDLER = CommandHandler("restart", restart)
+LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
+GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
+RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
 
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)

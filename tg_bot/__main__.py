@@ -4,7 +4,7 @@ from typing import Optional, List
 from sys import argv
 
 from pyrogram import idle, Client
-from telegram import Bot, Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (
     Unauthorized,
     BadRequest,
@@ -13,8 +13,8 @@ from telegram.error import (
     ChatMigrated,
     TelegramError,
 )
-from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from telegram.ext.dispatcher import run_async, DispatcherHandlerStop
+from telegram.ext import CallbackContext, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
 
 from tg_bot import (
@@ -40,30 +40,24 @@ from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 
 PM_START_TEXT = """
-Hi {}, my name is {}! 
+Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 You can find the list of available commands with /help.
 """
 
-HELP_STRINGS = """
-Hey there! My name is *{}*.
-I'm a part of *Eagle Union*
-Have a look at the following for an idea of some of \
+HELP_STRINGS = f"""
+Hello there! My name is *{dispatcher.bot.first_name}*. A part of *Eagle Union*.
+I'm a modular group management bot with a few fun extras! Have a look at the following for an idea of some of \
 the things I can help you with.
 *Main* commands available:
- - /start: start the bot
- - /help: PM's you this message.
- - /help <module name>: PM's you info about that module.
- - /settings:
+ • /start: Starts me, can be used to check I'm alive or not.
+ • /help: PM's you this message.
+ • /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
-{}
-And the following:
-""".format(
-    dispatcher.bot.first_name,
-    "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n",
-)
+ \nClick on the buttons below to get documentation about specific modules!"""
+
 
 
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
@@ -126,20 +120,23 @@ def send_help(chat_id, text, keyboard=None):
     )
 
 
-@run_async
-def test(bot: Bot, update: Update):
+
+def test(update: Update, context: CallbackContext):
     # pprint(eval(str(update)))
     # update.effective_message.reply_text("Hola tester! _I_ *have* `markdown`", parse_mode=ParseMode.MARKDOWN)
     update.effective_message.reply_text("This person edited a message")
     print(update.effective_message)
 
 
-@run_async
-def start(bot: Bot, update: Update, args: List[str]):
+
+def start(update: Update, context: CallbackContext):
+    args = context.args
     if update.effective_chat.type == "private":
         if len(args) >= 1:
             if args[0].lower() == "help":
                 send_help(update.effective_chat.id, HELP_STRINGS)
+            elif args[0].lower() == "markdownhelp":
+                IMPORTED["extras"].markdown_help_sender(update)
             elif args[0].lower() == "nations":
                 IMPORTED["nations"].send_nations(update)
             elif args[0].lower().startswith("stngs_"):
@@ -160,7 +157,7 @@ def start(bot: Bot, update: Update, args: List[str]):
                 KIGYO_IMG,
                 PM_START_TEXT.format(
                     escape_markdown(first_name),
-                    escape_markdown(bot.first_name),
+                    escape_markdown(context.bot.first_name),
                     OWNER_ID,
                 ),
                 parse_mode=ParseMode.MARKDOWN,
@@ -168,7 +165,7 @@ def start(bot: Bot, update: Update, args: List[str]):
                     [[
                         InlineKeyboardButton(
                             text="Add Kigyo to your group",
-                            url="t.me/{}?startgroup=true".format(bot.username))
+                            url="t.me/{}?startgroup=true".format(context.bot.username))
                     ],
                     [
                         InlineKeyboardButton(
@@ -216,8 +213,8 @@ def error_callback(bot, update, error):
         # handle all other telegram related errors
 
 
-@run_async
-def help_button(bot: Bot, update: Update):
+
+def help_button(update, context):
     query = update.callback_query
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
     prev_match = re.match(r"help_prev\((.+?)\)", query.data)
@@ -266,15 +263,15 @@ def help_button(bot: Bot, update: Update):
                 reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
 
         # ensure no spinny white circle
-        bot.answer_callback_query(query.id)
+        context.bot.answer_callback_query(query.id)
         # query.message.delete()
 
     except BadRequest:
         pass
 
 
-@run_async
-def get_help(bot: Bot, update: Update):
+
+def get_help(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     args = update.effective_message.text.split(None, 1)
 
@@ -287,7 +284,7 @@ def get_help(bot: Bot, update: Update):
                 [
                     [
                         InlineKeyboardButton(
-                            text="Help", url="t.me/{}?start=help".format(bot.username)
+                            text="Help", url="t.me/{}?start=help".format(context.bot.username)
                         )
                     ]
                 ]
@@ -318,48 +315,42 @@ def get_help(bot: Bot, update: Update):
 def send_settings(chat_id, user_id, user=False):
     if user:
         if USER_SETTINGS:
-            settings = "\n\n".join(
-                "*{}*:\n{}".format(mod.__mod_name__, mod.__user_settings__(user_id))
-                for mod in USER_SETTINGS.values()
-            )
+            settings = "\n\n".join("*{}*:\n{}".format(
+                mod.__mod_name__, mod.__user_settings__(user_id))
+                                   for mod in USER_SETTINGS.values())
             dispatcher.bot.send_message(
                 user_id,
                 "These are your current settings:" + "\n\n" + settings,
-                parse_mode=ParseMode.MARKDOWN,
-            )
+                parse_mode=ParseMode.MARKDOWN)
 
         else:
             dispatcher.bot.send_message(
                 user_id,
                 "Seems like there aren't any user specific settings available :'(",
-                parse_mode=ParseMode.MARKDOWN,
-            )
+                parse_mode=ParseMode.MARKDOWN)
 
     else:
         if CHAT_SETTINGS:
             chat_name = dispatcher.bot.getChat(chat_id).title
             dispatcher.bot.send_message(
                 user_id,
-                text="Which module would you like to check {}'s settings for?".format(
-                    chat_name
-                ),
+                text="Which module would you like to check {}'s settings for?"
+                .format(chat_name),
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)
-                ),
-            )
+                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)))
         else:
             dispatcher.bot.send_message(
                 user_id,
                 "Seems like there aren't any chat settings available :'(\nSend this "
                 "in a group chat you're admin in to find its current settings!",
-                parse_mode=ParseMode.MARKDOWN,
-            )
+                parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
-def settings_button(bot: Bot, update: Update):
+
+def settings_button(update: Update, context: CallbackContext):
     query = update.callback_query
     user = update.effective_user
+    bot = context.bot
     mod_match = re.match(r"stngs_module\((.+?),(.+?)\)", query.data)
     prev_match = re.match(r"stngs_prev\((.+?),(.+?)\)", query.data)
     next_match = re.match(r"stngs_next\((.+?),(.+?)\)", query.data)
@@ -369,23 +360,17 @@ def settings_button(bot: Bot, update: Update):
             chat_id = mod_match.group(1)
             module = mod_match.group(2)
             chat = bot.get_chat(chat_id)
-            text = "*{}* has the following settings for the *{}* module:\n\n".format(
-                escape_markdown(chat.title), CHAT_SETTINGS[module].__mod_name__
-            ) + CHAT_SETTINGS[module].__chat_settings__(chat_id, user.id)
+            text = "*{}* has the following settings for the *{}* module:\n\n".format(escape_markdown(chat.title),
+                                                                                     CHAT_SETTINGS[module].__mod_name__) + \
+                   CHAT_SETTINGS[module].__chat_settings__(chat_id, user.id)
             query.message.reply_text(
                 text=text,
                 parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="Back",
-                                callback_data="stngs_back({})".format(chat_id),
-                            )
-                        ]
-                    ]
-                ),
-            )
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text="Back",
+                        callback_data="stngs_back({})".format(chat_id))
+                ]]))
 
         elif prev_match:
             chat_id = prev_match.group(1)
@@ -396,10 +381,7 @@ def settings_button(bot: Bot, update: Update):
                 "you're interested in.".format(chat.title),
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(
-                        curr_page - 1, CHAT_SETTINGS, "stngs", chat=chat_id
-                    )
-                ),
-            )
+                        curr_page - 1, CHAT_SETTINGS, "stngs", chat=chat_id)))
 
         elif next_match:
             chat_id = next_match.group(1)
@@ -410,10 +392,7 @@ def settings_button(bot: Bot, update: Update):
                 "you're interested in.".format(chat.title),
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(
-                        next_page + 1, CHAT_SETTINGS, "stngs", chat=chat_id
-                    )
-                ),
-            )
+                        next_page + 1, CHAT_SETTINGS, "stngs", chat=chat_id)))
 
         elif back_match:
             chat_id = back_match.group(1)
@@ -423,9 +402,7 @@ def settings_button(bot: Bot, update: Update):
                 "you're interested in.".format(escape_markdown(chat.title)),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)
-                ),
-            )
+                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)))
 
         # ensure no spinny white circle
         bot.answer_callback_query(query.id)
@@ -438,15 +415,15 @@ def settings_button(bot: Bot, update: Update):
         elif excp.message == "Message can't be deleted":
             pass
         else:
-            LOGGER.exception("Exception in settings buttons. %s", str(query.data))
+            LOGGER.exception("Exception in settings buttons. %s",
+                             str(query.data))
 
 
-@run_async
-def get_settings(bot: Bot, update: Update):
+
+def get_settings(update: Update, context: CallbackContext):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     msg = update.effective_message  # type: Optional[Message]
-    args = msg.text.split(None, 1)
 
     # ONLY send settings in PM
     if chat.type != chat.PRIVATE:
@@ -454,19 +431,12 @@ def get_settings(bot: Bot, update: Update):
             text = "Click here to get this chat's settings, as well as yours."
             msg.reply_text(
                 text,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="Settings",
-                                url="t.me/{}?start=stngs_{}".format(
-                                    bot.username, chat.id
-                                ),
-                            )
-                        ]
-                    ]
-                ),
-            )
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text="Settings",
+                        url="t.me/{}?start=stngs_{}".format(
+                            context.bot.username, chat.id))
+                ]]))
         else:
             text = "Click here to check your settings."
 
@@ -474,8 +444,10 @@ def get_settings(bot: Bot, update: Update):
         send_settings(chat.id, user.id, True)
 
 
-@run_async
-def donate(bot: Bot, update: Update):
+
+
+
+def donate(context: CallbackContext, update: Update):
     user = update.effective_message.from_user
     chat = update.effective_chat  # type: Optional[Chat]
 
@@ -493,11 +465,11 @@ def donate(bot: Bot, update: Update):
 
     else:
         try:
-            bot.send_message(
+            context.bot.send_message(
                 user.id,
                 DONATE_STRING,
                 parse_mode=ParseMode.MARKDOWN,
-                disable_web_page_preview=True,
+
             )
 
             update.effective_message.reply_text(
@@ -509,7 +481,7 @@ def donate(bot: Bot, update: Update):
             )
 
 
-def migrate_chats(bot: Bot, update: Update):
+def migrate_chats(context: CallbackContext, update: Update):
     msg = update.effective_message  # type: Optional[Message]
     if msg.migrate_to_chat_id:
         old_chat = update.effective_chat.id
@@ -529,17 +501,17 @@ def migrate_chats(bot: Bot, update: Update):
 
 
 def main():
-    test_handler = CommandHandler("test", test)
-    start_handler = CommandHandler("start", start, pass_args=True)
+    test_handler = CommandHandler("test", test, run_async=True)
+    start_handler = CommandHandler("start", start, pass_args=True, run_async=True)
 
-    help_handler = CommandHandler("help", get_help)
-    help_callback_handler = CallbackQueryHandler(help_button, pattern=r"help_")
+    help_handler = CommandHandler("help", get_help, run_async=True)
+    help_callback_handler = CallbackQueryHandler(help_button, pattern=r"help_", run_async=True)
 
-    settings_handler = CommandHandler("settings", get_settings)
-    settings_callback_handler = CallbackQueryHandler(settings_button, pattern=r"stngs_")
+    settings_handler = CommandHandler("settings", get_settings, run_async=True)
+    settings_callback_handler = CallbackQueryHandler(settings_button, pattern=r"stngs_", run_async=True)
 
-    donate_handler = CommandHandler("donate", donate)
-    migrate_handler = MessageHandler(Filters.status_update.migrate, migrate_chats)
+    donate_handler = CommandHandler("donate", donate, run_async=True)
+    migrate_handler = MessageHandler(Filters.status_update.migrate, migrate_chats, run_async=True)
 
     # dispatcher.add_handler(test_handler)
     dispatcher.add_handler(start_handler)
@@ -567,12 +539,12 @@ def main():
     else:
         telethn.run_until_disconnected()
     updater.idle()
-    
-    
+
+
 
 if __name__ == "__main__":
     kp.start()
     LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
-    idle() 
+    idle()

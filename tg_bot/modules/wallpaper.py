@@ -1,21 +1,20 @@
-# Wallpapers module by @TheRealPhoenix using wall.alphacoders.com
+from random import randint
 
 import requests as r
-from random import randint
-from time import sleep
-
-from telegram import Message, Chat, Update, Bot
-from telegram.ext import run_async
-
-from tg_bot import dispatcher, WALL_API
+from tg_bot import WALL_API, dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
+from telegram import Update
+from telegram.ext import CallbackContext
+
+# Wallpapers module by @TheRealPhoenix using wall.alphacoders.com
 
 
-@run_async
-def wall(bot: Bot, update: Update, args):
+def wall(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message
+    args = context.args
     msg_id = update.effective_message.message_id
+    bot = context.bot
     query = " ".join(args)
     if not query:
         msg.reply_text("Please enter a query!")
@@ -27,7 +26,7 @@ def wall(bot: Bot, update: Update, args):
             f"https://wall.alphacoders.com/api2.0/get.php?auth={WALL_API}&method=search&term={term}"
         ).json()
         if not json_rep.get("success"):
-            msg.reply_text("An error occurred! Report this @YorktownEagleUnion")
+            msg.reply_text(f"An error occurred! Report this @YorkTownEagleUnion")
         else:
             wallpapers = json_rep.get("wallpapers")
             if not wallpapers:
@@ -41,19 +40,17 @@ def wall(bot: Bot, update: Update, args):
                 bot.send_photo(
                     chat_id,
                     photo=wallpaper,
-                    caption="Preview",
+                    caption='Preview',
                     reply_to_message_id=msg_id,
-                    timeout=60,
-                )
+                    timeout=60)
                 bot.send_document(
                     chat_id,
                     document=wallpaper,
-                    filename="wallpaper",
+                    filename='wallpaper',
                     caption=caption,
                     reply_to_message_id=msg_id,
-                    timeout=60,
-                )
+                    timeout=60)
 
 
-WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, pass_args=True)
+WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, run_async=True)
 dispatcher.add_handler(WALLPAPER_HANDLER)
