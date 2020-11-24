@@ -10,6 +10,7 @@ from telegram import (
     InlineKeyboardButton,
 )
 from tg_bot import dispatcher
+from tg_bot.modules.disable import DisableAbleCommandHandler
 import requests
 import math
 import time
@@ -49,8 +50,8 @@ def t(milliseconds: int) -> str:
 
 
 airing_query = """
-    query ($id: Int,$search: String) { 
-      Media (id: $id, type: ANIME,search: $search) { 
+    query ($id: Int,$search: String) {
+      Media (id: $id, type: ANIME,search: $search) {
         id
         episodes
         title {
@@ -62,14 +63,14 @@ airing_query = """
            airingAt
            timeUntilAiring
            episode
-        } 
+        }
       }
     }
     """
 
 fav_query = """
-query ($id: Int) { 
-      Media (id: $id, type: ANIME) { 
+query ($id: Int) {
+      Media (id: $id, type: ANIME) {
         id
         title {
           romaji
@@ -81,8 +82,8 @@ query ($id: Int) {
 """
 
 anime_query = """
-   query ($id: Int,$search: String) { 
-      Media (id: $id, type: ANIME,search: $search) { 
+   query ($id: Int,$search: String) {
+      Media (id: $id, type: ANIME,search: $search) {
         id
         title {
           romaji
@@ -107,7 +108,7 @@ anime_query = """
           }
           trailer{
                id
-               site 
+               site
                thumbnail
           }
           averageScore
@@ -135,8 +136,8 @@ character_query = """
 """
 
 manga_query = """
-query ($id: Int,$search: String) { 
-      Media (id: $id, type: MANGA,search: $search) { 
+query ($id: Int,$search: String) {
+      Media (id: $id, type: MANGA,search: $search) {
         id
         title {
           romaji
@@ -363,10 +364,10 @@ Get information about anime, manga or characters with the help of this module! A
 __mod_name__ = "AniList"
 
 
-AIRING_HANDLER = CommandHandler("airing", airing, run_async=True)
-ANIME_HANDLER = CommandHandler("anime", anime)
-CHARACTER_HANDLER = CommandHandler("character", character, run_async=True)
-MANGA_HANDLER = CommandHandler("manga", manga, run_async=True)
+AIRING_HANDLER = DisableAbleCommandHandler("airing", airing, run_async=True)
+ANIME_HANDLER = DisableAbleCommandHandler("anime", anime, run_async=True)
+CHARACTER_HANDLER = DisableAbleCommandHandler("character", character, run_async=True)
+MANGA_HANDLER = DisableAbleCommandHandler("manga", manga, run_async=True)
 
 dispatcher.add_handler(AIRING_HANDLER)
 dispatcher.add_handler(ANIME_HANDLER)
