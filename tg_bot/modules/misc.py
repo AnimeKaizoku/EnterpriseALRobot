@@ -146,7 +146,7 @@ def info(update: Update, context: CallbackContext):
         text += f"\nUsername: @{html.escape(user.username)}"
 
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
-    
+
     try:
         spamwtc = sw.get_ban(int(user.id))
         if spamwtc:
@@ -157,7 +157,7 @@ def info(update: Update, context: CallbackContext):
             pass
     except:
         pass # don't crash if api is down somehow...
-    
+
     Nation_level_present = False
 
     num_chats = sql.get_user_num_chats(user.id)
@@ -194,7 +194,7 @@ def info(update: Update, context: CallbackContext):
     elif user.id in WHITELIST_USERS:
             text += f'\nThe Nation level of this person is Neptunia'
             Nation_level_present = True
-            
+
     if Nation_level_present:
         text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(
             bot.username)
@@ -210,7 +210,7 @@ def info(update: Update, context: CallbackContext):
             mod_info = mod.__user_info__(user.id, chat.id)
         if mod_info:
             text += "\n" + mod_info
-            
+
     if INFOPIC:
         try:
             profile = bot.get_user_profile_photos(user.id).photos[0][-1]
@@ -246,7 +246,7 @@ def echo(update: Update, _):
 
     message.delete()
 
-    
+
 def shell(command):
     process = Popen(command, stdout=PIPE, shell=True, stderr=PIPE)
     stdout, stderr = process.communicate()
@@ -294,8 +294,8 @@ def stats(update: Update, _):
     stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
     result = re.sub(r"(\d+)", r"<code>\1</code>", stats)
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
-    
-    
+
+
 
 def ping(update: Update, _):
     msg = update.effective_message
@@ -330,28 +330,6 @@ Share what you're what listening to with the help of this module!
  - /setuser <username>: sets your last.fm username.
  - /clearuser: removes your last.fm username from the bot's database.
  - /lastfm: returns what you're scrobbling on last.fm.
-───────────────────────────────
-*Math*
-Solves complex math problems using https://newton.now.sh
- - /math: Simplify `/simplify 2^2+2(2)`
- - /factor: Factor `/factor x^2 + 2x`
- - /derive: Derive `/derive x^2+2x`
- - /integrate: Integrate `/integrate x^2+2x`
- - /zeroes: Find 0's `/zeroes x^2+2x`
- - /tangent: Find Tangent `/tangent 2lx^3`
- - /area: Area Under Curve `/area 2:4lx^3`
- - /cos: Cosine `/cos pi`
- - /sin: Sine `/sin 0`
- - /tan: Tangent `/tan 0`
- - /arccos: Inverse Cosine `/arccos 1`
- - /arcsin: Inverse Sine `/arcsin 0`
- - /arctan: Inverse Tangent `/arctan 0`
- - /abs: Absolute Value `/abs -1`
- - /log: Logarithm `/log 2l8`
-
-__Keep in mind__: To find the tangent line of a function at a certain x value, send the request as c|f(x) where c is the given x value and f(x) is the function expression, the separator is a vertical bar '|'. See the table above for an example request.
-To find the area under a function, send the request as c:d|f(x) where c is the starting x value, d is the ending x value, and f(x) is the function under which you want the curve between the two x values.
-To compute fractions, enter expressions as numerator(over)denominator. For example, to process 2/4 you must send in your expression as 2(over)4. The result expression will be in standard math notation (1/2, 3/4).
 
 """
 

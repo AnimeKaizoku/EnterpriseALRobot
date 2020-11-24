@@ -7,7 +7,6 @@ python-telegram-bot==13.0
 psycopg2-binary
 feedparser
 markdown2
-pynewtonmath
 spongemock
 tswift
 zalgo-text
