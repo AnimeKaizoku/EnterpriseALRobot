@@ -14,6 +14,7 @@ start-3.6.bat
 *.session
 kangsticker.png
 venv
+env
 kigyo.session-journal
 tg_bot/elevated_users.json
 *.exe
@@ -21,3 +22,4 @@ tg_bot/elevated_users.json
 env/
 *.session-journal
 config.ini
+*.session-journal

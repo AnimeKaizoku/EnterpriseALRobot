@@ -4,6 +4,9 @@
 
 ![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-green) [![Join Support!](https://img.shields.io/badge/Support%20Chat-EagleUnion-red)](https://t.me/YorktownEagleUnion) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseALRobot&amp;utm_campaign=Badge_Grade)
 
+
+A modular telegram Python bot running on python3 with an sqlalchemy database.
+
 Originally a marie fork - Kigyō has evolved further and was built to be more useful for Anime Chats. 
 
 Can be found on telegram as [Kigyōbot](https://t.me/kigyorobot).
@@ -154,6 +157,7 @@ Once you've setup your database and your configuration is complete, simply run t
 You can use [nssm](https://nssm.cc/usage) to install the bot as service on windows and set it to restart on /gitpull 
 Make sure to edit the start and restart bats to your needs. 
 Note: the restart bat requires that User account control be disabled.
+
 
 For queries or any issues regarding the bot please open an issue ticket or visit us at [Eagle Union](https://t.me/YorktownEagleUnion)  
 </details>  

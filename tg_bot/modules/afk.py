@@ -17,7 +17,6 @@ AFK_GROUP = 7
 AFK_REPLY_GROUP = 8
 
 
-
 def afk(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(None, 1)
     user = update.effective_user
@@ -25,7 +24,7 @@ def afk(update: Update, context: CallbackContext):
     if not user:  # ignore channels
         return
 
-    if user.id == 777000:
+    if user.id in (777000, 1087968824):
         return
 
     notice = ""

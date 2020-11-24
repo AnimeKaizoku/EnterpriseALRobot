@@ -127,7 +127,8 @@ def sudo_plus(func):
             update.effective_message.delete()
         else:
             update.effective_message.reply_text(
-                "Be an admin first.")
+                "Who dis non-admin telling me what to do?"
+            )
 
     return is_sudo_plus_func
 
@@ -183,7 +184,8 @@ def user_admin(func):
             update.effective_message.delete()
         else:
             update.effective_message.reply_text(
-                "Be an admin first.")
+      "Who dis non-admin telling me what to do?"
+            )
 
     return is_admin
 
