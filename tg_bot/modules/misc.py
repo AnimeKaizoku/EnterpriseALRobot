@@ -308,28 +308,28 @@ def ping(update: Update, _):
 
 
 __help__ = """
- - /id: get the current group id. If used by replying to a message, gets that user's id.
- - /gifid: reply to a gif to me to tell you its file ID.
- - /info: get information about a user.
- - /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
- - /ud <word>: Type the word or expression you want to search use.
- - /urban <word>: Same as /ud
- - /paste - Do a paste at `neko.bin`
- - /react: Reacts with a random reaction
- - /weebify <text>: returns a weebified text
- - /tr (language code) as reply to a long message.
- - /time <query> : Gives information about a timezone.
- - /cash : currency converter
+ • /id: get the current group id. If used by replying to a message, gets that user's id.
+ • /gifid: reply to a gif to me to tell you its file ID.
+ • /info: get information about a user.
+ • /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
+ • /ud <word>: Type the word or expression you want to search use.
+ • /urban <word>: Same as /ud
+ • /paste - Do a paste at `neko.bin`
+ • /react: Reacts with a random reaction
+ • /weebify <text>: returns a weebified text
+ • /tr (language code) as reply to a long message.
+ • /time <query> : Gives information about a timezone.
+ • /cash : currency converter
    example syntax: /cash 1 USD INR
- - /whois : get info about a user (uses @Pyrogram methods)
- - /spbinfo : get info about a user from @Intellivoid's SpamProtection API
+ • /whois : get info about a user (uses @Pyrogram methods)
+ • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
 ───────────────────────────────
 *Last.FM*
 Share what you're what listening to with the help of this module!
 *Available commands:*
- - /setuser <username>: sets your last.fm username.
- - /clearuser: removes your last.fm username from the bot's database.
- - /lastfm: returns what you're scrobbling on last.fm.
+ • /setuser <username>: sets your last.fm username.
+ • /clearuser: removes your last.fm username from the bot's database.
+ • /lastfm: returns what you're scrobbling on last.fm.
 
 """
 

@@ -388,7 +388,7 @@ def check_and_ban(update, user_id, should_message=True):
         update.effective_chat.kick_member(user_id)
         if should_message:
             update.effective_message.reply_text(
-                f"<b>Alert</b>: this user is globally banned.\n"
+                f"<b>Alert</b>: this user is SpamWatch banned.\n"
                 f"<code>*bans them from here*</code>.\n"
                 f"<b>Appeal chat</b>: @SpamWatchSupport\n"
                 f"<b>User ID</b>: <code>{sw_ban['id']}</code>\n"
@@ -500,9 +500,9 @@ Anti-Spam, used by bot devs to ban spammers across all groups. This helps protec
 you and your groups by removing spam flooders as quickly as possible.
 *Note:* Users can appeal gbans or report spammers at @YorkTownEagleUnion
 
-This also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
+Kigyo also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
 *What is SpamWatch?*
-SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/f584b643c6f4be0b1de53.jpg)
+SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/c1051d264a5b4146bd71e.jpg)
 Constantly help banning spammers off from your group automatically So, you wont have to worry about spammers storming your group.
 *Note:* Users can appeal spamwatch bans at @SpamwatchSupport
 """
