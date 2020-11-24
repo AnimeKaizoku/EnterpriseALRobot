@@ -40,30 +40,25 @@ from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 
 PM_START_TEXT = """
-Hi {}, my name is {}! 
+Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
 
 You can find the list of available commands with /help.
 """
 
-HELP_STRINGS = """
-Hey there! My name is *{}*.
-I'm a part of *Eagle Union*
-Have a look at the following for an idea of some of \
+HELP_STRINGS = f"""
+Hello there! My name is *{dispatcher.bot.first_name}*. A part of *Eagle Union*.
+I'm a modular group management bot with a few fun extras! Have a look at the following for an idea of some of \
 the things I can help you with.
 *Main* commands available:
- - /start: start the bot
- - /help: PM's you this message.
- - /help <module name>: PM's you info about that module.
- - /settings:
+ • /start: Starts me, can be used to check I'm alive or not.
+ • /help: PM's you this message.
+ • /help <module name>: PM's you info about that module.
+ • /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
-{}
-And the following:
-""".format(
-    dispatcher.bot.first_name,
-    "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n",
-)
+ \nClick on the buttons below to get documentation about specific modules!"""
+
 
 
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
@@ -475,7 +470,7 @@ def donate(context: CallbackContext, update: Update):
                 user.id,
                 DONATE_STRING,
                 parse_mode=ParseMode.MARKDOWN,
-                
+
             )
 
             update.effective_message.reply_text(
@@ -545,12 +540,12 @@ def main():
     else:
         telethn.run_until_disconnected()
     updater.idle()
-    
-    
+
+
 
 if __name__ == "__main__":
     kp.start()
     LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
-    idle() 
+    idle()
