@@ -11,8 +11,10 @@ StartTime = time.time()
 
 # enable logging
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler('log.txt'),
+              logging.StreamHandler()],
+    level=logging.INFO)
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
