@@ -223,7 +223,7 @@ def help_button(update, context):
     next_match = re.match(r"help_next\((.+?)\)", query.data)
     back_match = re.match(r"help_back", query.data)
 
-    print(query.message.chat.id)
+    # print(query.message.chat.id)
 
     try:
         if mod_match:
