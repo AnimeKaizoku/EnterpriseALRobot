@@ -1,33 +1,28 @@
 import html
 import random
 import time
-from typing import List
 
-from telegram import Bot, Update, ParseMode
-from telegram.ext import run_async
+from telegram import ParseMode, Update, ChatPermissions
+from telegram.ext import CallbackContext
+from telegram.error import BadRequest
 
 import tg_bot.modules.fun_strings as fun_strings
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
-from tg_bot.modules.helper_funcs.chat_status import is_user_admin
+from tg_bot.modules.helper_funcs.chat_status import (is_user_admin)
 from tg_bot.modules.helper_funcs.extraction import extract_user
 
-
-@run_async
-def runs(bot: Bot, update: Update):
+def runs(update: Update, context: CallbackContext):
     update.effective_message.reply_text(random.choice(fun_strings.RUN_STRINGS))
 
 
-@run_async
-def slap(bot: Bot, update: Update, args: List[str]):
+
+def slap(update: Update, context: CallbackContext):
+    bot, args = context.bot, context.args
     message = update.effective_message
     chat = update.effective_chat
 
-    reply_text = (
-        message.reply_to_message.reply_text
-        if message.reply_to_message
-        else message.reply_text
-    )
+    reply_text = message.reply_to_message.reply_text if message.reply_to_message else message.reply_text
 
     curr_user = html.escape(message.from_user.first_name)
     user_id = extract_user(message, args)
@@ -46,8 +41,7 @@ def slap(bot: Bot, update: Update, args: List[str]):
                     chat.id,
                     message.from_user.id,
                     until_date=mutetime,
-                    can_send_messages=False,
-                )
+                    permissions=ChatPermissions(can_send_messages=False))
             reply_text(temp[0])
         else:
             reply_text(temp)
@@ -67,53 +61,80 @@ def slap(bot: Bot, update: Update, args: List[str]):
     item = random.choice(fun_strings.ITEMS)
     hit = random.choice(fun_strings.HIT)
     throw = random.choice(fun_strings.THROW)
-
-    reply = temp.format(user1=user1, user2=user2, item=item, hits=hit, throws=throw)
+    reply = temp.format(
+        user1=user1, user2=user2, item=item, hits=hit, throws=throw)
 
     reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@run_async
-def roll(bot: Bot, update: Update):
+def pat(update: Update, context: CallbackContext):
+    bot = context.bot
+    args = context.args
+    message = update.effective_message
+
+    reply_to = message.reply_to_message if message.reply_to_message else message
+
+    curr_user = html.escape(message.from_user.first_name)
+    user_id = extract_user(message, args)
+
+    if user_id:
+        patted_user = bot.get_chat(user_id)
+        user1 = curr_user
+        user2 = html.escape(patted_user.first_name)
+
+    else:
+        user1 = bot.first_name
+        user2 = curr_user
+
+    pat_type = random.choice(("Text", "Gif", "Sticker"))
+    if pat_type == "Gif":
+        try:
+            temp = random.choice(fun_strings.PAT_GIFS)
+            reply_to.reply_animation(temp)
+        except BadRequest:
+            pat_type = "Text"
+
+    if pat_type == "Sticker":
+        try:
+            temp = random.choice(fun_strings.PAT_STICKERS)
+            reply_to.reply_sticker(temp)
+        except BadRequest:
+            pat_type = "Text"
+
+    if pat_type == "Text":
+        temp = random.choice(fun_strings.PAT_TEMPLATES)
+        reply = temp.format(user1=user1, user2=user2)
+        reply_to.reply_text(reply, parse_mode=ParseMode.HTML)
+
+
+
+def roll(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(range(1, 7)))
 
 
-@run_async
-def toss(bot: Bot, update: Update):
+
+def toss(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(fun_strings.TOSS))
 
 
-@run_async
-def abuse(bot: Bot, update: Update):
-    msg = update.effective_message
-    reply_text = (
-        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
-    )
-    reply_text(random.choice(fun_strings.ABUSE_STRINGS))
 
-
-@run_async
-def shrug(bot: Bot, update: Update):
+def shrug(update: Update, context: CallbackContext):
     msg = update.effective_message
-    reply_text = (
-        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
-    )
+    reply_text = msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
     reply_text(r"¯\_(ツ)_/¯")
 
 
-@run_async
-def bluetext(bot: Bot, update: Update):
+
+def bluetext(update: Update, context: CallbackContext):
     msg = update.effective_message
-    reply_text = (
-        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
-    )
+    reply_text = msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
     reply_text(
         "/BLUE /TEXT\n/MUST /CLICK\n/I /AM /A /STUPID /ANIMAL /THAT /IS /ATTRACTED /TO /COLORS"
     )
 
 
-@run_async
-def rlg(bot: Bot, update: Update):
+
+def rlg(update: Update, context: CallbackContext):
     eyes = random.choice(fun_strings.EYES)
     mouth = random.choice(fun_strings.MOUTHS)
     ears = random.choice(fun_strings.EARS)
@@ -125,24 +146,17 @@ def rlg(bot: Bot, update: Update):
     update.message.reply_text(repl)
 
 
-@run_async
-def decide(bot: Bot, update: Update):
-    reply_text = (
-        update.effective_message.reply_to_message.reply_text
-        if update.effective_message.reply_to_message
-        else update.effective_message.reply_text
-    )
+
+def decide(update: Update, context: CallbackContext):
+    reply_text = update.effective_message.reply_to_message.reply_text if update.effective_message.reply_to_message else update.effective_message.reply_text
     reply_text(random.choice(fun_strings.DECIDE))
 
 
-@run_async
-def table(bot: Bot, update: Update):
-    reply_text = (
-        update.effective_message.reply_to_message.reply_text
-        if update.effective_message.reply_to_message
-        else update.effective_message.reply_text
-    )
+
+def table(update: Update, context: CallbackContext):
+    reply_text = update.effective_message.reply_to_message.reply_text if update.effective_message.reply_to_message else update.effective_message.reply_text
     reply_text(random.choice(fun_strings.TABLE))
+
 
 
 __help__ = """
@@ -162,16 +176,17 @@ __help__ = """
  - /stickers: search stickers in combot sticker finder.
 """
 
-RUNS_HANDLER = DisableAbleCommandHandler("runs", runs)
-SLAP_HANDLER = DisableAbleCommandHandler("slap", slap, pass_args=True)
-ROLL_HANDLER = DisableAbleCommandHandler("roll", roll)
-TOSS_HANDLER = DisableAbleCommandHandler("toss", toss)
-SHRUG_HANDLER = DisableAbleCommandHandler("shrug", shrug)
-BLUETEXT_HANDLER = DisableAbleCommandHandler("bluetext", bluetext)
-RLG_HANDLER = DisableAbleCommandHandler("rlg", rlg)
-DECIDE_HANDLER = DisableAbleCommandHandler("decide", decide)
-TABLE_HANDLER = DisableAbleCommandHandler("table", table)
-#ABUSE_HANDLER = DisableAbleCommandHandler("abuse", abuse)
+RUNS_HANDLER = DisableAbleCommandHandler("runs", runs, run_async=True)
+SLAP_HANDLER = DisableAbleCommandHandler("slap", slap, pass_args=True, run_async=True)
+ROLL_HANDLER = DisableAbleCommandHandler("roll", roll, run_async=True)
+TOSS_HANDLER = DisableAbleCommandHandler("toss", toss, run_async=True)
+SHRUG_HANDLER = DisableAbleCommandHandler("shrug", shrug, run_async=True)
+BLUETEXT_HANDLER = DisableAbleCommandHandler("bluetext", bluetext, run_async=True)
+RLG_HANDLER = DisableAbleCommandHandler("rlg", rlg, run_async=True)
+DECIDE_HANDLER = DisableAbleCommandHandler("decide", decide, run_async=True)
+TABLE_HANDLER = DisableAbleCommandHandler("table", table, run_async=True)
+PAT_HANDLER = DisableAbleCommandHandler("pat", pat, run_async=True)
+
 
 dispatcher.add_handler(RUNS_HANDLER)
 dispatcher.add_handler(SLAP_HANDLER)
@@ -182,7 +197,7 @@ dispatcher.add_handler(BLUETEXT_HANDLER)
 dispatcher.add_handler(RLG_HANDLER)
 dispatcher.add_handler(DECIDE_HANDLER)
 dispatcher.add_handler(TABLE_HANDLER)
-#dispatcher.add_handler(ABUSE_HANDLER)
+dispatcher.add_handler(PAT_HANDLER)
 
 __mod_name__ = "Fun"
 __command_list__ = [
@@ -195,6 +210,7 @@ __command_list__ = [
     "rlg",
     "decide",
     "table",
+    "pat",
 ]
 __handlers__ = [
     RUNS_HANDLER,
@@ -206,5 +222,5 @@ __handlers__ = [
     RLG_HANDLER,
     DECIDE_HANDLER,
     TABLE_HANDLER,
-    #ABUSE_HANDLER,
+    PAT_HANDLER,
 ]

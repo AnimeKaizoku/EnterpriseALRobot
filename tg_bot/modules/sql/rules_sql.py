@@ -1,8 +1,7 @@
 import threading
 
-from sqlalchemy import Column, String, UnicodeText, func, distinct
-
-from tg_bot.modules.sql import SESSION, BASE
+from tg_bot.modules.sql import BASE, SESSION
+from sqlalchemy import Column, String, UnicodeText, distinct, func
 
 
 class Rules(BASE):
