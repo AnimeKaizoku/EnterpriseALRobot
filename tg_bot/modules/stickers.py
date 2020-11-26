@@ -422,7 +422,7 @@ def makepack_internal(
 
 STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid, run_async=True)
 GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker, run_async=True)
-KANG_HANDLER = DisableAbleCommandHandler("steal", kang, admin_ok=True, run_async=True)
+KANG_HANDLER = DisableAbleCommandHandler(["steal","kang"], kang, admin_ok=True, run_async=True)
 STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker, run_async=True)
 
 dispatcher.add_handler(STICKERS_HANDLER)
