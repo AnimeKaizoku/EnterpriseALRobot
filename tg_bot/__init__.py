@@ -11,14 +11,20 @@ StartTime = time.time()
 
 # enable logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('log.txt'),
-              logging.StreamHandler()],
-    level=logging.INFO)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
-
+LOGGER.info(" _   __                           ")
+LOGGER.info("| | / / (_)    __    _   _     __  ")
+LOGGER.info("|    \  | |  / _` | | | | |  / _ \  ")
+LOGGER.info("| |\  \ | | | (_| | | |_| | | (_) |  ")
+LOGGER.info("\_| \_/ |_|  \__, |  \__, |  \___/  ")
+LOGGER.info("              __/ |   __/ |       ")
+LOGGER.info("             |___/   |___/       ")
+LOGGER.info("                                   ")
+LOGGER.info("By github.com/Dank-del (t.me/dank_as_fuck)")
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     LOGGER.error(
