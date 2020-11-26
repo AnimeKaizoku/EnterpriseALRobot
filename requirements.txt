@@ -18,7 +18,7 @@ CurrencyConverter
 googletrans
 speedtest-cli
 spamwatch
-telethon==1.16.4
+telethon==1.17.5
 configparser
 pyrogram
 tgcrypto
