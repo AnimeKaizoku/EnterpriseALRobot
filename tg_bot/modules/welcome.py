@@ -61,7 +61,6 @@ ENUM_FUNC_MAP = {
 
 VERIFIED_USER_WAITLIST = {}
 
-JOIN_LOGGER= -1001159890779
 
 
 # do not async
@@ -220,24 +219,6 @@ def new_member(update: Update, context: CallbackContext):
 
             # Welcome yourself
             elif new_mem.id == bot.id:
-                creator = None
-                for x in bot.bot.get_chat_administrators(
-                        update.effective_chat.id):
-                    if x.status == 'creator':
-                        creator = x.user
-                        break
-                if creator:
-                    bot.send_message(
-                        JOIN_LOGGER,
-                        "#NEW_GROUP\n<b>Group name:</b> {}\n<b>ID:</b> <code>{}</code>\n<b>Creator:</b> <code>{}</code>"
-                        .format(chat.title, chat.id, creator),
-                        parse_mode=ParseMode.HTML)
-                else:
-                    bot.send_message(
-                        JOIN_LOGGER,
-                        "#NEW_GROUP\n<b>Group name:</b> {}\n<b>ID:</b> <code>{}</code>"
-                        .format(chat.title, chat.id),
-                        parse_mode=ParseMode.HTML)
                 update.effective_message.reply_text(
                     "Thanks for adding me! Join @YorkTownEagleUnion for support.", reply_to_message_id=reply)
                 continue
@@ -390,13 +371,20 @@ def new_member(update: Update, context: CallbackContext):
 
         if welcome_bool:
             if media_wel:
+              if ENUM_FUNC_MAP[welc_type] == dispatcher.bot.send_sticker:
                 sent = ENUM_FUNC_MAP[welc_type](
                     chat.id,
                     cust_content,
-                    caption=res,
                     reply_markup=keyboard,
-                    reply_to_message_id=reply,
-                    parse_mode="markdown",
+                    reply_to_message_id=reply)
+              else:
+                  sent = ENUM_FUNC_MAP[welc_type](
+                      chat.id,
+                      cust_content,
+                      caption=res,
+                      reply_markup=keyboard,
+                      reply_to_message_id=reply,
+                      parse_mode="markdown"
                 )
             else:
                 sent = send(update, res, keyboard, backup_message)
