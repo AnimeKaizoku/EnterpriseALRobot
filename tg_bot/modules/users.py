@@ -117,9 +117,9 @@ def chats(update: Update, context: CallbackContext):
     P = 1
     for chat in all_chats:
         try:
-            curr_chat = bot.getChat(chat.chat_id)
-            bot_member = curr_chat.get_member(bot.id)
-            chat_members = curr_chat.get_members_count(bot.id)
+            curr_chat = context.bot.getChat(chat.chat_id)
+            bot_member = curr_chat.get_member(context.bot.id)
+            chat_members = curr_chat.get_members_count(context.bot.id)
             chatfile += "{}. {} | {} | {}\n".format(P, chat.chat_name,
                                                     chat.chat_id, chat_members)
             P = P + 1
@@ -127,11 +127,11 @@ def chats(update: Update, context: CallbackContext):
             pass
 
     with BytesIO(str.encode(chatfile)) as output:
-        output.name = "chatlist.txt"
+        output.name = "glist.txt"
         update.effective_message.reply_document(
             document=output,
-            filename="chatlist.txt",
-            caption="Here is the list of chats in my database.")
+            filename="glist.txt",
+            caption="Here be the list of groups in my database.")
 
 
 
