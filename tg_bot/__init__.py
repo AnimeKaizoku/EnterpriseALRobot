@@ -6,6 +6,7 @@ import spamwatch
 import telegram.ext as tg
 from telethon import TelegramClient
 from pyrogram import Client, errors
+from googletrans import Translator
 from configparser import ConfigParser
 StartTime = time.time()
 
@@ -125,3 +126,7 @@ def spamfilters(text, user_id, chat_id):
         return True
     else:
         return False
+
+
+# Initialize Translator
+trl = Translator()
