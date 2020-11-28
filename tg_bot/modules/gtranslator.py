@@ -1,6 +1,6 @@
 from emoji import UNICODE_EMOJI
 from googletrans import LANGUAGES, Translator
-from tg_bot import dispatcher
+from tg_bot import dispatcher, trl
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
@@ -55,7 +55,6 @@ def totranslate(update: Update, context: CallbackContext):
                 if emoji in text:
                     text = text.replace(emoji, '')
 
-            trl = Translator()
             if source_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=dest_lang)
@@ -95,7 +94,7 @@ def totranslate(update: Update, context: CallbackContext):
                     else:
                         dest_lang = temp_source_lang.split("-")[1]
                         source_lang = temp_source_lang.split("-")[0]
-            trl = Translator()
+        
             if dest_lang is None:
                 detection = trl.detect(text)
                 tekstr = trl.translate(text, dest=source_lang)
