@@ -3,9 +3,11 @@ import threading
 from sqlalchemy import String, Column, Integer, UnicodeText
 
 from tg_bot.modules.sql import SESSION, BASE
+
 DEF_COUNT = 0
 DEF_LIMIT = 0
 DEF_OBJ = (None, DEF_COUNT, DEF_LIMIT)
+
 
 class FloodControl(BASE):
     __tablename__ = "antiflood"
@@ -19,6 +21,7 @@ class FloodControl(BASE):
 
     def __repr__(self):
         return "<flood control for %s>" % self.chat_id
+
 
 class FloodSettings(BASE):
     __tablename__ = "antiflood_settings"
@@ -94,7 +97,9 @@ def set_flood_strength(chat_id, flood_type, value):
     with INSERTION_FLOOD_SETTINGS_LOCK:
         curr_setting = SESSION.query(FloodSettings).get(str(chat_id))
         if not curr_setting:
-            curr_setting = FloodSettings(chat_id, flood_type=int(flood_type), value=value)
+            curr_setting = FloodSettings(
+                chat_id, flood_type=int(flood_type), value=value
+            )
 
         curr_setting.flood_type = int(flood_type)
         curr_setting.value = str(value)
@@ -119,8 +124,7 @@ def migrate_chat(old_chat_id, new_chat_id):
     with INSERTION_FLOOD_LOCK:
         flood = SESSION.query(FloodControl).get(str(old_chat_id))
         if flood:
-            CHAT_FLOOD[str(new_chat_id)] = CHAT_FLOOD.get(
-                str(old_chat_id), DEF_OBJ)
+            CHAT_FLOOD[str(new_chat_id)] = CHAT_FLOOD.get(str(old_chat_id), DEF_OBJ)
             flood.chat_id = str(new_chat_id)
             SESSION.commit()
 
@@ -131,9 +135,7 @@ def __load_flood_settings():
     global CHAT_FLOOD
     try:
         all_chats = SESSION.query(FloodControl).all()
-        CHAT_FLOOD = {
-            chat.chat_id: (None, DEF_COUNT, chat.limit) for chat in all_chats
-        }
+        CHAT_FLOOD = {chat.chat_id: (None, DEF_COUNT, chat.limit) for chat in all_chats}
     finally:
         SESSION.close()
 

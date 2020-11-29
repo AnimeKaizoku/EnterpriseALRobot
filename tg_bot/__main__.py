@@ -15,7 +15,13 @@ from telegram.error import (
     ChatMigrated,
     TelegramError,
 )
-from telegram.ext import CallbackContext, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext import (
+    CallbackContext,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    Filters,
+)
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
@@ -59,7 +65,6 @@ the things I can help you with.
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
  \nClick on the buttons below to get documentation about specific modules!"""
-
 
 
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
@@ -122,13 +127,11 @@ def send_help(chat_id, text, keyboard=None):
     )
 
 
-
 def test(update: Update, context: CallbackContext):
     # pprint(eval(str(update)))
     # update.effective_message.reply_text("Hola tester! _I_ *have* `markdown`", parse_mode=ParseMode.MARKDOWN)
     update.effective_message.reply_text("This person edited a message")
     print(update.effective_message)
-
 
 
 def start(update: Update, context: CallbackContext):
@@ -164,24 +167,34 @@ def start(update: Update, context: CallbackContext):
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
-                    [[
-                        InlineKeyboardButton(
-                            text="Add Kigyo to your group",
-                            url="t.me/{}?startgroup=true".format(context.bot.username))
-                    ],
                     [
-                        InlineKeyboardButton(
-                            text="Support Chat // Eagle Union",
-                            url=f"https://t.me/YorktownEagleUnion"),
-                        InlineKeyboardButton(
-                            text="Kigyo Updates Channel",
-                            url="https://t.me/KigyoUpdates")
-                    ],
-                    [
-                        InlineKeyboardButton(
-                            text="Source code (Licensed under GPLv3)",
-                            url="https://github.com/Dank-del/EnterpriseALRobot")
-                    ]]))
+                        [
+                            InlineKeyboardButton(
+                                text="Add Kigyo to your group",
+                                url="t.me/{}?startgroup=true".format(
+                                    context.bot.username
+                                ),
+                            )
+                        ],
+                        [
+                            InlineKeyboardButton(
+                                text="Support Chat // Eagle Union",
+                                url=f"https://t.me/YorktownEagleUnion",
+                            ),
+                            InlineKeyboardButton(
+                                text="Kigyo Updates Channel",
+                                url="https://t.me/KigyoUpdates",
+                            ),
+                        ],
+                        [
+                            InlineKeyboardButton(
+                                text="Source code (Licensed under GPLv3)",
+                                url="https://github.com/Dank-del/EnterpriseALRobot",
+                            )
+                        ],
+                    ]
+                ),
+            )
     else:
         update.effective_message.reply_text("Hi, I'm Kigyo.")
 
@@ -215,7 +228,6 @@ def error_callback(bot, update, error):
         # handle all other telegram related errors
 
 
-
 def help_button(update, context):
     query = update.callback_query
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
@@ -243,12 +255,14 @@ def help_button(update, context):
             )
 
         elif prev_match:
-                curr_page = int(prev_match.group(1))
-                query.message.edit_text(
+            curr_page = int(prev_match.group(1))
+            query.message.edit_text(
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(curr_page - 1, HELPABLE, "help")))
+                    paginate_modules(curr_page - 1, HELPABLE, "help")
+                ),
+            )
 
         elif next_match:
             next_page = int(next_match.group(1))
@@ -256,13 +270,18 @@ def help_button(update, context):
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(next_page + 1, HELPABLE, "help")))
+                    paginate_modules(next_page + 1, HELPABLE, "help")
+                ),
+            )
 
         elif back_match:
             query.message.edit_text(
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
+                reply_markup=InlineKeyboardMarkup(
+                    paginate_modules(0, HELPABLE, "help")
+                ),
+            )
 
         # ensure no spinny white circle
         context.bot.answer_callback_query(query.id)
@@ -270,7 +289,6 @@ def help_button(update, context):
 
     except BadRequest:
         pass
-
 
 
 def get_help(update, context):
@@ -286,7 +304,8 @@ def get_help(update, context):
                 [
                     [
                         InlineKeyboardButton(
-                            text="Help", url="t.me/{}?start=help".format(context.bot.username)
+                            text="Help",
+                            url="t.me/{}?start=help".format(context.bot.username),
                         )
                     ]
                 ]
@@ -317,36 +336,42 @@ def get_help(update, context):
 def send_settings(chat_id, user_id, user=False):
     if user:
         if USER_SETTINGS:
-            settings = "\n\n".join("*{}*:\n{}".format(
-                mod.__mod_name__, mod.__user_settings__(user_id))
-                                   for mod in USER_SETTINGS.values())
+            settings = "\n\n".join(
+                "*{}*:\n{}".format(mod.__mod_name__, mod.__user_settings__(user_id))
+                for mod in USER_SETTINGS.values()
+            )
             dispatcher.bot.send_message(
                 user_id,
                 "These are your current settings:" + "\n\n" + settings,
-                parse_mode=ParseMode.MARKDOWN)
+                parse_mode=ParseMode.MARKDOWN,
+            )
 
         else:
             dispatcher.bot.send_message(
                 user_id,
                 "Seems like there aren't any user specific settings available :'(",
-                parse_mode=ParseMode.MARKDOWN)
+                parse_mode=ParseMode.MARKDOWN,
+            )
 
     else:
         if CHAT_SETTINGS:
             chat_name = dispatcher.bot.getChat(chat_id).title
             dispatcher.bot.send_message(
                 user_id,
-                text="Which module would you like to check {}'s settings for?"
-                .format(chat_name),
+                text="Which module would you like to check {}'s settings for?".format(
+                    chat_name
+                ),
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)))
+                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)
+                ),
+            )
         else:
             dispatcher.bot.send_message(
                 user_id,
                 "Seems like there aren't any chat settings available :'(\nSend this "
                 "in a group chat you're admin in to find its current settings!",
-                parse_mode=ParseMode.MARKDOWN)
-
+                parse_mode=ParseMode.MARKDOWN,
+            )
 
 
 def settings_button(update: Update, context: CallbackContext):
@@ -362,17 +387,23 @@ def settings_button(update: Update, context: CallbackContext):
             chat_id = mod_match.group(1)
             module = mod_match.group(2)
             chat = bot.get_chat(chat_id)
-            text = "*{}* has the following settings for the *{}* module:\n\n".format(escape_markdown(chat.title),
-                                                                                     CHAT_SETTINGS[module].__mod_name__) + \
-                   CHAT_SETTINGS[module].__chat_settings__(chat_id, user.id)
+            text = "*{}* has the following settings for the *{}* module:\n\n".format(
+                escape_markdown(chat.title), CHAT_SETTINGS[module].__mod_name__
+            ) + CHAT_SETTINGS[module].__chat_settings__(chat_id, user.id)
             query.message.reply_text(
                 text=text,
                 parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        text="Back",
-                        callback_data="stngs_back({})".format(chat_id))
-                ]]))
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="Back",
+                                callback_data="stngs_back({})".format(chat_id),
+                            )
+                        ]
+                    ]
+                ),
+            )
 
         elif prev_match:
             chat_id = prev_match.group(1)
@@ -383,7 +414,10 @@ def settings_button(update: Update, context: CallbackContext):
                 "you're interested in.".format(chat.title),
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(
-                        curr_page - 1, CHAT_SETTINGS, "stngs", chat=chat_id)))
+                        curr_page - 1, CHAT_SETTINGS, "stngs", chat=chat_id
+                    )
+                ),
+            )
 
         elif next_match:
             chat_id = next_match.group(1)
@@ -394,7 +428,10 @@ def settings_button(update: Update, context: CallbackContext):
                 "you're interested in.".format(chat.title),
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(
-                        next_page + 1, CHAT_SETTINGS, "stngs", chat=chat_id)))
+                        next_page + 1, CHAT_SETTINGS, "stngs", chat=chat_id
+                    )
+                ),
+            )
 
         elif back_match:
             chat_id = back_match.group(1)
@@ -404,7 +441,9 @@ def settings_button(update: Update, context: CallbackContext):
                 "you're interested in.".format(escape_markdown(chat.title)),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
-                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)))
+                    paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)
+                ),
+            )
 
         # ensure no spinny white circle
         bot.answer_callback_query(query.id)
@@ -417,9 +456,7 @@ def settings_button(update: Update, context: CallbackContext):
         elif excp.message == "Message can't be deleted":
             pass
         else:
-            LOGGER.exception("Exception in settings buttons. %s",
-                             str(query.data))
-
+            LOGGER.exception("Exception in settings buttons. %s", str(query.data))
 
 
 def get_settings(update: Update, context: CallbackContext):
@@ -433,20 +470,24 @@ def get_settings(update: Update, context: CallbackContext):
             text = "Click here to get this chat's settings, as well as yours."
             msg.reply_text(
                 text,
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        text="Settings",
-                        url="t.me/{}?start=stngs_{}".format(
-                            context.bot.username, chat.id))
-                ]]))
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="Settings",
+                                url="t.me/{}?start=stngs_{}".format(
+                                    context.bot.username, chat.id
+                                ),
+                            )
+                        ]
+                    ]
+                ),
+            )
         else:
             text = "Click here to check your settings."
 
     else:
         send_settings(chat.id, user.id, True)
-
-
-
 
 
 def donate(context: CallbackContext, update: Update):
@@ -471,7 +512,6 @@ def donate(context: CallbackContext, update: Update):
                 user.id,
                 DONATE_STRING,
                 parse_mode=ParseMode.MARKDOWN,
-
             )
 
             update.effective_message.reply_text(
@@ -506,35 +546,46 @@ def error_handler(update: Update, context: CallbackContext) -> None:
     """Log the error and send a telegram message to notify the developer."""
     # Log the error before we do anything else, so we can see it even if something breaks.
     LOGGER.error(msg="Exception while handling an update:", exc_info=context.error)
-    if isinstance(context.error, SQLAlchemyError) or isinstance(context.error, DBAPIError):
-      return
+    if isinstance(context.error, SQLAlchemyError) or isinstance(
+        context.error, DBAPIError
+    ):
+        return
     # traceback.format_exception returns the usual python message about an exception, but as a
     # list of strings rather than a single string, so we have to join them together.
     else:
-        tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
-        tb_string = ''.join(tb_list)
+        tb_list = traceback.format_exception(
+            None, context.error, context.error.__traceback__
+        )
+        tb_string = "".join(tb_list)
 
-    # Build the message with some markup and additional information about what happened.
-    # You might need to add some logic to deal with messages longer than the 4096 character limit.
+        # Build the message with some markup and additional information about what happened.
+        # You might need to add some logic to deal with messages longer than the 4096 character limit.
         message = (
-        f'An exception was raised while handling an update\n'
-        f'update = {(json.dumps(update.to_dict(), indent=2, ensure_ascii=False))}'
-        '\n\n'
-        f'context.chat_data = {(str(context.chat_data))}\n\n'
-        f'context.user_data = {(str(context.user_data))}\n\n'
-        f'{(tb_string)}'
-         )
+            f"An exception was raised while handling an update\n"
+            f"update = {(json.dumps(update.to_dict(), indent=2, ensure_ascii=False))}"
+            "\n\n"
+            f"context.chat_data = {(str(context.chat_data))}\n\n"
+            f"context.user_data = {(str(context.user_data))}\n\n"
+            f"{(tb_string)}"
+        )
 
-        key = requests.post(
-                'https://nekobin.com/api/documents', json={
-                "content": message
-            }).json().get('result').get('key')
-        url = f'https://nekobin.com/{key}.py'
-        markup  = InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url = url)]])
+        key = (
+            requests.post(
+                "https://nekobin.com/api/documents", json={"content": message}
+            )
+            .json()
+            .get("result")
+            .get("key")
+        )
+        url = f"https://nekobin.com/{key}.py"
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url=url)]])
 
     # Finally, send the message
-    context.bot.send_message(chat_id=OWNER_ID, text="Your sugar mommy got some errors for you, you cute guy.", reply_markup=markup)
-
+    context.bot.send_message(
+        chat_id=OWNER_ID,
+        text="Your sugar mommy got some errors for you, you cute guy.",
+        reply_markup=markup,
+    )
 
 
 def main():
@@ -542,13 +593,19 @@ def main():
     start_handler = CommandHandler("start", start, pass_args=True, run_async=True)
 
     help_handler = CommandHandler("help", get_help, run_async=True)
-    help_callback_handler = CallbackQueryHandler(help_button, pattern=r"help_", run_async=True)
+    help_callback_handler = CallbackQueryHandler(
+        help_button, pattern=r"help_", run_async=True
+    )
 
     settings_handler = CommandHandler("settings", get_settings, run_async=True)
-    settings_callback_handler = CallbackQueryHandler(settings_button, pattern=r"stngs_", run_async=True)
+    settings_callback_handler = CallbackQueryHandler(
+        settings_button, pattern=r"stngs_", run_async=True
+    )
 
     donate_handler = CommandHandler("donate", donate, run_async=True)
-    migrate_handler = MessageHandler(Filters.status_update.migrate, migrate_chats, run_async=True)
+    migrate_handler = MessageHandler(
+        Filters.status_update.migrate, migrate_chats, run_async=True
+    )
 
     # dispatcher.add_handler(test_handler)
     dispatcher.add_handler(start_handler)
@@ -559,11 +616,7 @@ def main():
     dispatcher.add_handler(migrate_handler)
     dispatcher.add_handler(donate_handler)
 
-
-
-
     dispatcher.add_error_handler(error_handler)
-
 
     if WEBHOOK:
         LOGGER.info("Using webhooks.")
@@ -582,7 +635,6 @@ def main():
     else:
         telethn.run_until_disconnected()
     updater.idle()
-
 
 
 if __name__ == "__main__":

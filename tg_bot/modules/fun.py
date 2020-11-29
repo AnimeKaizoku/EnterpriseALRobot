@@ -9,12 +9,12 @@ from telegram.error import BadRequest
 import tg_bot.modules.fun_strings as fun_strings
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
-from tg_bot.modules.helper_funcs.chat_status import (is_user_admin)
+from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_user
+
 
 def runs(update: Update, context: CallbackContext):
     update.effective_message.reply_text(random.choice(fun_strings.RUN_STRINGS))
-
 
 
 def slap(update: Update, context: CallbackContext):
@@ -22,7 +22,11 @@ def slap(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
 
-    reply_text = message.reply_to_message.reply_text if message.reply_to_message else message.reply_text
+    reply_text = (
+        message.reply_to_message.reply_text
+        if message.reply_to_message
+        else message.reply_text
+    )
 
     curr_user = html.escape(message.from_user.first_name)
     user_id = extract_user(message, args)
@@ -41,7 +45,8 @@ def slap(update: Update, context: CallbackContext):
                     chat.id,
                     message.from_user.id,
                     until_date=mutetime,
-                    permissions=ChatPermissions(can_send_messages=False))
+                    permissions=ChatPermissions(can_send_messages=False),
+                )
             reply_text(temp[0])
         else:
             reply_text(temp)
@@ -61,8 +66,7 @@ def slap(update: Update, context: CallbackContext):
     item = random.choice(fun_strings.ITEMS)
     hit = random.choice(fun_strings.HIT)
     throw = random.choice(fun_strings.THROW)
-    reply = temp.format(
-        user1=user1, user2=user2, item=item, hits=hit, throws=throw)
+    reply = temp.format(user1=user1, user2=user2, item=item, hits=hit, throws=throw)
 
     reply_text(reply, parse_mode=ParseMode.HTML)
 
@@ -107,31 +111,30 @@ def pat(update: Update, context: CallbackContext):
         reply_to.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-
 def roll(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(range(1, 7)))
-
 
 
 def toss(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(fun_strings.TOSS))
 
 
-
 def shrug(update: Update, context: CallbackContext):
     msg = update.effective_message
-    reply_text = msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
+    reply_text = (
+        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
+    )
     reply_text(r"¯\_(ツ)_/¯")
-
 
 
 def bluetext(update: Update, context: CallbackContext):
     msg = update.effective_message
-    reply_text = msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
+    reply_text = (
+        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
+    )
     reply_text(
         "/BLUE /TEXT\n/MUST /CLICK\n/I /AM /A /STUPID /ANIMAL /THAT /IS /ATTRACTED /TO /COLORS"
     )
-
 
 
 def rlg(update: Update, context: CallbackContext):
@@ -146,17 +149,22 @@ def rlg(update: Update, context: CallbackContext):
     update.message.reply_text(repl)
 
 
-
 def decide(update: Update, context: CallbackContext):
-    reply_text = update.effective_message.reply_to_message.reply_text if update.effective_message.reply_to_message else update.effective_message.reply_text
+    reply_text = (
+        update.effective_message.reply_to_message.reply_text
+        if update.effective_message.reply_to_message
+        else update.effective_message.reply_text
+    )
     reply_text(random.choice(fun_strings.DECIDE))
 
 
-
 def table(update: Update, context: CallbackContext):
-    reply_text = update.effective_message.reply_to_message.reply_text if update.effective_message.reply_to_message else update.effective_message.reply_text
+    reply_text = (
+        update.effective_message.reply_to_message.reply_text
+        if update.effective_message.reply_to_message
+        else update.effective_message.reply_text
+    )
     reply_text(random.choice(fun_strings.TABLE))
-
 
 
 __help__ = """

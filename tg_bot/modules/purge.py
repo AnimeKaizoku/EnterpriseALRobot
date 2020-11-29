@@ -35,7 +35,9 @@ async def purge_messages(event):
 
     message_count = len(messages)
     await event.client.delete_messages(event.chat_id, messages)
-    msg = await event.reply(f"Purged {message_count} messages successfully!", parse_mode='markdown')
+    msg = await event.reply(
+        f"Purged {message_count} messages successfully!", parse_mode="markdown"
+    )
     await sleep(5)
     await msg.delete()
 
@@ -60,8 +62,6 @@ async def delete_messages(event):
     chat = await event.get_input_chat()
     del_message = [message, event.message]
     await event.client.delete_messages(chat, del_message)
-
-
 
 
 __help__ = """

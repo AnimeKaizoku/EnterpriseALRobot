@@ -7,12 +7,20 @@ from telegram import Update, ParseMode, TelegramError
 from telegram.ext import CommandHandler, run_async, CallbackContext
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, WHITELIST_USERS, SARDEGNA_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS, OWNER_ID
+from tg_bot import (
+    dispatcher,
+    WHITELIST_USERS,
+    SARDEGNA_USERS,
+    SUPPORT_USERS,
+    SUDO_USERS,
+    DEV_USERS,
+    OWNER_ID,
+)
 from tg_bot.modules.helper_funcs.chat_status import whitelist_plus, dev_plus, sudo_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot.modules.log_channel import gloggable
 
-ELEVATED_USERS_FILE = os.path.join(os.getcwd(), 'tg_bot/elevated_users.json')
+ELEVATED_USERS_FILE = os.path.join(os.getcwd(), "tg_bot/elevated_users.json")
 
 
 def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
@@ -28,7 +36,6 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
     return reply
 
 
-
 # I added extra new lines
 nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
 \n*Eagle Union* - Devs who can access the bots server and can execute, edit, modify bot code. Can also manage other Nations
@@ -41,14 +48,12 @@ Owner has complete bot access, including bot adminship in chats Kigyō is at.
 \n*Disclaimer*: The Nation levels in Kigyō are there for troubleshooting, support, banning potential scammers.
 Report abuse or ask us more on these at [Eagle Union](https://t.me/YorktownEagleUnion).
 """
+
+
 def send_nations(update):
     update.effective_message.reply_text(
-        nations,
-        parse_mode=ParseMode.MARKDOWN,
-        disable_web_page_preview=True)
-
-
-
+        nations, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
+    )
 
 
 @whitelist_plus
@@ -66,7 +71,6 @@ def whitelistlist(update: Update, context: CallbackContext):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-
 @whitelist_plus
 def Sardegnalist(update: Update, context: CallbackContext):
     bot = context.bot
@@ -79,7 +83,6 @@ def Sardegnalist(update: Update, context: CallbackContext):
         except TelegramError:
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
-
 
 
 @whitelist_plus
@@ -96,7 +99,6 @@ def supportlist(update: Update, context: CallbackContext):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-
 @whitelist_plus
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
@@ -110,7 +112,6 @@ def sudolist(update: Update, context: CallbackContext):
         except TelegramError:
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
-
 
 
 @whitelist_plus
@@ -138,9 +139,13 @@ __help__ = """
  You can visit @YorktownEagleUnion to query more about these.
 """
 
-WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "neptunians"], whitelistlist, run_async=True)
+WHITELISTLIST_HANDLER = CommandHandler(
+    ["whitelistlist", "neptunians"], whitelistlist, run_async=True
+)
 SARDEGNALIST_HANDLER = CommandHandler(["sardegnas"], Sardegnalist, run_async=True)
-SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "sakuras"], supportlist, run_async=True)
+SUPPORTLIST_HANDLER = CommandHandler(
+    ["supportlist", "sakuras"], supportlist, run_async=True
+)
 SUDOLIST_HANDLER = CommandHandler(["sudolist", "royals"], sudolist, run_async=True)
 DEVLIST_HANDLER = CommandHandler(["devlist", "eagle"], devlist, run_async=True)
 

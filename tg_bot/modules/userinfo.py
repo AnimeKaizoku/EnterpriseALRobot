@@ -23,14 +23,17 @@ def about_me(update: Update, context: CallbackContext):
     if info:
         update.effective_message.reply_text(
             f"*{user.first_name}*:\n{escape_markdown(info)}",
-            parse_mode=ParseMode.MARKDOWN)
+            parse_mode=ParseMode.MARKDOWN,
+        )
     elif message.reply_to_message:
         username = message.reply_to_message.from_user.first_name
         update.effective_message.reply_text(
-            f"{username} hasn't set an info message about themselves yet!")
+            f"{username} hasn't set an info message about themselves yet!"
+        )
     else:
         update.effective_message.reply_text(
-            "You haven't set an info message about yourself yet!")
+            "You haven't set an info message about yourself yet!"
+        )
 
 
 def set_about_me(update: Update, context: CallbackContext):
@@ -43,8 +46,7 @@ def set_about_me(update: Update, context: CallbackContext):
     if message.reply_to_message:
         repl_message = message.reply_to_message
         repl_user_id = repl_message.from_user.id
-        if repl_user_id == bot.id and (
-                user_id in SUDO_USERS or user_id in DEV_USERS):
+        if repl_user_id == bot.id and (user_id in SUDO_USERS or user_id in DEV_USERS):
             user_id = repl_user_id
 
     text = message.text
@@ -58,8 +60,11 @@ def set_about_me(update: Update, context: CallbackContext):
             else:
                 message.reply_text("Updated your info!")
         else:
-            message.reply_text("The info needs to be under {} characters! You have {}.".format(
-                MAX_MESSAGE_LENGTH // 4, len(info[1])))
+            message.reply_text(
+                "The info needs to be under {} characters! You have {}.".format(
+                    MAX_MESSAGE_LENGTH // 4, len(info[1])
+                )
+            )
 
 
 def about_bio(update: Update, context: CallbackContext):
@@ -73,14 +78,18 @@ def about_bio(update: Update, context: CallbackContext):
 
     if info:
         update.effective_message.reply_text(
-            "*{}*:\n{}".format(user.first_name, escape_markdown(info)), parse_mode=ParseMode.MARKDOWN)
+            "*{}*:\n{}".format(user.first_name, escape_markdown(info)),
+            parse_mode=ParseMode.MARKDOWN,
+        )
     elif message.reply_to_message:
         username = user.first_name
         update.effective_message.reply_text(
-            f"{username} hasn't had a message set about themselves yet!")
+            f"{username} hasn't had a message set about themselves yet!"
+        )
     else:
         update.effective_message.reply_text(
-            "You haven't had a bio set about yourself yet!")
+            "You haven't had a bio set about yourself yet!"
+        )
     message = update.effective_message
     if message.reply_to_message:
         repl_message = message.reply_to_message
@@ -88,14 +97,20 @@ def about_bio(update: Update, context: CallbackContext):
 
         if user_id == message.from_user.id:
             message.reply_text(
-                "Ha, you can't set your own bio! You're at the mercy of others here...")
+                "Ha, you can't set your own bio! You're at the mercy of others here..."
+            )
             return
 
         sender_id = update.effective_user.id
 
-        if user_id == bot.id and sender_id not in SUDO_USERS and sender_id not in DEV_USERS:
+        if (
+            user_id == bot.id
+            and sender_id not in SUDO_USERS
+            and sender_id not in DEV_USERS
+        ):
             message.reply_text(
-                "Erm... yeah, I only trust sudo users or developers to set my bio.")
+                "Erm... yeah, I only trust sudo users or developers to set my bio."
+            )
             return
 
         text = message.text
@@ -106,16 +121,18 @@ def about_bio(update: Update, context: CallbackContext):
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
                 message.reply_text(
-                    "Updated {}'s bio!".format(
-                        repl_message.from_user.first_name))
+                    "Updated {}'s bio!".format(repl_message.from_user.first_name)
+                )
             else:
                 message.reply_text(
                     "A bio needs to be under {} characters! You tried to set {}.".format(
-                        MAX_MESSAGE_LENGTH // 4, len(bio[1])))
+                        MAX_MESSAGE_LENGTH // 4, len(bio[1])
+                    )
+                )
     else:
         message.reply_text("Reply to someone's message to set their bio!")
-        
-        
+
+
 def set_about_bio(update: Update, context: CallbackContext):
     message = update.effective_message
     sender_id = update.effective_user.id
@@ -127,7 +144,7 @@ def set_about_bio(update: Update, context: CallbackContext):
         if user_id in (777000, 1087968824):
             message.reply_text("Don't set bio for Telegram bots!")
             return
-        
+
         if user_id == message.from_user.id:
             message.reply_text(
                 "Ha, you can't set your own bio! You're at the mercy of others here..."
@@ -139,8 +156,7 @@ def set_about_bio(update: Update, context: CallbackContext):
             return
 
         if user_id == bot.id and sender_id not in DEV_USERS:
-            message.reply_text(
-                "Erm... yeah, I only trust Eagle Union to set my bio.")
+            message.reply_text("Erm... yeah, I only trust Eagle Union to set my bio.")
             return
 
         text = message.text
@@ -151,16 +167,17 @@ def set_about_bio(update: Update, context: CallbackContext):
         if len(bio) == 2:
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
-                message.reply_text("Updated {}'s bio!".format(
-                    repl_message.from_user.first_name))
+                message.reply_text(
+                    "Updated {}'s bio!".format(repl_message.from_user.first_name)
+                )
             else:
                 message.reply_text(
-                    "Bio needs to be under {} characters! You tried to set {}."
-                    .format(MAX_MESSAGE_LENGTH // 4, len(bio[1])))
+                    "Bio needs to be under {} characters! You tried to set {}.".format(
+                        MAX_MESSAGE_LENGTH // 4, len(bio[1])
+                    )
+                )
     else:
         message.reply_text("Reply to someone to set their bio!")
-
-
 
 
 def __user_info__(user_id):
@@ -176,7 +193,6 @@ def __user_info__(user_id):
         return "\n"
 
 
-
 __help__ = """
  - /setbio <text>: while replying, will save another user's bio
  - /bio: will get your or another user's bio. This cannot be set by yourself.
@@ -185,10 +201,14 @@ __help__ = """
 """
 
 SET_BIO_HANDLER = DisableAbleCommandHandler("setbio", set_about_bio, run_async=True)
-GET_BIO_HANDLER = DisableAbleCommandHandler("bio", about_bio, pass_args=True, run_async=True)
+GET_BIO_HANDLER = DisableAbleCommandHandler(
+    "bio", about_bio, pass_args=True, run_async=True
+)
 
 SET_ABOUT_HANDLER = DisableAbleCommandHandler("setme", set_about_me, run_async=True)
-GET_ABOUT_HANDLER = DisableAbleCommandHandler("me", about_me, pass_args=True, run_async=True)
+GET_ABOUT_HANDLER = DisableAbleCommandHandler(
+    "me", about_me, pass_args=True, run_async=True
+)
 
 dispatcher.add_handler(SET_BIO_HANDLER)
 dispatcher.add_handler(GET_BIO_HANDLER)

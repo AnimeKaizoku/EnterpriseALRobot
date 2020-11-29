@@ -6,14 +6,30 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, CallbackContext
 from telegram.utils.helpers import mention_html
 
-from tg_bot import dispatcher, LOGGER, DEV_USERS, SUDO_USERS, SARDEGNA_USERS, SUPPORT_USERS, OWNER_ID, WHITELIST_USERS
+from tg_bot import (
+    dispatcher,
+    LOGGER,
+    DEV_USERS,
+    SUDO_USERS,
+    SARDEGNA_USERS,
+    SUPPORT_USERS,
+    OWNER_ID,
+    WHITELIST_USERS,
+)
 from tg_bot.modules.disable import DisableAbleCommandHandler
-from tg_bot.modules.helper_funcs.chat_status import (bot_admin, can_restrict, connection_status, is_user_admin,
-                                                    is_user_ban_protected, is_user_in_chat, user_admin, user_can_ban)
+from tg_bot.modules.helper_funcs.chat_status import (
+    bot_admin,
+    can_restrict,
+    connection_status,
+    is_user_admin,
+    is_user_ban_protected,
+    is_user_in_chat,
+    user_admin,
+    user_can_ban,
+)
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable, gloggable
-
 
 
 @connection_status
@@ -48,25 +64,19 @@ def ban(update, context):
 
     if is_user_ban_protected(chat, user_id, member) and user not in DEV_USERS:
         if user_id == OWNER_ID:
-            message.reply_text(
-                "I'd never ban my owner.")
+            message.reply_text("I'd never ban my owner.")
             return log_message
         elif user_id in DEV_USERS:
             message.reply_text("I can't act against our own.")
             return log_message
         elif user_id in SUDO_USERS:
-            message.reply_text(
-                "My sudos are ban immune")
+            message.reply_text("My sudos are ban immune")
             return log_message
         elif user_id in SUPPORT_USERS:
-            message.reply_text(
-                "My support users are ban immune"
-            )
+            message.reply_text("My support users are ban immune")
             return log_message
         elif user_id in SARDEGNA_USERS:
-            message.reply_text(
-                "Bring an order from Eagle Union to fight a Sardegna."
-            )
+            message.reply_text("Bring an order from Eagle Union to fight a Sardegna.")
             return log_message
         elif user_id in WHITELIST_USERS:
             message.reply_text("Neptunians are ban immune!")
@@ -79,7 +89,8 @@ def ban(update, context):
         f"<b>{html.escape(chat.title)}:</b>\n"
         f"#BANNED\n"
         f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}")
+        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
+    )
     if reason:
         log += "\n<b>Reason:</b> {}".format(reason)
 
@@ -112,8 +123,6 @@ def ban(update, context):
             message.reply_text("Well damn, I can't ban that user.")
 
     return ""
-
-
 
 
 @connection_status
@@ -172,7 +181,8 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
         "#TEMP BANNED\n"
         f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
         f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}\n"
-        f"<b>Time:</b> {time_val}")
+        f"<b>Time:</b> {time_val}"
+    )
     if reason:
         log += "\n<b>Reason:</b> {}".format(reason)
 
@@ -183,25 +193,29 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
             chat.id,
             f"Banned! User {mention_html(member.user.id, member.user.first_name)} "
             f"will be banned for {time_val}.",
-            parse_mode=ParseMode.HTML)
+            parse_mode=ParseMode.HTML,
+        )
         return log
 
     except BadRequest as excp:
         if excp.message == "Reply message not found":
             # Do not reply
             message.reply_text(
-                f"Banned! User will be banned for {time_val}.", quote=False)
+                f"Banned! User will be banned for {time_val}.", quote=False
+            )
             return log
         else:
             LOGGER.warning(update)
-            LOGGER.exception("ERROR banning user %s in chat %s (%s) due to %s",
-                             user_id, chat.title, chat.id, excp.message)
+            LOGGER.exception(
+                "ERROR banning user %s in chat %s (%s) due to %s",
+                user_id,
+                chat.title,
+                chat.id,
+                excp.message,
+            )
             message.reply_text("Well damn, I can't ban that user.")
 
     return log_message
-
-
-
 
 
 @connection_status
@@ -244,7 +258,8 @@ def kick(update: Update, context: CallbackContext) -> str:
         bot.sendMessage(
             chat.id,
             f"Kicked out {mention_html(member.user.id, member.user.first_name)} from the chat.",
-            parse_mode=ParseMode.HTML)
+            parse_mode=ParseMode.HTML,
+        )
         log = (
             f"<b>{html.escape(chat.title)}:</b>\n"
             f"#KICKED\n"
@@ -262,23 +277,19 @@ def kick(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-
 @bot_admin
 @can_restrict
 def kickme(update: Update, context: CallbackContext):
     user_id = update.effective_message.from_user.id
     if is_user_admin(update.effective_chat, user_id):
-        update.effective_message.reply_text(
-            "I wish I could... but you're an admin.")
+        update.effective_message.reply_text("I wish I could... but you're an admin.")
         return
 
-    res = update.effective_chat.unban_member(
-        user_id)  # unban on current user = kick
+    res = update.effective_chat.unban_member(user_id)  # unban on current user = kick
     if res:
         update.effective_message.reply_text("*kicks you out of the group*")
     else:
         update.effective_message.reply_text("Huh? I can't :/")
-
 
 
 @connection_status
@@ -322,13 +333,12 @@ def unban(update: Update, context: CallbackContext) -> str:
         f"<b>{html.escape(chat.title)}:</b>\n"
         f"#UNBANNED\n"
         f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}")
+        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
+    )
     if reason:
         log += f"\n<b>Reason:</b> {reason}"
 
     return log
-
-
 
 
 @connection_status
@@ -369,10 +379,10 @@ def selfunban(context: CallbackContext, update: Update) -> str:
     log = (
         f"<b>{html.escape(chat.title)}:</b>\n"
         f"#UNBANNED\n"
-        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}")
+        f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
+    )
 
     return log
-
 
 
 __help__ = """
@@ -386,12 +396,18 @@ __help__ = """
 """
 
 BAN_HANDLER = CommandHandler("ban", ban, pass_args=True, run_async=True)
-TEMPBAN_HANDLER = CommandHandler(["tban", "tempban"], temp_ban, pass_args=True, run_async=True)
-PUNCH_HANDLER = CommandHandler(["punch", "kick", "gtfo"], kick, pass_args=True, run_async=True)
+TEMPBAN_HANDLER = CommandHandler(
+    ["tban", "tempban"], temp_ban, pass_args=True, run_async=True
+)
+PUNCH_HANDLER = CommandHandler(
+    ["punch", "kick", "gtfo"], kick, pass_args=True, run_async=True
+)
 UNBAN_HANDLER = CommandHandler("unban", unban, pass_args=True, run_async=True)
-ROAR_HANDLER = CommandHandler(["roar", "selfunban"], selfunban, pass_args=True, run_async=True)
+ROAR_HANDLER = CommandHandler(
+    ["roar", "selfunban"], selfunban, pass_args=True, run_async=True
+)
 PUNCHME_HANDLER = DisableAbleCommandHandler(
-    ["punchme", "kickme"], kickme, filters=Filters.group, run_async=True
+    ["punchme", "kickme"], kickme, filters=Filters.chat_type.groups, run_async=True
 )
 
 dispatcher.add_handler(BAN_HANDLER)

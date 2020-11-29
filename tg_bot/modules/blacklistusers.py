@@ -1,11 +1,17 @@
 # Module to blacklist users and prevent them from using commands by @TheRealPhoenix
 
 import tg_bot.modules.sql.blacklistusers_sql as sql
-from tg_bot import (DEV_USERS, OWNER_ID, SUDO_USERS, SUPPORT_USERS,
-                        SARDEGNA_USERS, WHITELIST_USERS, dispatcher)
+from tg_bot import (
+    DEV_USERS,
+    OWNER_ID,
+    SUDO_USERS,
+    SUPPORT_USERS,
+    SARDEGNA_USERS,
+    WHITELIST_USERS,
+    dispatcher,
+)
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
-from tg_bot.modules.helper_funcs.extraction import (extract_user,
-                                                        extract_user_and_text)
+from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.log_channel import gloggable
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
@@ -16,7 +22,6 @@ BLACKLISTWHITELIST = (
     [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
 )
 BLABLEUSERS = [OWNER_ID] + DEV_USERS
-
 
 
 @dev_plus
@@ -32,8 +37,7 @@ def bl_user(update: Update, context: CallbackContext) -> str:
         return ""
 
     if user_id == bot.id:
-        message.reply_text(
-            "How am I supposed to do my work if I am ignoring myself?")
+        message.reply_text("How am I supposed to do my work if I am ignoring myself?")
         return ""
 
     if user_id in BLACKLISTWHITELIST:
@@ -54,7 +58,8 @@ def bl_user(update: Update, context: CallbackContext) -> str:
     log_message = (
         f"#BLACKLIST\n"
         f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}")
+        f"<b>User:</b> {mention_html(target_user.id, target_user.first_name)}"
+    )
     if reason:
         log_message += f"\n<b>Reason:</b> {reason}"
 
@@ -103,7 +108,6 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-
 @dev_plus
 def bl_users(update: Update, context: CallbackContext):
     users = []
@@ -113,8 +117,7 @@ def bl_users(update: Update, context: CallbackContext):
         reason = sql.get_reason(each_user)
 
         if reason:
-            users.append(
-                f"• {mention_html(user.id, user.first_name)} :- {reason}")
+            users.append(f"• {mention_html(user.id, user.first_name)} :- {reason}")
         else:
             users.append(f"• {mention_html(user.id, user.first_name)}")
 
@@ -122,20 +125,26 @@ def bl_users(update: Update, context: CallbackContext):
     if not users:
         message += "Noone is being ignored as of yet."
     else:
-        message += '\n'.join(users)
+        message += "\n".join(users)
 
     update.effective_message.reply_text(message, parse_mode=ParseMode.HTML)
 
 
 def __user_info__(user_id):
-    
+
     if user_id in (777000, 1087968824):
         return ""
 
     is_blacklisted = sql.is_user_blacklisted(user_id)
 
     text = "Blacklisted: <b>{}</b>"
-    if user_id in [777000, 1087968824, dispatcher.bot.id] + SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS:
+    if (
+        user_id
+        in [777000, 1087968824, dispatcher.bot.id]
+        + SUDO_USERS
+        + SARDEGNA_USERS
+        + WHITELIST_USERS
+    ):
         return ""
     if is_blacklisted:
         text = text.format("Yes")
@@ -146,8 +155,6 @@ def __user_info__(user_id):
         text = text.format("No")
 
     return text
-
-
 
 
 BL_HANDLER = CommandHandler("ignore", bl_user, pass_args=True, run_async=True)
