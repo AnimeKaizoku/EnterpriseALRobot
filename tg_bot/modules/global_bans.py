@@ -544,11 +544,11 @@ UNGBAN_HANDLER = CommandHandler("ungban", ungban, run_async=True)
 GBAN_LIST = CommandHandler("gbanlist", gbanlist, run_async=True)
 
 GBAN_STATUS = CommandHandler(
-    "antispam", gbanstat, filters=Filters.group, run_async=True
+    "antispam", gbanstat, filters=Filters.chat_type.groups, run_async=True
 )
 
 GBAN_ENFORCER = MessageHandler(
-    Filters.all & Filters.group, enforce_gban, run_async=True
+    Filters.all & Filters.chat_type.groups, enforce_gban, run_async=True
 )
 
 dispatcher.add_handler(GBAN_HANDLER)

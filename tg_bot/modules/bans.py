@@ -407,7 +407,7 @@ ROAR_HANDLER = CommandHandler(
     ["roar", "selfunban"], selfunban, pass_args=True, run_async=True
 )
 PUNCHME_HANDLER = DisableAbleCommandHandler(
-    ["punchme", "kickme"], kickme, filters=Filters.group, run_async=True
+    ["punchme", "kickme"], kickme, filters=Filters.chat_type.groups, run_async=True
 )
 
 dispatcher.add_handler(BAN_HANDLER)

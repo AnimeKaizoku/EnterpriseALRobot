@@ -337,10 +337,10 @@ ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True, run_async=T
 GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid, run_async=True)
 INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True, run_async=True)
 ECHO_HANDLER = DisableAbleCommandHandler(
-    "echo", echo, filters=Filters.group, run_async=True
+    "echo", echo, filters=Filters.chat_type.groups, run_async=True
 )
 MD_HELP_HANDLER = CommandHandler(
-    "markdownhelp", markdown_help, filters=Filters.private, run_async=True
+    "markdownhelp", markdown_help, filters=Filters.chat_type.private, run_async=True
 )
 STATS_HANDLER = CommandHandler("stats", stats, run_async=True)
 PING_HANDLER = DisableAbleCommandHandler("ping", ping, run_async=True)

@@ -7,7 +7,6 @@ from telegram.error import BadRequest
 from tg_bot import dispatcher
 from tg_bot.modules.disable import (
     DisableAbleCommandHandler,
-    DisableAbleRegexHandler,
     DisableAbleMessageHandler,
 )
 from tg_bot.modules.sql import afk_sql as sql
@@ -157,15 +156,15 @@ When marked as AFK, any mentions will be replied to with a message to say you're
 """
 
 AFK_HANDLER = DisableAbleCommandHandler("afk", afk, run_async=True)
-AFK_REGEX_HANDLER = DisableAbleRegexHandler(
-    r"(?i)brb", afk, friendly="afk", run_async=True
-)
+AFK_REGEX_HANDLER = DisableAbleMessageHandler(
+    Filters.regex("(?i)brb"), afk, friendly="afk", run_async=True)
+
 NO_AFK_HANDLER = DisableAbleMessageHandler(
-    Filters.all & Filters.group, no_longer_afk, friendly="afk", run_async=True
+    Filters.all & Filters.chat_type.groups, no_longer_afk, friendly="afk", run_async=True
 )
 AFK_REPLY_HANDLER = DisableAbleMessageHandler(
     (Filters.entity(MessageEntity.MENTION) | Filters.entity(MessageEntity.TEXT_MENTION))
-    & Filters.group,
+    & Filters.chat_type.groups,
     reply_afk,
     friendly="afk",
     run_async=True,

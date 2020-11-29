@@ -1048,31 +1048,31 @@ LEFT_MEM_HANDLER = MessageHandler(
     Filters.status_update.left_chat_member, left_member, run_async=True
 )
 WELC_PREF_HANDLER = CommandHandler(
-    "welcome", welcome, filters=Filters.group, run_async=True
+    "welcome", welcome, filters=Filters.chat_type.groups, run_async=True
 )
 GOODBYE_PREF_HANDLER = CommandHandler(
-    "goodbye", goodbye, filters=Filters.group, run_async=True
+    "goodbye", goodbye, filters=Filters.chat_type.groups, run_async=True
 )
 SET_WELCOME = CommandHandler(
-    "setwelcome", set_welcome, filters=Filters.group, run_async=True
+    "setwelcome", set_welcome, filters=Filters.chat_type.groups, run_async=True
 )
 SET_GOODBYE = CommandHandler(
-    "setgoodbye", set_goodbye, filters=Filters.group, run_async=True
+    "setgoodbye", set_goodbye, filters=Filters.chat_type.groups, run_async=True
 )
 RESET_WELCOME = CommandHandler(
-    "resetwelcome", reset_welcome, filters=Filters.group, run_async=True
+    "resetwelcome", reset_welcome, filters=Filters.chat_type.groups, run_async=True
 )
 RESET_GOODBYE = CommandHandler(
-    "resetgoodbye", reset_goodbye, filters=Filters.group, run_async=True
+    "resetgoodbye", reset_goodbye, filters=Filters.chat_type.groups, run_async=True
 )
 WELCOMEMUTE_HANDLER = CommandHandler(
-    "welcomemute", welcomemute, filters=Filters.group, run_async=True
+    "welcomemute", welcomemute, filters=Filters.chat_type.groups, run_async=True
 )
 CLEAN_SERVICE_HANDLER = CommandHandler(
-    "cleanservice", cleanservice, filters=Filters.group, run_async=True
+    "cleanservice", cleanservice, filters=Filters.chat_type.groups, run_async=True
 )
 CLEAN_WELCOME = CommandHandler(
-    "cleanwelcome", clean_welcome, filters=Filters.group, run_async=True
+    "cleanwelcome", clean_welcome, filters=Filters.chat_type.groups, run_async=True
 )
 WELCOME_HELP = CommandHandler("welcomehelp", welcome_help, run_async=True)
 WELCOME_MUTE_HELP = CommandHandler("welcomemutehelp", welcome_mute_help, run_async=True)
