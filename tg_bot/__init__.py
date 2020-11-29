@@ -6,9 +6,8 @@ import spamwatch
 import telegram.ext as tg
 from telethon import TelegramClient
 from pyrogram import Client, errors
-from googletrans import Translator
 from configparser import ConfigParser
-
+from googletrans import Translator
 StartTime = time.time()
 
 # enable logging
@@ -52,6 +51,7 @@ INFOPIC = kigconfig.getboolean("INFOPIC")
 DEL_CMDS = kigconfig.getboolean("DEL_CMDS")
 STRICT_GBAN = kigconfig.getboolean("STRICT_GBAN")
 ALLOW_EXCL = kigconfig.getboolean("ALLOW_EXCL")
+CUSTOM_CMD = kigconfig.getboolean("CUSTOM_CMD")
 BAN_STICKER = kigconfig.get("BAN_STICKER")
 WORKERS = kigconfig.getint("WORKERS")
 TOKEN = kigconfig.get("TOKEN")
@@ -105,19 +105,14 @@ SUPPORT_USERS = list(SUPPORT_USERS)
 SARDEGNA_USERS = list(SARDEGNA_USERS)
 SPAMMERS = list(SPAMMERS)
 
-# Load at end to ensure all prev variables have been set
-from tg_bot.modules.helper_funcs.handlers import (
-    CustomHandler,
-    CustomCommandHandler,
-    CustomRegexHandler,
-    CustomMessageHandler,
-)
+# initialize gtranslator
+trl = Translator()
 
-# make sure the regex handler can take extra kwargs
-tg.handler.Handler = CustomHandler
-tg.RegexHandler = CustomRegexHandler
-tg.CommandHandler = CustomCommandHandler
-tg.MessageHandler = CustomMessageHandler
+# Load at end to ensure all prev variables have been set
+from tg_bot.modules.helper_funcs.handlers import CustomCommandHandler
+
+if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
+    tg.CommandHandler = CustomCommandHandler
 
 
 def spamfilters(text, user_id, chat_id):
@@ -127,7 +122,3 @@ def spamfilters(text, user_id, chat_id):
         return True
     else:
         return False
-
-
-# Initialize Translator
-trl = Translator()
