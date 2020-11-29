@@ -4,14 +4,13 @@ from typing import Union
 
 from tg_bot.modules.helper_funcs.msg_types import Types
 from tg_bot.modules.sql import BASE, SESSION
-from sqlalchemy import (BigInteger, Boolean, Column, Integer, String,
-                        UnicodeText)
+from sqlalchemy import BigInteger, Boolean, Column, Integer, String, UnicodeText
 
-DEFAULT_WELCOME = 'Hey {first}, how are you?'
-DEFAULT_GOODBYE = 'Nice knowing ya!'
+DEFAULT_WELCOME = "Hey {first}, how are you?"
+DEFAULT_GOODBYE = "Nice knowing ya!"
 
 DEFAULT_WELCOME_MESSAGES = [
-    "{first} is here!",  #Discord welcome messages copied
+    "{first} is here!",  # Discord welcome messages copied
     "Ready player {first}",
     "Genos, {first} is here.",
     "A wild {first} appeared.",
@@ -51,11 +50,11 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first} has joined. Stay a while and listen!",
     "Roses are red, violets are blue, {first} joined this chat with you",
     "It's a bird! It's a plane! - Nope, its {first}!",
-    "{first} Joined! - Ok.",  #Discord welcome messages end.
+    "{first} Joined! - Ok.",  # Discord welcome messages end.
     "All Hail {first}!",
     "Hi, {first}. Don't lurk, Only Villans do that.",
     "{first} has joined the battle bus.",
-    "A new Challenger enters!",  #Tekken
+    "A new Challenger enters!",  # Tekken
     "Ok!",
     "{first} just fell into the chat!",
     "Something just fell from the sky! - oh, its {first}.",
@@ -86,7 +85,7 @@ DEFAULT_WELCOME_MESSAGES = [
     "Everyone stop what you’re doing, We are now in the presence of {first}.",
     "Hey {first}, Do you wanna know how I got these scars?",
     "Welcome {first}, drop your weapons and proceed to the spy scanner.",
-    "Stay safe {first}, Keep 3 meters social distances between your messages.",  #Corona memes lmao
+    "Stay safe {first}, Keep 3 meters social distances between your messages.",  # Corona memes lmao
     "You’re here now {first}, Resistance is futile",
     "{first} just arrived, the force is strong with this one.",
     "{first} just joined on president’s orders.",
@@ -105,31 +104,31 @@ DEFAULT_WELCOME_MESSAGES = [
     "Behold my new evil scheme, the {first}-Inator.",
     "Ah, {first} the Platypus, you're just in time... to be trapped.",
     "*snaps fingers and teleports {first} here*",
-    "{first} just arrived. Diable Jamble!",  #One Piece Sanji
-    "{first} just arrived. Aschente!",  #No Game No Life
-    "{first} say Aschente to swear by the pledges.",  #No Game No Life
-    "{first} just joined. El psy congroo!",  #Steins Gate
-    "Irasshaimase {first}!",  #weeabo shit
-    "Hi {first}, What is 1000-7?",  #tokyo ghoul
-    "Come. I don't want to destroy this place",  #hunter x hunter
-    "I... am... Whitebeard!...wait..wrong anime.",  #one Piece
-    "Hey {first}...have you ever heard these words?",  #BNHA
-    "Can't a guy get a little sleep around here?",  #Kamina Falls – Gurren Lagann
-    "It's time someone put you in your place, {first}.",  #Hellsing
-    "Unit-01's reactivated..",  #Neon Genesis: Evangelion
-    "Prepare for trouble....And make it double",  #Pokemon
-    "Hey {first}, Are You Challenging Me?",  #Shaggy
-    "Oh? You're Approaching Me?",  #jojo
+    "{first} just arrived. Diable Jamble!",  # One Piece Sanji
+    "{first} just arrived. Aschente!",  # No Game No Life
+    "{first} say Aschente to swear by the pledges.",  # No Game No Life
+    "{first} just joined. El psy congroo!",  # Steins Gate
+    "Irasshaimase {first}!",  # weeabo shit
+    "Hi {first}, What is 1000-7?",  # tokyo ghoul
+    "Come. I don't want to destroy this place",  # hunter x hunter
+    "I... am... Whitebeard!...wait..wrong anime.",  # one Piece
+    "Hey {first}...have you ever heard these words?",  # BNHA
+    "Can't a guy get a little sleep around here?",  # Kamina Falls – Gurren Lagann
+    "It's time someone put you in your place, {first}.",  # Hellsing
+    "Unit-01's reactivated..",  # Neon Genesis: Evangelion
+    "Prepare for trouble....And make it double",  # Pokemon
+    "Hey {first}, Are You Challenging Me?",  # Shaggy
+    "Oh? You're Approaching Me?",  # jojo
     "{first} just warped into the group!",
     "I..it's..it's just {first}.",
     "Sugoi, Dekai. {first} Joined!",
-    "{first}, do you know Gods of death love apples?",  #Death Note owo
-    "I'll take a potato chip.... and eat it",  #Death Note owo
-    "Oshiete oshiete yo sono shikumi wo!",  #Tokyo Ghoul
-    "Kaizoku ou ni...nvm wrong anime.",  #op
-    "{first} just joined! Gear.....second!",  #Op
+    "{first}, do you know Gods of death love apples?",  # Death Note owo
+    "I'll take a potato chip.... and eat it",  # Death Note owo
+    "Oshiete oshiete yo sono shikumi wo!",  # Tokyo Ghoul
+    "Kaizoku ou ni...nvm wrong anime.",  # op
+    "{first} just joined! Gear.....second!",  # Op
     "Omae wa mou....shindeiru",
-    "Hey {first}, the leaf village lotus blooms twice!",  #Naruto stuff begins from here
+    "Hey {first}, the leaf village lotus blooms twice!",  # Naruto stuff begins from here
     "{first} Joined! Omote renge!",
     "{first} joined!, Gate of Opening...open!",
     "{first} joined!, Gate of Healing...open!",
@@ -140,11 +139,11 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first} joined!, Gate of Shock...open!",
     "{first} joined!, Gate of Death...open!",
     "{first}! I, Madara! declare you the strongest",
-    "{first}, this time I'll lend you my power. ",  #Kyuubi to naruto
+    "{first}, this time I'll lend you my power. ",  # Kyuubi to naruto
     "{first}, welcome to the hidden leaf village!",  # Naruto thingies end here
-    "In the jungle you must wait...until the dice read five or eight.",  #Jumanji stuff
+    "In the jungle you must wait...until the dice read five or eight.",  # Jumanji stuff
     "Dr.{first} Famed archeologist and international explorer,\nWelcome to Jumanji!\nJumanji's Fate is up to you now.",
-    "{first}, this will not be an easy mission - monkeys slow the expedition.",  #End of jumanji stuff
+    "{first}, this will not be an easy mission - monkeys slow the expedition.",  # End of jumanji stuff
 ]
 DEFAULT_GOODBYE_MESSAGES = [
     "{first} will be missed.",
@@ -219,11 +218,11 @@ class Welcome(BASE):
     custom_content = Column(UnicodeText, default=None)
 
     custom_welcome = Column(
-        UnicodeText, default=random.choice(DEFAULT_WELCOME_MESSAGES))
+        UnicodeText, default=random.choice(DEFAULT_WELCOME_MESSAGES)
+    )
     welcome_type = Column(Integer, default=Types.TEXT.value)
 
-    custom_leave = Column(
-        UnicodeText, default=random.choice(DEFAULT_GOODBYE_MESSAGES))
+    custom_leave = Column(UnicodeText, default=random.choice(DEFAULT_GOODBYE_MESSAGES))
     leave_type = Column(Integer, default=Types.TEXT.value)
 
     clean_welcome = Column(BigInteger)
@@ -235,7 +234,8 @@ class Welcome(BASE):
 
     def __repr__(self):
         return "<Chat {} should Welcome new users: {}>".format(
-            self.chat_id, self.should_welcome)
+            self.chat_id, self.should_welcome
+        )
 
 
 class WelcomeButtons(BASE):
@@ -285,7 +285,7 @@ class WelcomeMuteUsers(BASE):
     human_check = Column(Boolean)
 
     def __init__(self, user_id, chat_id, human_check):
-        self.user_id = (user_id)  # ensure string
+        self.user_id = user_id  # ensure string
         self.chat_id = str(chat_id)
         self.human_check = human_check
 
@@ -338,8 +338,7 @@ def set_welcome_mutes(chat_id, welcomemutes):
 
 def set_human_checks(user_id, chat_id):
     with INSERTION_LOCK:
-        human_check = SESSION.query(WelcomeMuteUsers).get(
-            (user_id, str(chat_id)))
+        human_check = SESSION.query(WelcomeMuteUsers).get((user_id, str(chat_id)))
         if not human_check:
             human_check = WelcomeMuteUsers(user_id, str(chat_id), True)
 
@@ -354,8 +353,7 @@ def set_human_checks(user_id, chat_id):
 
 def get_human_checks(user_id, chat_id):
     try:
-        human_check = SESSION.query(WelcomeMuteUsers).get(
-            (user_id, str(chat_id)))
+        human_check = SESSION.query(WelcomeMuteUsers).get((user_id, str(chat_id)))
         if not human_check:
             return None
         human_check = human_check.human_check
@@ -378,7 +376,12 @@ def get_welc_pref(chat_id):
     welc = SESSION.query(Welcome).get(str(chat_id))
     SESSION.close()
     if welc:
-        return welc.should_welcome, welc.custom_welcome, welc.custom_content, welc.welcome_type
+        return (
+            welc.should_welcome,
+            welc.custom_welcome,
+            welc.custom_content,
+            welc.welcome_type,
+        )
 
     else:
         # Welcome by default.
@@ -441,11 +444,9 @@ def set_gdbye_preference(chat_id, should_goodbye):
         SESSION.commit()
 
 
-def set_custom_welcome(chat_id,
-                       custom_content,
-                       custom_welcome,
-                       welcome_type,
-                       buttons=None):
+def set_custom_welcome(
+    chat_id, custom_content, custom_welcome, welcome_type, buttons=None
+):
     if buttons is None:
         buttons = []
 
@@ -466,8 +467,11 @@ def set_custom_welcome(chat_id,
         SESSION.add(welcome_settings)
 
         with WELC_BTN_LOCK:
-            prev_buttons = SESSION.query(WelcomeButtons).filter(
-                WelcomeButtons.chat_id == str(chat_id)).all()
+            prev_buttons = (
+                SESSION.query(WelcomeButtons)
+                .filter(WelcomeButtons.chat_id == str(chat_id))
+                .all()
+            )
             for btn in prev_buttons:
                 SESSION.delete(btn)
 
@@ -508,8 +512,11 @@ def set_custom_gdbye(chat_id, custom_goodbye, goodbye_type, buttons=None):
         SESSION.add(welcome_settings)
 
         with LEAVE_BTN_LOCK:
-            prev_buttons = SESSION.query(GoodbyeButtons).filter(
-                GoodbyeButtons.chat_id == str(chat_id)).all()
+            prev_buttons = (
+                SESSION.query(GoodbyeButtons)
+                .filter(GoodbyeButtons.chat_id == str(chat_id))
+                .all()
+            )
             for btn in prev_buttons:
                 SESSION.delete(btn)
 
@@ -532,18 +539,24 @@ def get_custom_gdbye(chat_id):
 
 def get_welc_buttons(chat_id):
     try:
-        return SESSION.query(WelcomeButtons).filter(
-            WelcomeButtons.chat_id == str(chat_id)).order_by(
-                WelcomeButtons.id).all()
+        return (
+            SESSION.query(WelcomeButtons)
+            .filter(WelcomeButtons.chat_id == str(chat_id))
+            .order_by(WelcomeButtons.id)
+            .all()
+        )
     finally:
         SESSION.close()
 
 
 def get_gdbye_buttons(chat_id):
     try:
-        return SESSION.query(GoodbyeButtons).filter(
-            GoodbyeButtons.chat_id == str(chat_id)).order_by(
-                GoodbyeButtons.id).all()
+        return (
+            SESSION.query(GoodbyeButtons)
+            .filter(GoodbyeButtons.chat_id == str(chat_id))
+            .order_by(GoodbyeButtons.id)
+            .all()
+        )
     finally:
         SESSION.close()
 
@@ -576,14 +589,20 @@ def migrate_chat(old_chat_id, new_chat_id):
             chat.chat_id = str(new_chat_id)
 
         with WELC_BTN_LOCK:
-            chat_buttons = SESSION.query(WelcomeButtons).filter(
-                WelcomeButtons.chat_id == str(old_chat_id)).all()
+            chat_buttons = (
+                SESSION.query(WelcomeButtons)
+                .filter(WelcomeButtons.chat_id == str(old_chat_id))
+                .all()
+            )
             for btn in chat_buttons:
                 btn.chat_id = str(new_chat_id)
 
         with LEAVE_BTN_LOCK:
-            chat_buttons = SESSION.query(GoodbyeButtons).filter(
-                GoodbyeButtons.chat_id == str(old_chat_id)).all()
+            chat_buttons = (
+                SESSION.query(GoodbyeButtons)
+                .filter(GoodbyeButtons.chat_id == str(old_chat_id))
+                .all()
+            )
             for btn in chat_buttons:
                 btn.chat_id = str(new_chat_id)
 

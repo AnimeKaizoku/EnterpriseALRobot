@@ -11,7 +11,6 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 import tg_bot.modules.sql.last_fm_sql as sql
 
 
-
 def set_user(update: Update, context: CallbackContext):
     args = context.args
     msg = update.effective_message
@@ -22,16 +21,16 @@ def set_user(update: Update, context: CallbackContext):
         msg.reply_text(f"Username set as {username}!")
     else:
         msg.reply_text(
-            "That's not how this works...\nRun /setuser followed by your username!")
-
+            "That's not how this works...\nRun /setuser followed by your username!"
+        )
 
 
 def clear_user(update: Update, _):
     user = update.effective_user.id
     sql.set_user(user, "")
     update.effective_message.reply_text(
-        "Last.fm username successfully cleared from my database!")
-
+        "Last.fm username successfully cleared from my database!"
+    )
 
 
 def last_fm(update: Update, _):
@@ -45,10 +44,12 @@ def last_fm(update: Update, _):
 
     base_url = "http://ws.audioscrobbler.com/2.0"
     res = requests.get(
-        f"{base_url}?method=user.getrecenttracks&limit=3&extended=1&user={username}&api_key={LASTFM_API_KEY}&format=json")
+        f"{base_url}?method=user.getrecenttracks&limit=3&extended=1&user={username}&api_key={LASTFM_API_KEY}&format=json"
+    )
     if res.status_code != 200:
         msg.reply_text(
-            "Hmm... something went wrong.\nPlease ensure that you've set the correct username!")
+            "Hmm... something went wrong.\nPlease ensure that you've set the correct username!"
+        )
         return
 
     try:
@@ -58,8 +59,7 @@ def last_fm(update: Update, _):
         return
     if first_track.get("@attr"):
         # Ensures the track is now playing
-        image = first_track.get("image")[3].get(
-            "#text")  # Grab URL of 300x300 image
+        image = first_track.get("image")[3].get("#text")  # Grab URL of 300x300 image
         artist = first_track.get("artist").get("name")
         song = first_track.get("name")
         loved = int(first_track.get("loved"))
@@ -72,13 +72,19 @@ def last_fm(update: Update, _):
             rep += f"<a href='{image}'>\u200c</a>"
     else:
         tracks = res.json().get("recenttracks").get("track")
-        track_dict = {tracks[i].get("artist").get(
-            "name"): tracks[i].get("name") for i in range(3)}
+        track_dict = {
+            tracks[i].get("artist").get("name"): tracks[i].get("name") for i in range(3)
+        }
         rep = f"{user} was listening to:\n"
         for artist, song in track_dict.items():
             rep += f"🎧  <code>{artist} - {song}</code>\n"
-        last_user = requests.get(
-            f"{base_url}?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json").json().get("user")
+        last_user = (
+            requests.get(
+                f"{base_url}?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json"
+            )
+            .json()
+            .get("user")
+        )
         scrobbles = last_user.get("playcount")
         rep += f"\n(<code>{scrobbles}</code> scrobbles so far)"
 

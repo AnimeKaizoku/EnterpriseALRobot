@@ -10,7 +10,6 @@ from tg_bot.modules.helper_funcs.chat_status import dev_plus
 DEBUG_MODE = False
 
 
-
 @dev_plus
 def debug(update: Update, context: CallbackContext):
     global DEBUG_MODE
@@ -18,10 +17,10 @@ def debug(update: Update, context: CallbackContext):
     message = update.effective_message
     print(DEBUG_MODE)
     if len(args) > 1:
-        if args[1] in ('yes', 'on'):
+        if args[1] in ("yes", "on"):
             DEBUG_MODE = True
             message.reply_text("Debug mode is now on.")
-        elif args[1] in ('no', 'off'):
+        elif args[1] in ("no", "off"):
             DEBUG_MODE = False
             message.reply_text("Debug mode is now off.")
     else:
@@ -36,14 +35,13 @@ async def i_do_nothing_yes(event):
     global DEBUG_MODE
     if DEBUG_MODE:
         print(f"-{event.from_id} ({event.chat_id}) : {event.text}")
-        if os.path.exists('updates.txt'):
-            with open('updates.txt', 'r') as f:
+        if os.path.exists("updates.txt"):
+            with open("updates.txt", "r") as f:
                 text = f.read()
-            with open('updates.txt', 'w+') as f:
-                f.write(text +
-                        f"\n-{event.from_id} ({event.chat_id}) : {event.text}")
+            with open("updates.txt", "w+") as f:
+                f.write(text + f"\n-{event.from_id} ({event.chat_id}) : {event.text}")
         else:
-            with open('updates.txt', 'w+') as f:
+            with open("updates.txt", "w+") as f:
                 f.write(
                     f"- {event.from_id} ({event.chat_id}) : {event.text} | {datetime.datetime.now()}"
                 )

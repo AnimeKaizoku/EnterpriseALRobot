@@ -18,13 +18,12 @@ if is_module_loaded(FILENAME):
     from tg_bot.modules.sql import log_channel_sql as sql
 
     def loggable(func):
-
         @wraps(func)
         def log_action(update, context, *args, **kwargs):
             result = func(update, context, *args, **kwargs)
             chat = update.effective_chat  # type: Optional[Chat]
             message = update.effective_message  # type: Optional[Message]
-            
+
             if result:
                 datetime_fmt = "%H:%M - %d-%m-%Y"
                 result += f"\n<b>Event Stamp</b>: <code>{datetime.utcnow().strftime(datetime_fmt)}</code>"
@@ -40,17 +39,17 @@ if is_module_loaded(FILENAME):
         return log_action
 
     def gloggable(func):
-
         @wraps(func)
         def glog_action(update, context, *args, **kwargs):
             result = func(update, context, *args, **kwargs)
             chat = update.effective_chat  # type: Optional[Chat]
             message = update.effective_message  # type: Optional[Message]
-            
+
             if result:
                 datetime_fmt = "%H:%M - %d-%m-%Y"
                 result += "\n<b>Event Stamp</b>: <code>{}</code>".format(
-                    datetime.utcnow().strftime(datetime_fmt))
+                    datetime.utcnow().strftime(datetime_fmt)
+                )
 
                 if message.chat.type == chat.SUPERGROUP and message.chat.username:
                     result += f'\n<b>Link:</b> <a href="https://t.me/{chat.username}/{message.message_id}">click here</a>'
@@ -62,20 +61,22 @@ if is_module_loaded(FILENAME):
 
         return glog_action
 
-    def send_log(context: CallbackContext, log_chat_id: str, orig_chat_id: str,
-                 result: str):
+    def send_log(
+        context: CallbackContext, log_chat_id: str, orig_chat_id: str, result: str
+    ):
         bot = context.bot
         try:
             bot.send_message(
                 log_chat_id,
                 result,
                 parse_mode=ParseMode.HTML,
-                disable_web_page_preview=True)
+                disable_web_page_preview=True,
+            )
         except BadRequest as excp:
             if excp.message == "Chat not found":
                 bot.send_message(
-                    orig_chat_id,
-                    "This log channel has been deleted - unsetting.")
+                    orig_chat_id, "This log channel has been deleted - unsetting."
+                )
                 sql.stop_chat_logging(orig_chat_id)
             else:
                 LOGGER.warning(excp.message)
@@ -83,11 +84,11 @@ if is_module_loaded(FILENAME):
                 LOGGER.exception("Could not parse")
 
                 bot.send_message(
-                    log_chat_id, result +
-                    "\n\nFormatting has been disabled due to an unexpected error."
+                    log_chat_id,
+                    result
+                    + "\n\nFormatting has been disabled due to an unexpected error.",
                 )
 
-    
     @user_admin
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
@@ -100,12 +101,12 @@ if is_module_loaded(FILENAME):
             message.reply_text(
                 f"This group has all it's logs sent to:"
                 f" {escape_markdown(log_channel_info.title)} (`{log_channel}`)",
-                parse_mode=ParseMode.MARKDOWN)
+                parse_mode=ParseMode.MARKDOWN,
+            )
 
         else:
             message.reply_text("No log channel has been set for this group!")
 
-    
     @user_admin
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
@@ -131,7 +132,7 @@ if is_module_loaded(FILENAME):
             try:
                 bot.send_message(
                     message.forward_from_chat.id,
-                    f"This channel has been set as the log channel for {chat.title or chat.first_name}."
+                    f"This channel has been set as the log channel for {chat.title or chat.first_name}.",
                 )
             except Unauthorized as excp:
                 if excp.message == "Forbidden: bot is not a member of the channel chat":
@@ -142,12 +143,13 @@ if is_module_loaded(FILENAME):
             bot.send_message(chat.id, "Successfully set log channel!")
 
         else:
-            message.reply_text("The steps to set a log channel are:\n"
-                               " - add bot to the desired channel\n"
-                               " - send /setlog to the channel\n"
-                               " - forward the /setlog to the group\n")
+            message.reply_text(
+                "The steps to set a log channel are:\n"
+                " - add bot to the desired channel\n"
+                " - send /setlog to the channel\n"
+                " - forward the /setlog to the group\n"
+            )
 
-    
     @user_admin
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot
@@ -156,8 +158,9 @@ if is_module_loaded(FILENAME):
 
         log_channel = sql.stop_chat_logging(chat.id)
         if log_channel:
-            bot.send_message(log_channel,
-                             f"Channel has been unlinked from {chat.title}")
+            bot.send_message(
+                log_channel, f"Channel has been unlinked from {chat.title}"
+            )
             message.reply_text("Log channel has been un-set.")
 
         else:
