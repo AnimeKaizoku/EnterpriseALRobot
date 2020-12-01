@@ -254,7 +254,7 @@ if is_module_loaded(FILENAME):
             sql.disable_command(chat_id, disable_cmd)
 
     def __stats__():
-        return "× {} disabled items, across {} chats.".format(
+        return "• {} disabled items, across {} chats.".format(
             sql.num_disabled(), sql.num_chats()
         )
 
