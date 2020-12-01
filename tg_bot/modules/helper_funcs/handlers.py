@@ -9,7 +9,7 @@ except:
 if CUSTOM_CMD:
     CMD_STARTERS = CUSTOM_CMD
 else:
-    CMD_STARTERS = "/"
+    CMD_STARTERS = ["/", "!", "."]
 
 
 class CustomCommandHandler(tg.CommandHandler):
