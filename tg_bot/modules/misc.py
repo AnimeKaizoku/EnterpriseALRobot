@@ -314,7 +314,7 @@ __help__ = """
  • /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
  • /ud <word>: Type the word or expression you want to search use.
  • /urban <word>: Same as /ud
- • /paste - Do a paste at `neko.bin`
+ • /paste - Do a paste at `nekobin.com`
  • /react: Reacts with a random reaction
  • /weebify <text>: returns a weebified text
  • /tr (language code) as reply to a long message.

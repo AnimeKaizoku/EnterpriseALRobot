@@ -39,7 +39,7 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
 # I added extra new lines
 nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
 \n*Eagle Union* - Devs who can access the bots server and can execute, edit, modify bot code. Can also manage other Nations
-\n*God* - Only one exists, bot owner. 
+\n*God* - Only one exists, bot owner.
 Owner has complete bot access, including bot adminship in chats Kigyō is at.
 \n*Royals* - Have super user access, can gban, manage Nations lower than them and are admins in Kigyō.
 \n*Sakuras* - Have access go globally ban users across Kigyō.
@@ -130,7 +130,7 @@ def devlist(update: Update, context: CallbackContext):
 
 
 __help__ = """
- - /eagle - Lists all Hero Union members.
+ - /eagle - Lists all Eagle Union members.
  - /royals - Lists all Royal Nations.
  - /sakuras - Lists all Sakura Nations.
  - /sardegnas - Lists all Sardegnas Nations.

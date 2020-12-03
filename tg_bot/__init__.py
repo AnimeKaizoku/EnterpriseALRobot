@@ -7,7 +7,6 @@ import telegram.ext as tg
 from telethon import TelegramClient
 from pyrogram import Client, errors
 from configparser import ConfigParser
-from googletrans import Translator
 StartTime = time.time()
 
 # enable logging
@@ -104,9 +103,6 @@ WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)
 SARDEGNA_USERS = list(SARDEGNA_USERS)
 SPAMMERS = list(SPAMMERS)
-
-# initialize gtranslator
-trl = Translator()
 
 # Load at end to ensure all prev variables have been set
 from tg_bot.modules.helper_funcs.handlers import CustomCommandHandler
