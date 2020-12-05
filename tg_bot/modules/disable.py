@@ -11,6 +11,11 @@ from tg_bot.modules.helper_funcs.misc import is_module_loaded
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 from tg_bot.modules.connection import connected
 
+
+CMD_STARTERS = tuple(CMD_STARTERS)
+
+
+
 FILENAME = __name__.rsplit(".", 1)[-1]
 
 # If module is due to be loaded, then setup all the magical handlers
