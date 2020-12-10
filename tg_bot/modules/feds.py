@@ -1439,10 +1439,10 @@ def fed_ban_list(update, context):
                 backups += json.dumps(json_parser)
                 backups += "\n"
             with BytesIO(str.encode(backups)) as output:
-                output.name = "perry_fbanned_users.json"
+                output.name = "kigyo_fbanned_users.json"
                 update.effective_message.reply_document(
                     document=output,
-                    filename="perry_fbanned_users.json",
+                    filename="kigyo_fbanned_users.json",
                     caption="Total {} User are blocked by the Federation {}.".format(
                         len(getfban), info["fname"]
                     ),
@@ -1482,10 +1482,10 @@ def fed_ban_list(update, context):
                 )
                 backups += "\n"
             with BytesIO(str.encode(backups)) as output:
-                output.name = "perry_fbanned_users.csv"
+                output.name = "kigyo_fbanned_users.csv"
                 update.effective_message.reply_document(
                     document=output,
-                    filename="perry_fbanned_users.csv",
+                    filename="kigyo_fbanned_users.csv",
                     caption="Total {} User are blocked by Federation {}.".format(
                         len(getfban), info["fname"]
                     ),
@@ -2433,7 +2433,7 @@ You can even designate admin federations, so your trusted admin can ban all the 
  • /fbanlist: Displays all users who are victimized at the Federation at this time.
  • /fednotif <on / off>: Federation settings not in PM when there are users who are fban / unfban.
  • /fedchats: Get all the chats that are connected in the Federation.
- • /importfbans: Reply to the Federation backup message file to import the banned list to the Federation now.
+ • /importfbans: Reply to the Federation backup message file to import the banned list to the Federation now. (disabled for now.)
 """
 
 
@@ -2460,9 +2460,7 @@ FED_USERBAN_HANDLER = CommandHandler(
 )
 FED_NOTIF_HANDLER = CommandHandler("fednotif", fed_notif, pass_args=True)
 FED_CHATLIST_HANDLER = CommandHandler("fedchats", fed_chats, pass_args=True)
-FED_IMPORTBAN_HANDLER = CommandHandler(
-    "importfbans", fed_import_bans, pass_chat_data=True
-)
+# FED_IMPORTBAN_HANDLER = CommandHandler( "importfbans", fed_import_bans, pass_chat_data=True)
 FEDSTAT_USER = DisableAbleCommandHandler(
     ["fedstat", "fbanstat"], fed_stat_user, pass_args=True
 )
@@ -2494,7 +2492,7 @@ dispatcher.add_handler(FED_ADMIN_HANDLER)
 dispatcher.add_handler(FED_USERBAN_HANDLER)
 dispatcher.add_handler(FED_NOTIF_HANDLER)
 dispatcher.add_handler(FED_CHATLIST_HANDLER)
-dispatcher.add_handler(FED_IMPORTBAN_HANDLER)
+# dispatcher.add_handler(FED_IMPORTBAN_HANDLER)
 dispatcher.add_handler(FEDSTAT_USER)
 dispatcher.add_handler(SET_FED_LOG)
 dispatcher.add_handler(UNSET_FED_LOG)

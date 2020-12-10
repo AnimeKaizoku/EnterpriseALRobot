@@ -1,7 +1,7 @@
 import html
 import random
 import time
-
+import requests
 from telegram import ParseMode, Update, ChatPermissions
 from telegram.ext import CallbackContext
 from telegram.error import BadRequest
@@ -71,44 +71,14 @@ def slap(update: Update, context: CallbackContext):
     reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-def pat(update: Update, context: CallbackContext):
-    bot = context.bot
-    args = context.args
-    message = update.effective_message
-
-    reply_to = message.reply_to_message if message.reply_to_message else message
-
-    curr_user = html.escape(message.from_user.first_name)
-    user_id = extract_user(message, args)
-
-    if user_id:
-        patted_user = bot.get_chat(user_id)
-        user1 = curr_user
-        user2 = html.escape(patted_user.first_name)
-
-    else:
-        user1 = bot.first_name
-        user2 = curr_user
-
-    pat_type = random.choice(("Text", "Gif", "Sticker"))
-    if pat_type == "Gif":
-        try:
-            temp = random.choice(fun_strings.PAT_GIFS)
-            reply_to.reply_animation(temp)
-        except BadRequest:
-            pat_type = "Text"
-
-    if pat_type == "Sticker":
-        try:
-            temp = random.choice(fun_strings.PAT_STICKERS)
-            reply_to.reply_sticker(temp)
-        except BadRequest:
-            pat_type = "Text"
-
-    if pat_type == "Text":
-        temp = random.choice(fun_strings.PAT_TEMPLATES)
-        reply = temp.format(user1=user1, user2=user2)
-        reply_to.reply_text(reply, parse_mode=ParseMode.HTML)
+def pat(update: Update, _):
+    msg = update.effective_message
+    pat = requests.get("https://some-random-api.ml/animu/pat").json()
+    link = pat.get("link")
+    if not link:
+        msg.reply_text("No URL was received from the API!")
+        return
+    msg.reply_video(link)
 
 
 def roll(update: Update, context: CallbackContext):
@@ -168,20 +138,21 @@ def table(update: Update, context: CallbackContext):
 
 
 __help__ = """
- - /runs: reply a random string from an array of replies.
- - /slap: slap a user, or get slapped if not a reply.
- - /shrug : get shrug XD.
- - /table : get flip/unflip :v.
- - /decide : Randomly answers yes/no/maybe
- - /toss : Tosses A coin
- - /bluetext : check urself :V
- - /roll : Roll a dice.
- - /rlg : Join ears,nose,mouth and create an emo ;-;
- - /shout <keyword>: write anything you want to give loud shout.
- - /stickerid: reply to a sticker to get its ID.
- - /getsticker: reply to a sticker to get the raw PNG image.
- - /steal: reply to a sticker or image to add it to your pack.
- - /stickers: search stickers in combot sticker finder.
+ • /runs: reply a random string from an array of replies.
+ • /pat: pat a person, cool thing to have for cute ones :3
+ • /slap: slap a user, or get slapped if not a reply.
+ • /shrug : get shrug XD.
+ • /table : get flip/unflip :v.
+ • /decide : Randomly answers yes/no/maybe
+ • /toss : Tosses A coin
+ • /bluetext : check urself :V
+ • /roll : Roll a dice.
+ • /rlg : Join ears,nose,mouth and create an emo ;-;
+ • /shout <keyword>: write anything you want to give loud shout.
+ • /stickerid: reply to a sticker to get its ID.
+ • /getsticker: reply to a sticker to get the raw PNG image.
+ • /steal: reply to a sticker or image to add it to your pack.
+ • /stickers: search stickers in combot sticker finder.
 """
 
 RUNS_HANDLER = DisableAbleCommandHandler("runs", runs, run_async=True)
