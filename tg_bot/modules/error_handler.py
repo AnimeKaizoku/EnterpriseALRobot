@@ -59,7 +59,7 @@ def error_callback(update: Update, context: CallbackContext):
             return
         key = key.get('result').get('key')
         url = f'https://nekobin.com/{key}.py'
-        context.bot.send_message(660565862, text=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url = url)]]), parse_mode = 'html')
+        context.bot.send_message(OWNER_ID, text=f"#{context.error.identifier}\n<b>Your sugar mommy got an error for you, you cute guy:</b>\n<code>{e}</code>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url = url)]]), parse_mode = 'html')
 
 def list_errors(update: Update, context: CallbackContext):
     if update.effective_user.id not in DEV_USERS:

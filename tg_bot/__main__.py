@@ -542,54 +542,6 @@ def migrate_chats(context: CallbackContext, update: Update):
     raise DispatcherHandlerStop
 
 
-def error_handler(update: Update, context: CallbackContext) -> None:
-    try:
-       """Log the error and send a telegram message to notify the developer."""
-       # Log the error before we do anything else, so we can see it even if something breaks.
-       LOGGER.error(msg="Exception while handling an update:", exc_info=context.error)
-       if isinstance(context.error, SQLAlchemyError) or isinstance(
-           context.error, DBAPIError
-       ):
-           return
-    # traceback.format_exception returns the usual python message about an exception, but as a
-    # list of strings rather than a single string, so we have to join them together.
-       else:
-           tb_list = traceback.format_exception(
-               None, context.error, context.error.__traceback__
-           )
-           tb_string = "".join(tb_list)
-
-           # Build the message with some markup and additional information about what happened.
-           # You might need to add some logic to deal with messages longer than the 4096 character limit.
-           message = (
-               f"An exception was raised while handling an update\n"
-               f"update = {(json.dumps(update.to_dict(), indent=2, ensure_ascii=False))}"
-               "\n\n"
-               f"context.chat_data = {(str(context.chat_data))}\n\n"
-               f"context.user_data = {(str(context.user_data))}\n\n"
-               f"{(tb_string)}"
-           )
-
-           key = (
-               requests.post(
-                   "https://nekobin.com/api/documents", json={"content": message}
-               )
-               .json()
-               .get("result")
-               .get("key")
-           )
-           url = f"https://nekobin.com/{key}.py"
-           markup = InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url=url)]])
-    except AttributeError:
-        print("Failed to paste error log. :c")
-    # Finally, send the message
-    context.bot.send_message(
-        chat_id=OWNER_ID,
-        text="Your sugar mommy got some errors for you, you cute guy.",
-        reply_markup=markup,
-    )
-
-
 def main():
     test_handler = CommandHandler("test", test, run_async=True)
     start_handler = CommandHandler("start", start, pass_args=True, run_async=True)
@@ -618,7 +570,7 @@ def main():
     dispatcher.add_handler(migrate_handler)
     dispatcher.add_handler(donate_handler)
 
-    dispatcher.add_error_handler(error_handler)
+    # dispatcher.add_error_handler(error_handler)
 
     if WEBHOOK:
         LOGGER.info("Using webhooks.")
