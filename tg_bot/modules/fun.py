@@ -1,6 +1,9 @@
 import html
+import json
 import random
 import time
+import urllib.request
+import urllib.parse
 import requests
 from telegram import ParseMode, Update, ChatPermissions
 from telegram.ext import CallbackContext
@@ -71,14 +74,25 @@ def slap(update: Update, context: CallbackContext):
     reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-def pat(update: Update, _):
-    msg = update.effective_message
-    pat = requests.get("https://some-random-api.ml/animu/pat").json()
-    link = pat.get("link")
-    if not link:
-        msg.reply_text("No URL was received from the API!")
-        return
-    msg.reply_video(link)
+def pat(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    msg = str(update.message.text)
+    try:
+        msg = msg.split(" ", 1)[1]
+    except IndexError:
+        msg = ""
+    msg_id = update.effective_message.reply_to_message.message_id if update.effective_message.reply_to_message else update.effective_message.message_id
+    pats = []
+    pats = json.loads(urllib.request.urlopen(urllib.request.Request(
+    'http://headp.at/js/pats.json',
+    headers={'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686) '
+         'Gecko/20071127 Firefox/2.0.0.11'}
+    )).read().decode('utf-8'))
+    if "@" in msg and len(msg) > 5:
+        context.bot.send_photo(chat_id, f'https://headp.at/pats/{urllib.parse.quote(random.choice(pats))}', caption=msg)
+    else:
+        context.bot.send_photo(chat_id, f'https://headp.at/pats/{urllib.parse.quote(random.choice(pats))}', reply_to_message_id=msg_id)
+
 
 
 def roll(update: Update, context: CallbackContext):
@@ -95,16 +109,6 @@ def shrug(update: Update, context: CallbackContext):
         msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
     )
     reply_text(r"¯\_(ツ)_/¯")
-
-
-def bluetext(update: Update, context: CallbackContext):
-    msg = update.effective_message
-    reply_text = (
-        msg.reply_to_message.reply_text if msg.reply_to_message else msg.reply_text
-    )
-    reply_text(
-        "/BLUE /TEXT\n/MUST /CLICK\n/I /AM /A /STUPID /ANIMAL /THAT /IS /ATTRACTED /TO /COLORS"
-    )
 
 
 def rlg(update: Update, context: CallbackContext):
@@ -145,7 +149,6 @@ __help__ = """
  • /table : get flip/unflip :v.
  • /decide : Randomly answers yes/no/maybe
  • /toss : Tosses A coin
- • /bluetext : check urself :V
  • /roll : Roll a dice.
  • /rlg : Join ears,nose,mouth and create an emo ;-;
  • /shout <keyword>: write anything you want to give loud shout.
@@ -160,7 +163,6 @@ SLAP_HANDLER = DisableAbleCommandHandler("slap", slap, pass_args=True, run_async
 ROLL_HANDLER = DisableAbleCommandHandler("roll", roll, run_async=True)
 TOSS_HANDLER = DisableAbleCommandHandler("toss", toss, run_async=True)
 SHRUG_HANDLER = DisableAbleCommandHandler("shrug", shrug, run_async=True)
-BLUETEXT_HANDLER = DisableAbleCommandHandler("bluetext", bluetext, run_async=True)
 RLG_HANDLER = DisableAbleCommandHandler("rlg", rlg, run_async=True)
 DECIDE_HANDLER = DisableAbleCommandHandler("decide", decide, run_async=True)
 TABLE_HANDLER = DisableAbleCommandHandler("table", table, run_async=True)
@@ -172,7 +174,6 @@ dispatcher.add_handler(SLAP_HANDLER)
 dispatcher.add_handler(ROLL_HANDLER)
 dispatcher.add_handler(TOSS_HANDLER)
 dispatcher.add_handler(SHRUG_HANDLER)
-dispatcher.add_handler(BLUETEXT_HANDLER)
 dispatcher.add_handler(RLG_HANDLER)
 dispatcher.add_handler(DECIDE_HANDLER)
 dispatcher.add_handler(TABLE_HANDLER)
@@ -185,7 +186,6 @@ __command_list__ = [
     "roll",
     "toss",
     "shrug",
-    "bluetext",
     "rlg",
     "decide",
     "table",
@@ -197,7 +197,6 @@ __handlers__ = [
     ROLL_HANDLER,
     TOSS_HANDLER,
     SHRUG_HANDLER,
-    BLUETEXT_HANDLER,
     RLG_HANDLER,
     DECIDE_HANDLER,
     TABLE_HANDLER,
