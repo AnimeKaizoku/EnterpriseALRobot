@@ -24,14 +24,12 @@ from telegram.ext import (
 )
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
-from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 from tg_bot import (
     dispatcher,
     updater,
     TOKEN,
     WEBHOOK,
     OWNER_ID,
-    DONATION_LINK,
     CERT_PATH,
     PORT,
     URL,
@@ -46,7 +44,7 @@ from tg_bot import (
 from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
-
+from tg_bot.modules.disable import DisableAbleCommandHandler
 PM_START_TEXT = """
 Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
@@ -69,7 +67,6 @@ the things I can help you with.
 
 KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
-DONATE_STRING = """I'm free for everyone!! """
 
 IMPORTED = {}
 MIGRATEABLE = []
@@ -490,40 +487,13 @@ def get_settings(update: Update, context: CallbackContext):
         send_settings(chat.id, user.id, True)
 
 
-def donate(context: CallbackContext, update: Update):
-    user = update.effective_message.from_user
-    chat = update.effective_chat  # type: Optional[Chat]
-
-    if chat.type == "private":
-        update.effective_message.reply_text(
-            DONATE_STRING, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
-        )
-
-        if OWNER_ID != 254318997 and DONATION_LINK:
-            update.effective_message.reply_text(
-                "You can also donate to the person currently running me "
-                "[here]({})".format(DONATION_LINK),
-                parse_mode=ParseMode.MARKDOWN,
-            )
-
-    else:
-        try:
-            context.bot.send_message(
-                user.id,
-                DONATE_STRING,
-                parse_mode=ParseMode.MARKDOWN,
-            )
-
-            update.effective_message.reply_text(
-                "I've PM'ed you about donating to my creator!"
-            )
-        except Unauthorized:
-            update.effective_message.reply_text(
-                "Contact me in PM first to get donation information."
-            )
+def donate(update: Update, context: CallbackContext):
+    update.effective_message.reply_text(
+        "I'm free for everyone! >_<"
+    )
 
 
-def migrate_chats(context: CallbackContext, update: Update):
+def migrate_chats(update: Update, context: CallbackContext):
     msg = update.effective_message  # type: Optional[Message]
     if msg.migrate_to_chat_id:
         old_chat = update.effective_chat.id
@@ -556,7 +526,7 @@ def main():
         settings_button, pattern=r"stngs_", run_async=True
     )
 
-    donate_handler = CommandHandler("donate", donate, run_async=True)
+    donate_handler = DisableAbleCommandHandler("donate", donate, run_async=True)
     migrate_handler = MessageHandler(
         Filters.status_update.migrate, migrate_chats, run_async=True
     )
