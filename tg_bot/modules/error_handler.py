@@ -55,7 +55,7 @@ def error_callback(update: Update, context: CallbackContext):
         if not key.get('result', {}).get('key'):
             with open('error.txt', 'w+') as f:
                 f.write(pretty_message)
-            context.bot.send_document(OWNER_ID, open('error.txt', 'rb'),caption=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>", parse_mode = 'html')
+            context.bot.send_document(OWNER_ID, open('error.txt', 'rb'),caption=f"#{context.error.identifier}\n<b>Your sugar mommy got an error for you, you cute guy:</b>\n<code>{e}</code>", parse_mode = 'html')
             return
         key = key.get('result').get('key')
         url = f'https://nekobin.com/{key}.py'
