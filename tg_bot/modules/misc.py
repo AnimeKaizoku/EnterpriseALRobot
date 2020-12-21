@@ -321,8 +321,7 @@ __help__ = """
  • /time <query> : Gives information about a timezone.
  • /cash : currency converter
    example syntax: /cash 1 USD INR
- • /cinfo : get info about a user or a chat (uses @Pyrogram methods)
- • /getid : get IDs of chat, user and chat message.
+ • /whois : get info about a user (uses @Pyrogram methods)
  • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
 ───────────────────────────────
 *Last.FM*
