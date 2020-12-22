@@ -89,8 +89,11 @@ if spamwatch_api is None:
     sw = None
     LOGGER.warning("SpamWatch API key is missing! Check your config.env.")
 else:
-    sw = spamwatch.Client(spamwatch_api)
-
+    try:
+        sw = spamwatch.Client(spamwatch_api)
+    except:
+        sw = None
+        LOGGER.warning("Can't connect to SpamWatch!")
 
 updater = tg.Updater(TOKEN, workers=WORKERS)
 telethn = TelegramClient("kigyo", APP_ID, API_HASH)
