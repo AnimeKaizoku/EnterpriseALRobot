@@ -96,7 +96,7 @@ def send(update, message, keyboard, backup_message):
                 message,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=keyboard,
-                quote=False
+                quote=False,
             )
         elif excp.message == "Button_url_invalid":
             msg = update.effective_message.reply_text(

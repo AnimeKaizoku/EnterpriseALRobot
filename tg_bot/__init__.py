@@ -9,6 +9,7 @@ from pyrogram import Client, errors
 from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
 from pyrogram.types import Chat, User
 from configparser import ConfigParser
+
 StartTime = time.time()
 
 # enable logging
@@ -130,6 +131,7 @@ async def get_entity(client, entity):
                 entity = await kp.get_chat(entity)
                 entity_client = kp
     return entity, entity_client
+
 
 SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
 DEV_USERS = list(DEV_USERS)

@@ -45,6 +45,7 @@ from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.disable import DisableAbleCommandHandler
+
 PM_START_TEXT = """
 Hi {}, my name is {}!
 I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
@@ -488,9 +489,7 @@ def get_settings(update: Update, context: CallbackContext):
 
 
 def donate(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        "I'm free for everyone! >_<"
-    )
+    update.effective_message.reply_text("I'm free for everyone! >_<")
 
 
 def migrate_chats(update: Update, context: CallbackContext):

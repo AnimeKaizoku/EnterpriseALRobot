@@ -1,8 +1,13 @@
 import telegram.ext as tg
 from telegram import Update
 from tg_bot import DEV_USERS, SUDO_USERS, WHITELIST_USERS, SUPPORT_USERS, SARDEGNA_USERS
-from pyrate_limiter import (BucketFullException, Duration, RequestRate, Limiter,
-                            MemoryListBucket)
+from pyrate_limiter import (
+    BucketFullException,
+    Duration,
+    RequestRate,
+    Limiter,
+    MemoryListBucket,
+)
 
 try:
     from tg_bot import CUSTOM_CMD
@@ -14,13 +19,17 @@ if CUSTOM_CMD:
 else:
     CMD_STARTERS = ["/", "!", "."]
 
-class AntiSpam:
 
+class AntiSpam:
     def __init__(self):
-        self.whitelist = (DEV_USERS or []) + (SUDO_USERS or []) + (
-            WHITELIST_USERS or []) + (SUPPORT_USERS or []) + (
-                SARDEGNA_USERS or [])
-        #Values are HIGHLY experimental, its recommended you pay attention to our commits as we will be adjusting the values over time with what suits best.
+        self.whitelist = (
+            (DEV_USERS or [])
+            + (SUDO_USERS or [])
+            + (WHITELIST_USERS or [])
+            + (SUPPORT_USERS or [])
+            + (SARDEGNA_USERS or [])
+        )
+        # Values are HIGHLY experimental, its recommended you pay attention to our commits as we will be adjusting the values over time with what suits best.
         Duration.CUSTOM = 15  # Custom duration, 15 seconds
         self.sec_limit = RequestRate(6, Duration.CUSTOM)  # 6 / Per 15 Seconds
         self.min_limit = RequestRate(20, Duration.MINUTE)  # 20 / Per minute
@@ -31,7 +40,8 @@ class AntiSpam:
             self.min_limit,
             self.hour_limit,
             self.daily_limit,
-            bucket_class=MemoryListBucket)
+            bucket_class=MemoryListBucket,
+        )
 
     def check_user(self, user):
         """

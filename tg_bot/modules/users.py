@@ -164,7 +164,9 @@ __help__ = ""  # no help string
 BROADCAST_HANDLER = CommandHandler(
     ["broadcastall", "broadcastusers", "broadcastgroups"], broadcast, run_async=True
 )
-USER_HANDLER = MessageHandler(Filters.all & Filters.chat_type.groups, log_user, run_async=True)
+USER_HANDLER = MessageHandler(
+    Filters.all & Filters.chat_type.groups, log_user, run_async=True
+)
 CHAT_CHECKER_HANDLER = MessageHandler(
     Filters.all & Filters.chat_type.groups, chat_checker, run_async=True
 )
