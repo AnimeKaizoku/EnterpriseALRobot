@@ -26,7 +26,8 @@ LOGGER.info("\_| \_/ |_|  \__, |  \__, |  \___/  ")
 LOGGER.info("              __/ |   __/ |       ")
 LOGGER.info("             |___/   |___/       ")
 LOGGER.info("                                   ")
-LOGGER.info("By github.com/Dank-del (t.me/dank_as_fuck)")
+LOGGER.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
+LOGGER.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     LOGGER.error(
@@ -87,10 +88,13 @@ DEV_USERS.append(OWNER_ID)
 # SpamWatch
 if spamwatch_api is None:
     sw = None
-    LOGGER.warning("SpamWatch API key is missing! Check your config.env.")
+    LOGGER.warning("SpamWatch API key is missing! Check your config.ini")
 else:
-    sw = spamwatch.Client(spamwatch_api)
-
+    try:
+        sw = spamwatch.Client(spamwatch_api)
+    except:
+        sw = None
+        LOGGER.warning("Can't connect to SpamWatch!")
 
 updater = tg.Updater(TOKEN, workers=WORKERS)
 telethn = TelegramClient("kigyo", APP_ID, API_HASH)

@@ -628,6 +628,10 @@ def fed_ban(update, context):
         message.reply_text("This person can't be fbanned!")
         return
 
+    if int(user_id) in (777000, 1087968824):
+        message.reply_text("I'm not fbanning Telegram bots.")
+        return
+        
     try:
         user_chat = context.bot.get_chat(user_id)
         isvalid = True
