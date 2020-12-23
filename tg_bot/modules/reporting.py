@@ -1,6 +1,6 @@
 import html
 
-from tg_bot import LOGGER, SUDO_USERS, SARDEGNA_USERS, WHITELIST_USERS, dispatcher
+from tg_bot import log, SUDO_USERS, SARDEGNA_USERS, WHITELIST_USERS, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import user_admin, user_not_admin
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql import reporting_sql as sql
@@ -191,7 +191,7 @@ def report(update: Update, context: CallbackContext) -> str:
                 except Unauthorized:
                     pass
                 except BadRequest as excp:  # TODO: cleanup exceptions
-                    LOGGER.exception("Exception while reporting user")
+                    log.exception("Exception while reporting user")
 
         message.reply_to_message.reply_text(
             f"{mention_html(user.id, user.first_name)} reported the message to the admins.",
@@ -273,7 +273,9 @@ __help__ = """
 """
 
 SETTING_HANDLER = CommandHandler("reports", report_setting, run_async=True)
-REPORT_HANDLER = CommandHandler("report", report, filters=Filters.chat_type.groups, run_async=True)
+REPORT_HANDLER = CommandHandler(
+    "report", report, filters=Filters.chat_type.groups, run_async=True
+)
 ADMIN_REPORT_HANDLER = MessageHandler(
     Filters.regex(r"(?i)@admin(s)?"), report, run_async=True
 )

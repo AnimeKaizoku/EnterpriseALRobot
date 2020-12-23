@@ -3,7 +3,7 @@ from io import BytesIO
 from typing import Optional
 
 import tg_bot.modules.sql.notes_sql as sql
-from tg_bot import LOGGER, dispatcher, SUDO_USERS
+from tg_bot import log, dispatcher, SUDO_USERS
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, connection_status
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
@@ -198,10 +198,10 @@ def get(update, context, notename, show_none=True, no_format=False):
                         "This note could not be sent, as it is incorrectly formatted. Ask in "
                         f"@YorkTownEagleUnion if you can't figure out why!"
                     )
-                    LOGGER.exception(
+                    log.exception(
                         "Could not parse message #%s in chat %s", notename, str(chat_id)
                     )
-                    LOGGER.warning("Message was: %s", str(note.value))
+                    log.warning("Message was: %s", str(note.value))
         return
     elif show_none:
         message.reply_text("This note doesn't exist")

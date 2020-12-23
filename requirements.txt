@@ -26,3 +26,4 @@ alphabet_detector
 pyrate-limiter
 bleach
 cachetools
+loguru

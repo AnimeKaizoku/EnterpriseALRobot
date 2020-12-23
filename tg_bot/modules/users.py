@@ -2,7 +2,7 @@ from io import BytesIO
 from time import sleep
 
 import tg_bot.modules.sql.users_sql as sql
-from tg_bot import DEV_USERS, LOGGER, OWNER_ID, dispatcher
+from tg_bot import DEV_USERS, log, OWNER_ID, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus, sudo_plus
 from tg_bot.modules.sql.users_sql import get_all_users
 from telegram import TelegramError, Update
@@ -41,7 +41,7 @@ def get_user_id(username):
                 if excp.message == "Chat not found":
                     pass
                 else:
-                    LOGGER.exception("Error extracting user ID")
+                    log.exception("Error extracting user ID")
 
     return None
 
@@ -164,7 +164,9 @@ __help__ = ""  # no help string
 BROADCAST_HANDLER = CommandHandler(
     ["broadcastall", "broadcastusers", "broadcastgroups"], broadcast, run_async=True
 )
-USER_HANDLER = MessageHandler(Filters.all & Filters.chat_type.groups, log_user, run_async=True)
+USER_HANDLER = MessageHandler(
+    Filters.all & Filters.chat_type.groups, log_user, run_async=True
+)
 CHAT_CHECKER_HANDLER = MessageHandler(
     Filters.all & Filters.chat_type.groups, chat_checker, run_async=True
 )

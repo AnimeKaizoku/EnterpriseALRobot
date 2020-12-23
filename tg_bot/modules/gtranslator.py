@@ -7,9 +7,13 @@ from pyrogram import filters
 @kp.on_message(filters.command(["tr", "tl"], prefixes=["/", "!", "."]))
 async def translate(_client, message):
     trl = Translator()
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+    if message.reply_to_message and (
+        message.reply_to_message.text or message.reply_to_message.caption
+    ):
         if len(message.text.split()) == 1:
-            await message.reply_text("Provide lang code.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n**Usage:** `/tr en`")
+            await message.reply_text(
+                "Provide lang code.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n**Usage:** `/tr en`"
+            )
             return
         target = message.text.split()[1]
         if message.reply_to_message.text:
@@ -24,7 +28,9 @@ async def translate(_client, message):
             return
     else:
         if len(message.text.split()) <= 2:
-            await message.reply_text("Provide lang code.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n**Usage:** `/tr en`")
+            await message.reply_text(
+                "Provide lang code.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n**Usage:** `/tr en`"
+            )
             return
         target = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
@@ -37,7 +43,8 @@ async def translate(_client, message):
 
     await message.reply_text(f"**Translated:**\n```{tekstr.text}```")
 
-if  __name__=="__translate__":
+
+if __name__ == "__translate__":
     asyncio.run(translate())
 
 

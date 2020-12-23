@@ -9,28 +9,45 @@ from pyrogram import Client, errors
 from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
 from pyrogram.types import Chat, User
 from configparser import ConfigParser
+from loguru import logger
 StartTime = time.time()
 
 # enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+class InterceptHandler(logging.Handler):
+    LEVELS_MAP = {
+        logging.CRITICAL: "CRITICAL",
+        logging.ERROR: "ERROR",
+        logging.WARNING: "WARNING",
+        logging.INFO: "INFO",
+        logging.DEBUG: "DEBUG"
+    }
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
-LOGGER.info(" _   __                           ")
-LOGGER.info("| | / / (_)    __    _   _     __  ")
-LOGGER.info("|    \  | |  / _` | | | | |  / _ \  ")
-LOGGER.info("| |\  \ | | | (_| | | |_| | | (_) |  ")
-LOGGER.info("\_| \_/ |_|  \__, |  \__, |  \___/  ")
-LOGGER.info("              __/ |   __/ |       ")
-LOGGER.info("             |___/   |___/       ")
-LOGGER.info("                                   ")
-LOGGER.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
-LOGGER.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
+    def _get_level(self, record):
+        return self.LEVELS_MAP.get(record.levelno, record.levelno)
+
+    def emit(self, record):
+        logger_opt = logger.opt(depth=6, exception=record.exc_info, ansi=True, lazy=True)
+        logger_opt.log(self._get_level(record), record.getMessage())
+
+
+logging.basicConfig(handlers=[InterceptHandler()], level=logging.INFO)
+log = logging.getLogger(__name__)
+
+
+log.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
+log.info(" _   __                           ")
+log.info("| | / / (_)    __    _   _     __  ")
+log.info("|    \  | |  / _` | | | | |  / _ \  ")
+log.info("| |\  \ | | | (_| | | |_| | | (_) |  ")
+log.info("\_| \_/ |_|  \__, |  \__, |  \___/  ")
+log.info("              __/ |   __/ |       ")
+log.info("             |___/   |___/       ")
+log.info("                                   ")
+log.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
+log.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    LOGGER.error(
+    log.error(
         "You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting."
     )
     quit(1)
@@ -88,13 +105,13 @@ DEV_USERS.append(OWNER_ID)
 # SpamWatch
 if spamwatch_api is None:
     sw = None
-    LOGGER.warning("SpamWatch API key is missing! Check your config.ini")
+    log.warning("SpamWatch API key is missing! Check your config.ini")
 else:
     try:
         sw = spamwatch.Client(spamwatch_api)
     except:
         sw = None
-        LOGGER.warning("Can't connect to SpamWatch!")
+        log.warning("Can't connect to SpamWatch!")
 
 updater = tg.Updater(TOKEN, workers=WORKERS)
 telethn = TelegramClient("kigyo", APP_ID, API_HASH)
@@ -130,6 +147,7 @@ async def get_entity(client, entity):
                 entity = await kp.get_chat(entity)
                 entity_client = kp
     return entity, entity_client
+
 
 SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
 DEV_USERS = list(DEV_USERS)

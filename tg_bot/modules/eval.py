@@ -6,7 +6,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
-from tg_bot import LOGGER, dispatcher
+from tg_bot import log, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, CommandHandler
@@ -31,7 +31,7 @@ def namespace_of(chat, update, bot):
 def log_input(update):
     user = update.effective_user.id
     chat = update.effective_chat.id
-    LOGGER.info(f"IN: {update.effective_message.text} (user={user}, chat={chat})")
+    log.info(f"IN: {update.effective_message.text} (user={user}, chat={chat})")
 
 
 def send(msg, bot, update):
@@ -40,7 +40,7 @@ def send(msg, bot, update):
             out_file.name = "output.txt"
             bot.send_document(chat_id=update.effective_chat.id, document=out_file)
     else:
-        LOGGER.info(f"OUT: '{msg}'")
+        log.info(f"OUT: '{msg}'")
         bot.send_message(
             chat_id=update.effective_chat.id,
             text=f"`{msg}`",

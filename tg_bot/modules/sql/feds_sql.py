@@ -16,9 +16,7 @@ class Federations(BASE):
     fed_log = Column(UnicodeText)
     fed_users = Column(UnicodeText)
 
-    def __init__(
-        self, owner_id, fed_name, fed_id, fed_rules, fed_log, fed_users
-    ):
+    def __init__(self, owner_id, fed_name, fed_id, fed_rules, fed_log, fed_users):
         self.owner_id = owner_id
         self.fed_name = fed_name
         self.fed_id = fed_id
@@ -49,9 +47,7 @@ class BansF(BASE):
     reason = Column(UnicodeText, default="")
     time = Column(Integer, default=0)
 
-    def __init__(
-        self, fed_id, user_id, first_name, last_name, user_name, reason, time
-    ):
+    def __init__(self, fed_id, user_id, first_name, last_name, user_name, reason, time):
         self.fed_id = fed_id
         self.user_id = user_id
         self.first_name = first_name
@@ -154,9 +150,7 @@ def get_user_fban(fed_id, user_id):
 def get_user_admin_fed_name(user_id):
     user_feds = []
     for f in FEDERATION_BYFEDID:
-        if int(user_id) in eval(
-            eval(FEDERATION_BYFEDID[f]["fusers"])["members"]
-        ):
+        if int(user_id) in eval(eval(FEDERATION_BYFEDID[f]["fusers"])["members"]):
             user_feds.append(FEDERATION_BYFEDID[f]["fname"])
     return user_feds
 
@@ -172,9 +166,7 @@ def get_user_owner_fed_name(user_id):
 def get_user_admin_fed_full(user_id):
     user_feds = []
     for f in FEDERATION_BYFEDID:
-        if int(user_id) in eval(
-            eval(FEDERATION_BYFEDID[f]["fusers"])["members"]
-        ):
+        if int(user_id) in eval(eval(FEDERATION_BYFEDID[f]["fusers"])["members"]):
             user_feds.append({"fed_id": f, "fed": FEDERATION_BYFEDID[f]})
     return user_feds
 

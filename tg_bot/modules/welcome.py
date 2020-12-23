@@ -7,7 +7,7 @@ from functools import partial
 import tg_bot.modules.sql.welcome_sql as sql
 from tg_bot import (
     DEV_USERS,
-    LOGGER,
+    log,
     OWNER_ID,
     SUDO_USERS,
     SUPPORT_USERS,
@@ -96,7 +96,7 @@ def send(update, message, keyboard, backup_message):
                 message,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=keyboard,
-                quote=False
+                quote=False,
             )
         elif excp.message == "Button_url_invalid":
             msg = update.effective_message.reply_text(
@@ -126,9 +126,9 @@ def send(update, message, keyboard, backup_message):
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
             )
-            LOGGER.warning(message)
-            LOGGER.warning(keyboard)
-            LOGGER.exception("Could not parse! got invalid url host errors")
+            log.warning(message)
+            log.warning(keyboard)
+            log.exception("Could not parse! got invalid url host errors")
         elif excp.message == "Have no rights to send a message":
             return
         else:
@@ -140,7 +140,7 @@ def send(update, message, keyboard, backup_message):
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
             )
-            LOGGER.exception()
+            log.exception()
     return msg
 
 
