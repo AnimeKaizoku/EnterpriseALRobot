@@ -26,7 +26,7 @@ from tg_bot import (
     SUDO_USERS,
     WHITELIST_USERS,
     GBAN_LOGS,
-    LOGGER,
+    log,
 )
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.extraction import (
@@ -56,7 +56,7 @@ from tg_bot.modules.helper_funcs.alternate import (
 #
 # Total spended for making this features is 68+ hours
 
-# LOGGER.info("Original federation module by MrYacha, reworked by Mizukito Akito (@peaktogoo) on Telegram.")
+# log.info("Original federation module by MrYacha, reworked by Mizukito Akito (@peaktogoo) on Telegram.")
 
 # TODO: Fix Loads of code duplication
 
@@ -103,7 +103,7 @@ def new_fed(update, context):
         fednam = fednam[1]
         fed_id = str(uuid.uuid4())
         fed_name = fednam
-        LOGGER.info(fed_id)
+        log.info(fed_id)
 
         # Currently only for creator
         # if fednam == 'Team Nusantara Disciplinary Circle':
@@ -133,7 +133,7 @@ def new_fed(update, context):
                 parse_mode=ParseMode.HTML,
             )
         except Exception:
-            LOGGER.warning("Cannot send a message to GBAN_LOGS")
+            log.warning("Cannot send a message to GBAN_LOGS")
     else:
         update.effective_message.reply_text(
             "Please write down the name of the federation"
@@ -348,7 +348,7 @@ def user_join_fed(update, context):
             msg.reply_text("I cannot extract user from this message")
             return
         else:
-            LOGGER.warning("error")
+            log.warning("error")
         getuser = sql.search_user_in_fed(fed_id, user_id)
         fed_id = sql.get_fed_id(chat.id)
         info = sql.get_fed_info(fed_id)
@@ -414,7 +414,7 @@ def user_demote_fed(update, context):
             msg.reply_text("I cannot extract user from this message")
             return
         else:
-            LOGGER.warning("error")
+            log.warning("error")
 
         if user_id == context.bot.id:
             update.effective_message.reply_text(
@@ -731,7 +731,7 @@ def fed_ban(update, context):
                         dispatcher.bot.getChat(fedschat)
                     except Unauthorized:
                         sql.chat_leave_fed(fedschat)
-                        LOGGER.info(
+                        log.info(
                             "Chat {} has leave fed {} because I was kicked".format(
                                 fedschat, info["fname"]
                             )
@@ -740,7 +740,7 @@ def fed_ban(update, context):
                 elif excp.message == "User_id_invalid":
                     break
                 else:
-                    LOGGER.warning(
+                    log.warning(
                         "Could not fban on {} because: {}".format(chat, excp.message)
                     )
             except TelegramError:
@@ -771,7 +771,7 @@ def fed_ban(update, context):
                             except Unauthorized:
                                 targetfed_id = sql.get_fed_id(fedschat)
                                 sql.unsubs_fed(fed_id, targetfed_id)
-                                LOGGER.info(
+                                log.info(
                                     "Chat {} has unsub fed {} because I was kicked".format(
                                         fedschat, info["fname"]
                                     )
@@ -780,7 +780,7 @@ def fed_ban(update, context):
                         elif excp.message == "User_id_invalid":
                             break
                         else:
-                            LOGGER.warning(
+                            log.warning(
                                 "Unable to fban on {} because: {}".format(
                                     fedschat, excp.message
                                 )
@@ -889,7 +889,7 @@ def fed_ban(update, context):
             elif excp.message == "User_id_invalid":
                 break
             else:
-                LOGGER.warning(
+                log.warning(
                     "Could not fban on {} because: {}".format(chat, excp.message)
                 )
         except TelegramError:
@@ -922,7 +922,7 @@ def fed_ban(update, context):
                             except Unauthorized:
                                 targetfed_id = sql.get_fed_id(fedschat)
                                 sql.unsubs_fed(fed_id, targetfed_id)
-                                LOGGER.info(
+                                log.info(
                                     "Chat {} has unsub fed {} because I was kicked".format(
                                         fedschat, info["fname"]
                                     )
@@ -931,7 +931,7 @@ def fed_ban(update, context):
                         elif excp.message == "User_id_invalid":
                             break
                         else:
-                            LOGGER.warning(
+                            log.warning(
                                 "Unable to fban on {} because: {}".format(
                                     fedschat, excp.message
                                 )
@@ -1090,7 +1090,7 @@ def unfban(update, context):
             elif excp.message == "User_id_invalid":
                 break
             else:
-                LOGGER.warning(
+                log.warning(
                     "Could not fban on {} because: {}".format(chat, excp.message)
                 )
         except TelegramError:
@@ -1122,7 +1122,7 @@ def unfban(update, context):
                         except Unauthorized:
                             targetfed_id = sql.get_fed_id(fedschat)
                             sql.unsubs_fed(fed_id, targetfed_id)
-                            LOGGER.info(
+                            log.info(
                                 "Chat {} has unsub fed {} because I was kicked".format(
                                     fedschat, info["fname"]
                                 )
@@ -1131,7 +1131,7 @@ def unfban(update, context):
                     elif excp.message == "User_id_invalid":
                         break
                     else:
-                        LOGGER.warning(
+                        log.warning(
                             "Unable to fban on {} because: {}".format(
                                 fedschat, excp.message
                             )
@@ -1291,14 +1291,14 @@ def fed_broadcast(update, context):
                 except Unauthorized:
                     failed += 1
                     sql.chat_leave_fed(chat)
-                    LOGGER.info(
+                    log.info(
                         "Chat {} has leave fed {} because I was kicked".format(
                             chat, fedinfo["fname"]
                         )
                     )
                     continue
                 failed += 1
-                LOGGER.warning("Couldn't send broadcast to {}".format(str(chat)))
+                log.warning("Couldn't send broadcast to {}".format(str(chat)))
 
         send_text = "The federation broadcast is complete"
         if failed >= 1:
@@ -1565,7 +1565,7 @@ def fed_chats(update, context):
             chat_name = dispatcher.bot.getChat(chats).title
         except Unauthorized:
             sql.chat_leave_fed(chats)
-            LOGGER.info(
+            log.info(
                 "Chat {} has leave fed {} because I was kicked".format(
                     chats, info["fname"]
                 )

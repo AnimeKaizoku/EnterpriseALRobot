@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import mention_html, escape_markdown
 
-from tg_bot import dispatcher, LOGGER, SUDO_USERS
+from tg_bot import dispatcher, log, SUDO_USERS
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_text
@@ -353,7 +353,7 @@ def reply_filter(update, context):
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
-                                LOGGER.exception("Error in filters: " + excp.message)
+                                log.exception("Error in filters: " + excp.message)
                                 send_message(
                                     update.effective_message,
                                     get_exception(excp, filt, chat),
@@ -365,7 +365,7 @@ def reply_filter(update, context):
                                     get_exception(excp, filt, chat),
                                 )
                             except BadRequest as excp:
-                                LOGGER.exception(
+                                log.exception(
                                     "Failed to send message: " + excp.message
                                 )
                                 pass
@@ -423,7 +423,7 @@ def reply_filter(update, context):
                                     "again...",
                                 )
                             except BadRequest as excp:
-                                LOGGER.exception("Error in filters: " + excp.message)
+                                log.exception("Error in filters: " + excp.message)
                                 pass
                         elif excp.message == "Reply message not found":
                             try:
@@ -435,7 +435,7 @@ def reply_filter(update, context):
                                     reply_markup=keyboard,
                                 )
                             except BadRequest as excp:
-                                LOGGER.exception("Error in filters: " + excp.message)
+                                log.exception("Error in filters: " + excp.message)
                                 pass
                         else:
                             try:
@@ -444,12 +444,12 @@ def reply_filter(update, context):
                                     "This message couldn't be sent as it's incorrectly formatted.",
                                 )
                             except BadRequest as excp:
-                                LOGGER.exception("Error in filters: " + excp.message)
+                                log.exception("Error in filters: " + excp.message)
                                 pass
-                            LOGGER.warning(
+                            log.warning(
                                 "Message %s could not be parsed", str(filt.reply)
                             )
-                            LOGGER.exception(
+                            log.exception(
                                 "Could not parse filter %s in chat %s",
                                 str(filt.keyword),
                                 str(chat.id),
@@ -460,7 +460,7 @@ def reply_filter(update, context):
                     try:
                         send_message(update.effective_message, filt.reply)
                     except BadRequest as excp:
-                        LOGGER.exception("Error in filters: " + excp.message)
+                        log.exception("Error in filters: " + excp.message)
                         pass
                 break
 
@@ -536,8 +536,8 @@ def get_exception(excp, filt, chat):
     elif excp.message == "Reply message not found":
         return "noreply"
     else:
-        LOGGER.warning("Message %s could not be parsed", str(filt.reply))
-        LOGGER.exception(
+        log.warning("Message %s could not be parsed", str(filt.reply))
+        log.exception(
             "Could not parse filter %s in chat %s", str(filt.keyword), str(chat.id)
         )
         return "This data could not be sent because it is incorrectly formatted."

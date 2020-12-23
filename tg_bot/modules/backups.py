@@ -6,7 +6,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler
 
 import tg_bot.modules.sql.notes_sql as sql
-from tg_bot import dispatcher, LOGGER, OWNER_ID
+from tg_bot import dispatcher, log, OWNER_ID
 from tg_bot.__main__ import DATA_IMPORT
 from tg_bot.modules.helper_funcs.chat_status import user_admin
 
@@ -98,7 +98,7 @@ def import_data(update, context):
                 "An error occurred while recovering your data. The process failed. If you experience a problem with this, please take it to @YorkTownEagleUnion"
             )
 
-            LOGGER.exception(
+            log.exception(
                 "Imprt for the chat %s with the name %s failed.",
                 str(chat.id),
                 str(chat.title),
