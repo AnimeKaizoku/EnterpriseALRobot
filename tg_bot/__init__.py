@@ -33,16 +33,19 @@ class InterceptHandler(logging.Handler):
 logging.basicConfig(handlers=[InterceptHandler()], level=logging.INFO)
 log = logging.getLogger(__name__)
 
+BANNER = r"""
+    __ __ _                 ______     __                                ____        __
+   / //_/(_)___ ___  ______/_  __/__  / /__  ____ __________ _____ ___  / __ )____  / /_             Buit with <3, In Python 3.8.
+  / ,<  / / __ `/ / / / __ \/ / / _ \/ / _ \/ __ `/ ___/ __ `/ __ `__ \/ __  / __ \/ __/             Originaly a work of Paul Larsen.
+ / /| |/ / /_/ / /_/ / /_/ / / /  __/ /  __/ /_/ / /  / /_/ / / / / / / /_/ / /_/ / /_               
+/_/ |_/_/\__, /\__, /\____/_/  \___/_/\___/\__, /_/   \__,_/_/ /_/ /_/_____/\____/\__/
+        /____//____/                      /____/
+
+
+"""
 
 log.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
-log.info(" _   __                           ")
-log.info("| | / / (_)    __    _   _     __  ")
-log.info("|    \  | |  / _` | | | | |  / _ \  ")
-log.info("| |\  \ | | | (_| | | |_| | | (_) |  ")
-log.info("\_| \_/ |_|  \__, |  \__, |  \___/  ")
-log.info("              __/ |   __/ |       ")
-log.info("             |___/   |___/       ")
-log.info("                                   ")
+log.info(BANNER)
 log.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
 log.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
 # if version < 3.6, stop bot.
