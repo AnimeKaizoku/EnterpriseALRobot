@@ -4,7 +4,7 @@ from telegram import ParseMode, ChatPermissions
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
-
+from tg_bot.modules.sql.approve_sql import is_approved
 import tg_bot.modules.sql.blacklist_sql as sql
 from tg_bot import dispatcher, log
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -250,7 +250,7 @@ def blacklist_mode(update, context):
         elif args[0].lower() == "tban":
             if len(args) == 1:
                 teks = """It looks like you tried to set time value for blacklist but you didn't specified time; Try, `/blacklistmode tban <timevalue>`.
-				
+
 Examples of time value: 4m = 4 minutes, 3h = 3 hours, 6d = 6 days, 5w = 5 weeks."""
                 send_message(update.effective_message, teks, parse_mode="markdown")
                 return ""
@@ -343,7 +343,8 @@ def del_blacklist(update, context):
     to_match = extract_text(message)
     if not to_match:
         return
-
+    if is_approved(chat.id, user.id):
+        return
     getmode, value = sql.get_blacklist_setting(chat.id)
 
     chat_filters = sql.get_chat_blacklist(chat.id)

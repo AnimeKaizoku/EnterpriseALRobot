@@ -23,10 +23,10 @@ def shell(update: Update, context: CallbackContext):
     stdout = stdout.decode()
     if stdout:
         reply += f"*Stdout*\n`{stdout}`\n"
-        log.info(f"Shell - {cmd} - {stdout}")
+        #log.info(f"Shell - {cmd} - {stdout}")
     if stderr:
         reply += f"*Stderr*\n`{stderr}`\n"
-        log.error(f"Shell - {cmd} - {stderr}")
+        #log.error(f"Shell - {cmd} - {stderr}")
     if len(reply) > 3000:
         with open("shell_output.txt", "w") as file:
             file.write(reply)
