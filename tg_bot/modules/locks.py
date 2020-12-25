@@ -7,7 +7,7 @@ from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
 
 from alphabet_detector import AlphabetDetector
-
+from tg_bot.modules.sql.approve_sql import is_approved
 import tg_bot.modules.sql.locks_sql as sql
 from tg_bot import dispatcher, SUDO_USERS, log
 from tg_bot.modules.disable import DisableAbleCommandHandler
@@ -346,7 +346,9 @@ def unlock(update, context) -> str:
 def del_lockables(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
-
+    user = update.effective_user
+    if is_approved(chat.id, user.id):
+        return
     for lockable, filter in LOCK_TYPES.items():
         if lockable == "rtl":
             if sql.is_locked(chat.id, lockable) and can_delete(chat, context.bot.id):
@@ -551,12 +553,12 @@ The locks module allows you to lock away some common items in the \
 telegram world; the bot will automatically delete them!
 
  • `/locktypes`*:* Lists all possible locktypes
- 
+
 *Admins only:*
  • `/lock <type>`*:* Lock items of a certain type (not available in private)
  • `/unlock <type>`*:* Unlock items of a certain type (not available in private)
  • `/locks`*:* The current list of locks in this chat.
- 
+
 Locks can be used to restrict a group's users.
 eg:
 Locking urls will auto-delete all messages with urls, locking stickers will restrict all \

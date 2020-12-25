@@ -15,6 +15,7 @@ from telegram import (
 )
 
 from tg_bot import SARDEGNA_USERS, WHITELIST_USERS, dispatcher
+from tg_bot.modules.sql.approve_sql import is_approved
 from tg_bot.modules.helper_funcs.chat_status import (
     bot_admin,
     can_restrict,
@@ -66,6 +67,10 @@ def check_flood(update, context) -> str:
     ):
         sql.update_flood(chat.id, None)
         return ""
+      # ignore approved users
+    if is_approved(chat.id, user.id):
+        sql.update_flood(chat.id, None)
+        return
 
     should_ban = sql.update_flood(chat.id, user.id)
     if not should_ban:
