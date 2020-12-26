@@ -21,6 +21,7 @@ from telegram.ext import (
     MessageHandler,
     CallbackQueryHandler,
     Filters,
+    messagequeue
 )
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
@@ -538,7 +539,7 @@ def main():
     dispatcher.add_handler(settings_callback_handler)
     dispatcher.add_handler(migrate_handler)
     dispatcher.add_handler(donate_handler)
-
+    _message_queue = messagequeue.MessageQueue(autostart=False)
     # dispatcher.add_error_handler(error_handler)
 
     if WEBHOOK:
@@ -552,13 +553,24 @@ def main():
 
     else:
         log.info("Using long polling.")
+        _message_queue.start()
         updater.start_polling(timeout=15, read_latency=4, clean=True)
     if len(argv) not in (1, 3, 4):
         telethn.disconnect()
     else:
         telethn.run_until_disconnected()
     updater.idle()
+    _message_queue.stop()
+def start_updater(poll_interval, timeout):
+        self.updater.start_polling(poll_interval=poll_interval, timeout=timeout)
+        self.updater.idle()
+        args = (0.1, 10)
+        self.updater_thread = threading.Thread(target=start_updater, args=args)
+        self.updater_thread.daemon = True
+        self.updater_thread.start()
 
+        while(True):
+            pass
 
 if __name__ == "__main__":
     kp.start()
