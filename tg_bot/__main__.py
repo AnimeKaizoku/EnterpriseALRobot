@@ -559,6 +559,16 @@ def main():
         telethn.run_until_disconnected()
     updater.idle()
 
+def start_updater(poll_interval, timeout):
+        self.updater.start_polling(poll_interval=poll_interval, timeout=timeout)
+        self.updater.idle()
+        args = (0.1, 10)
+        self.updater_thread = threading.Thread(target=start_updater, args=args)
+        self.updater_thread.daemon = True
+        self.updater_thread.start()
+
+        while(True):
+            pass
 
 if __name__ == "__main__":
     kp.start()
