@@ -7,14 +7,8 @@ from sys import argv
 import requests
 from pyrogram import idle, Client
 from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.error import (
-    Unauthorized,
-    BadRequest,
-    TimedOut,
-    NetworkError,
-    ChatMigrated,
-    TelegramError,
-)
+from telegram.error import (TelegramError, Unauthorized, BadRequest,
+                            TimedOut, ChatMigrated, NetworkError)
 from telegram.ext import (
     CallbackContext,
     CommandHandler,
@@ -132,7 +126,6 @@ def test(update: Update, context: CallbackContext):
     update.effective_message.reply_text("This person edited a message")
     print(update.effective_message)
 
-
 def start(update: Update, context: CallbackContext):
     args = context.args
     if update.effective_chat.type == "private":
@@ -199,33 +192,27 @@ def start(update: Update, context: CallbackContext):
 
 
 # for test purposes
-def error_callback(bot, update, error):
+def error_callback(update, context):
     try:
-        raise error
+        raise context.error
     except Unauthorized:
-        print("no nono1")
-        print(error)
+        pass
         # remove update.message.chat_id from conversation list
     except BadRequest:
-        print("no nono2")
-        print("BadRequest caught")
-        print(error)
-
+        pass
         # handle malformed requests - read more below!
     except TimedOut:
-        print("no nono3")
+        pass
         # handle slow connection problems
     except NetworkError:
-        print("no nono4")
+        pass
         # handle other connection problems
-    except ChatMigrated as err:
-        print("no nono5")
-        print(err)
+    except ChatMigrated as e:
+        pass
         # the chat_id of a group has changed, use e.new_chat_id instead
     except TelegramError:
-        print(error)
+        pass
         # handle all other telegram related errors
-
 
 def help_button(update, context):
     query = update.callback_query
@@ -289,7 +276,6 @@ def help_button(update, context):
     except BadRequest:
         pass
 
-
 def get_help(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     args = update.effective_message.text.split(None, 1)
@@ -330,7 +316,6 @@ def get_help(update, context):
 
     else:
         send_help(chat.id, HELP_STRINGS)
-
 
 def send_settings(chat_id, user_id, user=False):
     if user:
@@ -457,7 +442,6 @@ def settings_button(update: Update, context: CallbackContext):
         else:
             log.exception("Exception in settings buttons. %s", str(query.data))
 
-
 def get_settings(update: Update, context: CallbackContext):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -488,10 +472,8 @@ def get_settings(update: Update, context: CallbackContext):
     else:
         send_settings(chat.id, user.id, True)
 
-
 def donate(update: Update, context: CallbackContext):
     update.effective_message.reply_text("I'm free for everyone! >_<")
-
 
 def migrate_chats(update: Update, context: CallbackContext):
     msg = update.effective_message  # type: Optional[Message]
@@ -539,6 +521,7 @@ def main():
     dispatcher.add_handler(settings_callback_handler)
     dispatcher.add_handler(migrate_handler)
     dispatcher.add_handler(donate_handler)
+    dispatcher.add_error_handler(error_callback)
     _message_queue = messagequeue.MessageQueue(autostart=False)
     # dispatcher.add_error_handler(error_handler)
 
@@ -561,16 +544,16 @@ def main():
         telethn.run_until_disconnected()
     updater.idle()
     _message_queue.stop()
-def start_updater(poll_interval, timeout):
+    def start_updater(poll_interval, timeout):
         self.updater.start_polling(poll_interval=poll_interval, timeout=timeout)
         self.updater.idle()
-        args = (0.1, 10)
-        self.updater_thread = threading.Thread(target=start_updater, args=args)
-        self.updater_thread.daemon = True
-        self.updater_thread.start()
 
-        while(True):
-            pass
+    args = (0.1, 10)
+    self.updater_thread = threading.Thread(target=start_updater, args=args)
+    self.updater_thread.daemon = True
+    self.updater_thread.start()
+    while(True):
+        pass
 
 if __name__ == "__main__":
     kp.start()
