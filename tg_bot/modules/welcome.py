@@ -91,14 +91,7 @@ def send(update, message, keyboard, backup_message):
             reply_to_message_id=reply,
         )
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
-            msg = update.effective_message.reply_text(
-                message,
-                parse_mode=ParseMode.MARKDOWN,
-                reply_markup=keyboard,
-                quote=False,
-            )
-        elif excp.message == "Button_url_invalid":
+        if excp.message == "Button_url_invalid":
             msg = update.effective_message.reply_text(
                 markdown_parser(
                     backup_message + "\nNote: the current message has an invalid url "
@@ -106,6 +99,15 @@ def send(update, message, keyboard, backup_message):
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
+            )
+        elif excp.message == "Have no rights to send a message":
+            return
+        elif excp.message == "Reply message not found":
+            msg = update.effective_message.reply_text(
+                message,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=keyboard,
+                quote=False,
             )
         elif excp.message == "Unsupported url protocol":
             msg = update.effective_message.reply_text(
@@ -129,8 +131,6 @@ def send(update, message, keyboard, backup_message):
             log.warning(message)
             log.warning(keyboard)
             log.exception("Could not parse! got invalid url host errors")
-        elif excp.message == "Have no rights to send a message":
-            return
         else:
             msg = update.effective_message.reply_text(
                 markdown_parser(
@@ -311,90 +311,89 @@ def new_member(update: Update, context: CallbackContext):
         if new_mem.is_bot:
             should_mute = False
 
-        if user.id == new_mem.id:
-            if should_mute:
-                if welc_mutes == "soft":
-                    bot.restrict_chat_member(
-                        chat.id,
-                        new_mem.id,
-                        permissions=ChatPermissions(
-                            can_send_messages=True,
-                            can_send_media_messages=False,
-                            can_send_other_messages=False,
-                            can_invite_users=False,
-                            can_pin_messages=False,
-                            can_send_polls=False,
-                            can_change_info=False,
-                            can_add_web_page_previews=False,
-                        ),
-                        until_date=(int(time.time() + 24 * 60 * 60)),
-                    )
-                if welc_mutes == "strong":
-                    welcome_bool = False
-                    if not media_wel:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                new_mem.id: {
-                                    "should_welc": should_welc,
-                                    "media_wel": False,
-                                    "status": False,
-                                    "update": update,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                    "backup_message": backup_message,
-                                }
+        if user.id == new_mem.id and should_mute:
+            if welc_mutes == "soft":
+                bot.restrict_chat_member(
+                    chat.id,
+                    new_mem.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=True,
+                        can_send_media_messages=False,
+                        can_send_other_messages=False,
+                        can_invite_users=False,
+                        can_pin_messages=False,
+                        can_send_polls=False,
+                        can_change_info=False,
+                        can_add_web_page_previews=False,
+                    ),
+                    until_date=(int(time.time() + 24 * 60 * 60)),
+                )
+            if welc_mutes == "strong":
+                welcome_bool = False
+                if not media_wel:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            new_mem.id: {
+                                "should_welc": should_welc,
+                                "media_wel": False,
+                                "status": False,
+                                "update": update,
+                                "res": res,
+                                "keyboard": keyboard,
+                                "backup_message": backup_message,
                             }
-                        )
-                    else:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                new_mem.id: {
-                                    "should_welc": should_welc,
-                                    "chat_id": chat.id,
-                                    "status": False,
-                                    "media_wel": True,
-                                    "cust_content": cust_content,
-                                    "welc_type": welc_type,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                }
+                        }
+                    )
+                else:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            new_mem.id: {
+                                "should_welc": should_welc,
+                                "chat_id": chat.id,
+                                "status": False,
+                                "media_wel": True,
+                                "cust_content": cust_content,
+                                "welc_type": welc_type,
+                                "res": res,
+                                "keyboard": keyboard,
                             }
-                        )
-                    new_join_mem = f"[{escape_markdown(new_mem.first_name)}](tg://user?id={user.id})"
-                    message = msg.reply_text(
-                        f"{new_join_mem}, click the button below to prove you're human.\nYou have 120 seconds.",
-                        reply_markup=InlineKeyboardMarkup(
-                            [
-                                {
-                                    InlineKeyboardButton(
-                                        text="Yes, I'm human.",
-                                        callback_data=f"user_join_({new_mem.id})",
-                                    )
-                                }
-                            ]
-                        ),
-                        parse_mode=ParseMode.MARKDOWN,
-                        reply_to_message_id=reply,
+                        }
                     )
-                    bot.restrict_chat_member(
-                        chat.id,
-                        new_mem.id,
-                        permissions=ChatPermissions(
-                            can_send_messages=False,
-                            can_invite_users=False,
-                            can_pin_messages=False,
-                            can_send_polls=False,
-                            can_change_info=False,
-                            can_send_media_messages=False,
-                            can_send_other_messages=False,
-                            can_add_web_page_previews=False,
-                        ),
-                    )
-                    job_queue.run_once(
-                        partial(check_not_bot, new_mem, chat.id, message.message_id),
-                        120,
-                        name="welcomemute",
-                    )
+                new_join_mem = f"[{escape_markdown(new_mem.first_name)}](tg://user?id={user.id})"
+                message = msg.reply_text(
+                    f"{new_join_mem}, click the button below to prove you're human.\nYou have 120 seconds.",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            {
+                                InlineKeyboardButton(
+                                    text="Yes, I'm human.",
+                                    callback_data=f"user_join_({new_mem.id})",
+                                )
+                            }
+                        ]
+                    ),
+                    parse_mode=ParseMode.MARKDOWN,
+                    reply_to_message_id=reply,
+                )
+                bot.restrict_chat_member(
+                    chat.id,
+                    new_mem.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=False,
+                        can_invite_users=False,
+                        can_pin_messages=False,
+                        can_send_polls=False,
+                        can_change_info=False,
+                        can_send_media_messages=False,
+                        can_send_other_messages=False,
+                        can_add_web_page_previews=False,
+                    ),
+                )
+                job_queue.run_once(
+                    partial(check_not_bot, new_mem, chat.id, message.message_id),
+                    120,
+                    name="welcomemute",
+                )
 
         if welcome_bool:
             if media_wel:
@@ -512,7 +511,7 @@ def left_member(update: Update, context: CallbackContext):
                 return
 
             # if media goodbye, use appropriate function for it
-            if goodbye_type != sql.Types.TEXT and goodbye_type != sql.Types.BUTTON_TEXT:
+            if goodbye_type not in [sql.Types.TEXT, sql.Types.BUTTON_TEXT]:
                 ENUM_FUNC_MAP[goodbye_type](chat.id, cust_goodbye)
                 return
 
@@ -581,7 +580,7 @@ def welcome(update: Update, context: CallbackContext):
             parse_mode=ParseMode.MARKDOWN,
         )
 
-        if welcome_type == sql.Types.BUTTON_TEXT or welcome_type == sql.Types.TEXT:
+        if welcome_type in [sql.Types.BUTTON_TEXT, sql.Types.TEXT]:
             buttons = sql.get_welc_buttons(chat.id)
             if noformat:
                 welcome_m += revert_buttons(buttons)

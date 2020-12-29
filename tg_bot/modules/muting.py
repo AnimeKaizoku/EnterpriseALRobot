@@ -26,12 +26,11 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            reply = "I can't seem to find this user"
-            return reply
-        else:
+        if excp.message != "User not found":
             raise
 
+        reply = "I can't seem to find this user"
+        return reply
     if user_id == bot.id:
         reply = "I'm not gonna MUTE myself, How high are you?"
         return reply
@@ -109,7 +108,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
 
     member = chat.get_member(int(user_id))
 
-    if member.status != "kicked" and member.status != "left":
+    if member.status not in ["kicked", "left"]:
         if (
             member.can_send_messages
             and member.can_send_media_messages
@@ -179,11 +178,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
     split_reason = reason.split(None, 1)
 
     time_val = split_reason[0].lower()
-    if len(split_reason) > 1:
-        reason = split_reason[1]
-    else:
-        reason = ""
-
+    reason = split_reason[1] if len(split_reason) > 1 else ""
     mutetime = extract_time(message, time_val)
 
     if not mutetime:

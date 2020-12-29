@@ -190,7 +190,7 @@ def set_flood(update, context) -> str:
 
     if len(args) >= 1:
         val = args[0].lower()
-        if val == "off" or val == "no" or val == "0":
+        if val in ["off", "no", "0"]:
             sql.set_flood(chat_id, 0)
             if conn:
                 text = message.reply_text(

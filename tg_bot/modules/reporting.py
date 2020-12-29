@@ -212,10 +212,9 @@ def __chat_settings__(chat_id, _):
 
 def __user_settings__(user_id):
     if sql.user_should_report(user_id) is True:
-        text = "You will receive reports from chats you're admin."
+        return "You will receive reports from chats you're admin."
     else:
-        text = "You will *not* receive reports from chats you're admin."
-    return text
+        return "You will *not* receive reports from chats you're admin."
 
 
 def buttons(update: Update, context: CallbackContext):

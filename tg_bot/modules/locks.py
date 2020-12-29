@@ -97,8 +97,6 @@ def restr_members(
     bot, chat_id, members, messages=False, media=False, other=False, previews=False
 ):
     for mem in members:
-        if mem.user in SUDO_USERS:
-            pass
         try:
             bot.restrict_chat_member(
                 chat_id,
@@ -358,9 +356,7 @@ def del_lockables(update, context):
                         try:
                             message.delete()
                         except BadRequest as excp:
-                            if excp.message == "Message to delete not found":
-                                pass
-                            else:
+                            if excp.message != "Message to delete not found":
                                 log.exception("ERROR in lockables")
                         break
                 if message.text:
@@ -369,35 +365,37 @@ def del_lockables(update, context):
                         try:
                             message.delete()
                         except BadRequest as excp:
-                            if excp.message == "Message to delete not found":
-                                pass
-                            else:
+                            if excp.message != "Message to delete not found":
                                 log.exception("ERROR in lockables")
                         break
             continue
         if lockable == "button":
-            if sql.is_locked(chat.id, lockable) and can_delete(chat, context.bot.id):
-                if message.reply_markup and message.reply_markup.inline_keyboard:
-                    try:
-                        message.delete()
-                    except BadRequest as excp:
-                        if excp.message == "Message to delete not found":
-                            pass
-                        else:
-                            log.exception("ERROR in lockables")
-                    break
+            if (
+                sql.is_locked(chat.id, lockable)
+                and can_delete(chat, context.bot.id)
+                and message.reply_markup
+                and message.reply_markup.inline_keyboard
+            ):
+                try:
+                    message.delete()
+                except BadRequest as excp:
+                    if excp.message != "Message to delete not found":
+                        log.exception("ERROR in lockables")
+                break
             continue
         if lockable == "inline":
-            if sql.is_locked(chat.id, lockable) and can_delete(chat, context.bot.id):
-                if message and message.via_bot:
-                    try:
-                        message.delete()
-                    except BadRequest as excp:
-                        if excp.message == "Message to delete not found":
-                            pass
-                        else:
-                            log.exception("ERROR in lockables")
-                    break
+            if (
+                sql.is_locked(chat.id, lockable)
+                and can_delete(chat, context.bot.id)
+                and message
+                and message.via_bot
+            ):
+                try:
+                    message.delete()
+                except BadRequest as excp:
+                    if excp.message != "Message to delete not found":
+                        log.exception("ERROR in lockables")
+                break
             continue
         if (
             filter(update)
@@ -426,9 +424,7 @@ def del_lockables(update, context):
                 try:
                     message.delete()
                 except BadRequest as excp:
-                    if excp.message == "Message to delete not found":
-                        pass
-                    else:
+                    if excp.message != "Message to delete not found":
                         log.exception("ERROR in lockables")
 
                 break
@@ -441,24 +437,23 @@ def build_lock_message(chat_id):
     permslist = []
     if locks:
         res += "*" + "These are the current locks in this Chat:" + "*"
-        if locks:
-            locklist.append("sticker = `{}`".format(locks.sticker))
-            locklist.append("audio = `{}`".format(locks.audio))
-            locklist.append("voice = `{}`".format(locks.voice))
-            locklist.append("document = `{}`".format(locks.document))
-            locklist.append("video = `{}`".format(locks.video))
-            locklist.append("contact = `{}`".format(locks.contact))
-            locklist.append("photo = `{}`".format(locks.photo))
-            locklist.append("gif = `{}`".format(locks.gif))
-            locklist.append("url = `{}`".format(locks.url))
-            locklist.append("bots = `{}`".format(locks.bots))
-            locklist.append("forward = `{}`".format(locks.forward))
-            locklist.append("game = `{}`".format(locks.game))
-            locklist.append("location = `{}`".format(locks.location))
-            locklist.append("rtl = `{}`".format(locks.rtl))
-            locklist.append("button = `{}`".format(locks.button))
-            locklist.append("egame = `{}`".format(locks.egame))
-            locklist.append("inline = `{}`".format(locks.inline))
+        locklist.append("sticker = `{}`".format(locks.sticker))
+        locklist.append("audio = `{}`".format(locks.audio))
+        locklist.append("voice = `{}`".format(locks.voice))
+        locklist.append("document = `{}`".format(locks.document))
+        locklist.append("video = `{}`".format(locks.video))
+        locklist.append("contact = `{}`".format(locks.contact))
+        locklist.append("photo = `{}`".format(locks.photo))
+        locklist.append("gif = `{}`".format(locks.gif))
+        locklist.append("url = `{}`".format(locks.url))
+        locklist.append("bots = `{}`".format(locks.bots))
+        locklist.append("forward = `{}`".format(locks.forward))
+        locklist.append("game = `{}`".format(locks.game))
+        locklist.append("location = `{}`".format(locks.location))
+        locklist.append("rtl = `{}`".format(locks.rtl))
+        locklist.append("button = `{}`".format(locks.button))
+        locklist.append("egame = `{}`".format(locks.egame))
+        locklist.append("inline = `{}`".format(locks.inline))
     permissions = dispatcher.bot.get_chat(chat_id).permissions
     permslist.append("messages = `{}`".format(permissions.can_send_messages))
     permslist.append("media = `{}`".format(permissions.can_send_media_messages))
@@ -522,8 +517,7 @@ def get_permission_list(current, new):
     }
     permissions.update(current)
     permissions.update(new)
-    new_permissions = ChatPermissions(**permissions)
-    return new_permissions
+    return ChatPermissions(**permissions)
 
 
 def __import_data__(chat_id, data):
@@ -534,8 +528,6 @@ def __import_data__(chat_id, data):
             sql.update_lock(chat_id, itemlock, locked=True)
         elif itemlock in LOCK_CHAT_RESTRICTION:
             sql.update_restriction(chat_id, itemlock, locked=True)
-        else:
-            pass
 
 
 def __migrate__(old_chat_id, new_chat_id):
