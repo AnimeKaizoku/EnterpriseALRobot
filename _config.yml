@@ -1,1 +1,4 @@
 theme: jekyll-theme-architect
+
+- name: wemake-python-styleguide
+  uses: wemake-services/wemake-python-styleguide@0.14.1
