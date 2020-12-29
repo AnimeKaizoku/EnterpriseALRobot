@@ -172,7 +172,11 @@ def escape_invalid_curly_brackets(text: str, valids: List[str]) -> str:
                 new_text += "{{{{"
                 continue
             else:
-                success = any(text[idx:].startswith("{" + v + "}") for v in valids)
+                success = False
+                for v in valids:
+                    if text[idx:].startswith("{" + v + "}"):
+                        success = True
+                        break
                 if success:
                     new_text += text[idx : idx + len(v) + 2]
                     idx += len(v) + 2
