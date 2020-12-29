@@ -121,8 +121,7 @@ telethn = TelegramClient("kigyo", APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
 kp = Client("KigyoPyro", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN)
-apps = []
-apps.append(kp)
+apps = [kp]
 
 
 async def get_entity(client, entity):
@@ -168,8 +167,8 @@ if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
 
 def spamfilters(text, user_id, chat_id):
     # print("{} | {} | {}".format(text, user_id, chat_id))
-    if int(user_id) in SPAMMERS:
-        print("This user is a spammer!")
-        return True
-    else:
+    if int(user_id) not in SPAMMERS:
         return False
+
+    print("This user is a spammer!")
+    return True

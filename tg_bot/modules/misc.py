@@ -153,8 +153,6 @@ def info(update: Update, context: CallbackContext):
             text += "\n\n<b>This person is banned in Spamwatch!</b>"
             text += f"\nReason: <pre>{spamwtc.reason}</pre>"
             text += "\nAppeal at @SpamWatchSupport"
-        else:
-            pass
     except:
         pass  # don't crash if api is down somehow...
 
@@ -259,9 +257,7 @@ def ram(update: Update, _):
     cmd = "ps -o pid"
     output = shell(cmd)[0].decode()
     processes = output.splitlines()
-    mem = 0
-    for p in processes[1:]:
-        mem += int(
+    mem = sum(int(
             float(
                 shell(
                     "ps u -p {} | awk ".format(p)
@@ -271,7 +267,7 @@ def ram(update: Update, _):
                 .rstrip()
                 .replace("'", "")
             )
-        )
+        ) for p in processes[1:])
     update.message.reply_text(
         f"RAM usage = <code>{mem} MiB</code>", parse_mode=ParseMode.HTML
     )
@@ -291,7 +287,7 @@ def markdown_help(update: Update, _):
 
 @sudo_plus
 def stats(update: Update, _):
-    stats = "Current stats:\n" + "\n".join([mod.__stats__() for mod in STATS])
+    stats = "Current stats:\n" + "\n".join(mod.__stats__() for mod in STATS)
     result = re.sub(r"(\d+)", r"<code>\1</code>", stats)
     update.effective_message.reply_text(result, parse_mode=ParseMode.HTML)
 

@@ -128,9 +128,11 @@ def add_history_conn(user_id, chat_id, chat_name):
                 .filter(ConnectionHistory.user_id == str(user_id))
                 .count()
             )
-            getchat_id = {}
-            for x in HISTORY_CONNECT[int(user_id)]:
-                getchat_id[HISTORY_CONNECT[int(user_id)][x]["chat_id"]] = x
+            getchat_id = {
+                HISTORY_CONNECT[int(user_id)][x]["chat_id"]: x
+                for x in HISTORY_CONNECT[int(user_id)]
+            }
+
             if chat_id in getchat_id:
                 todeltime = getchat_id[str(chat_id)]
                 delold = SESSION.query(ConnectionHistory).get(

@@ -73,30 +73,28 @@ def get(update, context, notename, show_none=True, no_format=False):
                         chat_id=chat_id, from_chat_id=JOIN_LOGGER, message_id=note.value
                     )
                 except BadRequest as excp:
-                    if excp.message == "Message to forward not found":
-                        message.reply_text(
-                            "This message seems to have been lost - I'll remove it "
-                            "from your notes list."
-                        )
-                        sql.rm_note(chat_id, notename)
-                    else:
+                    if excp.message != "Message to forward not found":
                         raise
+                    message.reply_text(
+                        "This message seems to have been lost - I'll remove it "
+                        "from your notes list."
+                    )
+                    sql.rm_note(chat_id, notename)
             else:
                 try:
                     bot.forward_message(
                         chat_id=chat_id, from_chat_id=chat_id, message_id=note.value
                     )
                 except BadRequest as excp:
-                    if excp.message == "Message to forward not found":
-                        message.reply_text(
-                            "Looks like the original sender of this note has deleted "
-                            "their message - sorry! Get your bot admin to start using a "
-                            "message dump to avoid this. I'll remove this note from "
-                            "your saved notes."
-                        )
-                        sql.rm_note(chat_id, notename)
-                    else:
+                    if excp.message != "Message to forward not found":
                         raise
+                    message.reply_text(
+                        "Looks like the original sender of this note has deleted "
+                        "their message - sorry! Get your bot admin to start using a "
+                        "message dump to avoid this. I'll remove this note from "
+                        "your saved notes."
+                    )
+                    sql.rm_note(chat_id, notename)
         else:
             VALID_NOTE_FORMATTERS = [
                 "first",
@@ -283,8 +281,8 @@ def save(update: Update, context: CallbackContext):
 @connection_status
 def clear(update: Update, context: CallbackContext):
     args = context.args
-    chat_id = update.effective_chat.id
     if len(args) >= 1:
+        chat_id = update.effective_chat.id
         notename = args[0].lower()
 
         if sql.rm_note(chat_id, notename):
