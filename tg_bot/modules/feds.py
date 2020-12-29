@@ -2202,10 +2202,7 @@ def is_user_fed_admin(fed_id, user_id):
     fed_admins = sql.all_fed_users(fed_id)
     if fed_admins == False:
         return False
-    if int(user_id) in fed_admins or int(user_id) == OWNER_ID:
-        return True
-    else:
-        return False
+    return int(user_id) in fed_admins or int(user_id) == OWNER_ID
 
 
 def is_user_fed_owner(fed_id, user_id):
@@ -2213,13 +2210,10 @@ def is_user_fed_owner(fed_id, user_id):
     if getsql == False:
         return False
     getfedowner = eval(getsql["fusers"])
-    if getfedowner == None or getfedowner == False:
+    if getfedowner is None or getfedowner == False:
         return False
     getfedowner = getfedowner["owner"]
-    if str(user_id) == getfedowner or int(user_id) == OWNER_ID:
-        return True
-    else:
-        return False
+    return str(user_id) == getfedowner or int(user_id) == OWNER_ID
 
 
 def welcome_fed(update, context):
@@ -2279,18 +2273,14 @@ def __user_info__(user_id, chat_id):
 # Temporary data
 def put_chat(chat_id, value, chat_data):
     # print(chat_data)
-    if value == False:
-        status = False
-    else:
-        status = True
+    status = value != False
     chat_data[chat_id] = {"federation": {"status": status, "value": value}}
 
 
 def get_chat(chat_id, chat_data):
     # print(chat_data)
     try:
-        value = chat_data[chat_id]["federation"]
-        return value
+        return chat_data[chat_id]["federation"]
     except KeyError:
         return {"status": False, "value": False}
 
