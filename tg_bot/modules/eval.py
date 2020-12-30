@@ -16,14 +16,14 @@ namespaces = {}
 
 def namespace_of(chat, update, bot):
     if chat not in namespaces:
-        namespaces[chat] = {
-            "__builtins__": globals()["__builtins__"],
+        copy = globals().copy()
+        locals = {
             "bot": bot,
-            "effective_message": update.effective_message,
             "effective_user": update.effective_user,
             "effective_chat": update.effective_chat,
             "update": update,
         }
+        namespaces[chat] = copy.update(locals)
 
     return namespaces[chat]
 
@@ -62,7 +62,7 @@ def execute(update: Update, context: CallbackContext):
 
 def cleanup_code(code):
     if code.startswith("```") and code.endswith("```"):
-        return "\n".join(code.split("\n")[1:-1])
+        return code[3:-3].strip()
     return code.strip("` \n")
 
 
@@ -71,6 +71,7 @@ def do(func, bot, update):
     content = update.message.text.split(" ", 1)[-1]
     body = cleanup_code(content)
     env = namespace_of(update.message.chat_id, update, bot)
+    env["effective_message"] = update.effective_message
 
     os.chdir(os.getcwd())
     with open(
@@ -100,10 +101,10 @@ def do(func, bot, update):
         result = None
         if func_return is None:
             if value:
-                result = f"{value}"
+                result = str(value)
             else:
                 try:
-                    result = f"{repr(eval(body, env))}"
+                    result = repr(eval(body, env))
                 except:
                     pass
         else:
