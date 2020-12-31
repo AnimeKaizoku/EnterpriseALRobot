@@ -25,4 +25,3 @@ config.ini
 *.session-journal
 log.txt
 shell_output.txt
-.vs
