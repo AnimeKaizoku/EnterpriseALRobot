@@ -547,7 +547,7 @@ def get_exception(excp, filt, chat):
 def addnew_filter(update, chat_id, keyword, text, file_type, file_id, buttons):
     msg = update.effective_message
     totalfilt = sql.get_chat_triggers(chat_id)
-    if len(totalfilt) >= 150:  # Idk why i made this like function....
+    if len(totalfilt) >= 1000:
         msg.reply_text("This group has reached its max filters limit of 150.")
         return False
     else:
@@ -595,8 +595,8 @@ Check `/markdownhelp` to know more!
 
 __mod_name__ = "Filters"
 
-FILTER_HANDLER = CommandHandler("filter", filters)
-STOP_HANDLER = CommandHandler("stop", stop_filter)
+FILTER_HANDLER = CommandHandler("filter", filters, run_async=False)
+STOP_HANDLER = CommandHandler("stop", stop_filter, run_async=False)
 RMALLFILTER_HANDLER = CommandHandler(
     "removeallfilters", rmall_filters, filters=Filters.chat_type.groups
 )
