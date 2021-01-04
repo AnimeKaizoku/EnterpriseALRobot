@@ -32,14 +32,9 @@ The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEa
 
 
 # How to setup
-<details>
-  <summary>Click to expand!! </summary>
+Note: This instruction set is just a copy paste from marie, note that [Eagle Union](https://t.me/YorktownEagleUnion) aims to handle support for @Kigyorobot and now how to setup your own fork, if you find this bit confusing/tough to understand then we recommend you ask a dev, kindly avoid asking how to setup the bot instance in the support chat, it aims to help our own instance of the bot. 
   
- 
- 
- Note: This instruction set is just a copy paste from marie, note that [Eagle Union](https://t.me/YorktownEagleUnion) aims to handle support for @Kigyōbot and now how to setup your own fork, if you find this bit confusing/tough to understand then we recommend you ask a dev, kindly avoid asking how to setup the bot instance in the support chat, it aims to help our own instance of the bot. 
-  
-  ## Setting up the bot (Read this before trying to use!):
+## Setting up the bot (Read this before trying to use!):
 Please make sure to use python3.6, as I cannot guarantee everything will work as expected on older python versions!
 This is because markdown parsing is done by iterating through a dict, which are ordered by default in 3.6.
 
@@ -185,3 +180,6 @@ Any other authorship/credits can be seen through the commits.
 
 
 Should any be missing kindly let us know at [Eagle Union](https://t.me/YorktownEagleUnion) or simply submit a pull request on the readme.
+
+## © Eagle Union (2021)
+ Software licensed under GPLv3
