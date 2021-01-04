@@ -2,7 +2,7 @@ import html
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot import dispatcher, SUDO_USERS
 from tg_bot.modules.helper_funcs.extraction import extract_user
-from telegram.ext import CallbackContext, CallbackQueryHandler
+from telegram.ext import CallbackContext, CallbackQueryHandler, Filters
 import tg_bot.modules.sql.approve_sql as sql
 from tg_bot.modules.helper_funcs.chat_status import user_admin
 from tg_bot.modules.log_channel import loggable
@@ -198,11 +198,11 @@ That's what approvals are for - approve of trustworthy users to allow them to se
 • `/unapproveall`*:* Unapprove *ALL* users in a chat. This cannot be undone.
 """
 
-APPROVE = DisableAbleCommandHandler("approve", approve, run_async=True)
-DISAPPROVE = DisableAbleCommandHandler("unapprove", disapprove, run_async=True)
-APPROVED = DisableAbleCommandHandler("approved", approved, run_async=True)
-APPROVAL = DisableAbleCommandHandler("approval", approval, run_async=True)
-UNAPPROVEALL = DisableAbleCommandHandler("unapproveall", unapproveall, run_async=True)
+APPROVE = DisableAbleCommandHandler("approve", approve, run_async=True, filters=Filters.chat_type.groups)
+DISAPPROVE = DisableAbleCommandHandler("unapprove", disapprove, run_async=True, filters=Filters.chat_type.groups)
+APPROVED = DisableAbleCommandHandler("approved", approved, run_async=True, filters=Filters.chat_type.groups)
+APPROVAL = DisableAbleCommandHandler("approval", approval, run_async=True, filters=Filters.chat_type.groups)
+UNAPPROVEALL = DisableAbleCommandHandler("unapproveall", unapproveall, run_async=True, filters=Filters.chat_type.groups)
 UNAPPROVEALL_BTN = CallbackQueryHandler(
     unapproveall_btn, pattern=r"unapproveall_.*")
 
