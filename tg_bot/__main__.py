@@ -634,7 +634,7 @@ def main():
 
 if __name__ == "__main__":
     kp.start()
-    log.info("Successfully loaded modules: " + str(ALL_MODULES))
+    log.info("Successfully loaded modules: ", str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
     idle()
