@@ -27,3 +27,4 @@ pyrate-limiter
 bleach
 cachetools
 loguru
+PyYAML>=5.1.2
