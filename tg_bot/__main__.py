@@ -46,6 +46,7 @@ from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot.modules.language import gs
 
 PM_START_TEXT = """
 Hi {}, my name is {}!
@@ -154,7 +155,7 @@ def start(update: Update, context: CallbackContext):
         update: Update           -
         context: CallbackContext -
     '''
-
+    chat = update.effective_chat
     args = context.args
     if update.effective_chat.type == "private":
         if len(args) >= 1:
@@ -179,8 +180,8 @@ def start(update: Update, context: CallbackContext):
         else:
             first_name = update.effective_user.first_name
             update.effective_message.reply_photo(
-                KIGYO_IMG,
-                PM_START_TEXT.format(
+                photo=KIGYO_IMG,
+                caption=gs(chat.id, "pm_start_text").format(
                     escape_markdown(first_name),
                     escape_markdown(context.bot.first_name),
                     OWNER_ID,
@@ -190,7 +191,7 @@ def start(update: Update, context: CallbackContext):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Add Kigyo to your group",
+                                text=gs(chat.id, "add_bot_to_group_btn"),
                                 url="t.me/{}?startgroup=true".format(
                                     context.bot.username
                                 ),
@@ -198,17 +199,17 @@ def start(update: Update, context: CallbackContext):
                         ],
                         [
                             InlineKeyboardButton(
-                                text="Support Chat // Eagle Union",
+                                text=gs(chat.id, "support_chat_link_btn"),
                                 url=f"https://t.me/YorktownEagleUnion",
                             ),
                             InlineKeyboardButton(
-                                text="Kigyo Updates Channel",
+                                text=gs(chat.id, "updates_channel_link_btn"),
                                 url="https://t.me/KigyoUpdates",
                             ),
                         ],
                         [
                             InlineKeyboardButton(
-                                text="Source code (Licensed under GPLv3)",
+                                text=gs(chat.id, "src_btn"),
                                 url="https://github.com/Dank-del/EnterpriseALRobot",
                             )
                         ],
@@ -216,7 +217,7 @@ def start(update: Update, context: CallbackContext):
                 ),
             )
     else:
-        update.effective_message.reply_text("Hi, I'm Kigyo.")
+        update.effective_message.reply_text(gs(chat.id, "grp_start_text"))
 
 
 # for test purposes
