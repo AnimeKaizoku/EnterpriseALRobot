@@ -574,24 +574,10 @@ def __chat_settings__(chat_id, user_id):
     cust_filters = sql.get_chat_triggers(chat_id)
     return "There are `{}` custom filters here.".format(len(cust_filters))
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- • `/filters`*:* List all active filters saved in the chat.
-
-*Admin only:*
- • `/filter <keyword> <reply message>`*:* Add a filter to this chat. The bot will now reply that message whenever 'keyword'\
-is mentioned. If you reply to a sticker with a keyword, the bot will reply with that sticker. NOTE: all filter \
-keywords are in lowercase. If you want your keyword to be a sentence, use quotes. eg: /filter "hey there" How you \
-doin?
- • `/stop <filter keyword>`*:* Stop that filter.
-
-*Chat creator only:*
- • `/removeallfilters`*:* Remove all chat filters at once.
-
-*Note*: Filters also support markdown formatters like: {first}, {last} etc.. and buttons.
-Check `/markdownhelp` to know more!
-
-"""
+def get_help(chat):
+    return gs(chat, "cust_filters_help")
 
 __mod_name__ = "Filters"
 

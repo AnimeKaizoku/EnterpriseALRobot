@@ -358,14 +358,11 @@ def manga(update: Update, context: CallbackContext):
             )
 
 
-__help__ = """
-*AniList*
-Get information about anime, manga or characters with the help of this module! All data is fetched from [AniList](anilist.co).
-*Available commands:*
- - /anime <anime>: returns information about the anime.
- - /character <character>: returns information about the character.
- - /manga <manga>: returns information about the manga.
-"""
+from tg_bot.modules.language import gs
+
+def get_help(chat):
+    return gs(chat, "anilist_help")
+
 __mod_name__ = "AniList"
 
 

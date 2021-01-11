@@ -22,6 +22,7 @@ from tg_bot.modules.helper_funcs.alternate import send_message
 from tg_bot import kp, get_entity
 from pyrogram import Client, filters
 from pyrogram.types import Chat, User
+from tg_bot.modules.language import gs
 
 
 @connection_status
@@ -392,18 +393,8 @@ async def admins(client, message):
     reply = await message.reply_text(text_unping, disable_web_page_preview=True)
     await reply.edit_text(text_ping, disable_web_page_preview=True)
 
-
-__help__ = """
- • `/admins`*:* list of admins in the chat
-
-*Admins only:*
- • `/pin`*:* silently pins the message replied to - add `'loud'` or `'notify'` to give notifs to users.
- • `/unpin`*:* unpins the currently pinned message
- • `/invitelink`*:* gets invitelink
- • `/promote`*:* promotes the user replied to
- • `/demote`*:* demotes the user replied to
- • `/title <title here>`*:* sets a custom title for an admin that the bot promoted
-"""
+def get_help(chat):
+    return gs(chat, "admin_help")
 
 PIN_HANDLER = CommandHandler(
     "pin", pin, filters=Filters.chat_type.groups, run_async=True

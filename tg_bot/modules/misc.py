@@ -26,6 +26,7 @@ from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, sudo_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user
 import tg_bot.modules.sql.users_sql as sql
+from tg_bot.modules.language import gs
 
 MARKDOWN_HELP = f"""
 Markdown is a very powerful formatting tool supported by telegram. {dispatcher.bot.first_name} has some enhancements, to make sure that \
@@ -278,7 +279,8 @@ def ram(update: Update, _):
 
 
 def markdown_help(update: Update, _):
-    update.effective_message.reply_text(MARKDOWN_HELP, parse_mode=ParseMode.HTML)
+    chat = update.effective_chat
+    update.effective_message.reply_text((gs(chat.id, "markdown_help_text")), parse_mode=ParseMode.HTML)
     update.effective_message.reply_text(
         "Try forwarding the following message to me, and you'll see!"
     )
@@ -307,32 +309,10 @@ def ping(update: Update, _):
     )
 
 
-__help__ = """
- • /id: get the current group id. If used by replying to a message, gets that user's id.
- • /gifid: reply to a gif to me to tell you its file ID.
- • /info: get information about a user.
- • /markdownhelp: quick summary of how markdown works in telegram - can only be called in private chats.
- • /ud <word>: Type the word or expression you want to search use.
- • /urban <word>: Same as /ud
- • /paste - Do a paste at `nekobin.com`
- • /react: Reacts with a random reaction
- • /weebify <text>: returns a weebified text
- • /tr (language code) as reply to a long message.
- • /time <query> : Gives information about a timezone.
- • /cash : currency converter
-   example syntax: /cash 1 USD INR
- • /cinfo : get info about a user or a chat (uses @Pyrogram methods)
- • /getid : get IDs of chat, user and chat message.
- • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
-───────────────────────────────
-*Last.FM*
-Share what you're what listening to with the help of this module!
-*Available commands:*
- • /setuser <username>: sets your last.fm username.
- • /clearuser: removes your last.fm username from the bot's database.
- • /lastfm: returns what you're scrobbling on last.fm.
+def get_help(chat):
+    return gs(chat, "misc_help")
 
-"""
+
 
 ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True, run_async=True)
 GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid, run_async=True)

@@ -10,6 +10,10 @@ from tg_bot.modules.helper_funcs.handlers import CMD_STARTERS
 from tg_bot.modules.helper_funcs.misc import is_module_loaded
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 from tg_bot.modules.connection import connected
+from tg_bot.modules.language import gs
+
+def get_help(chat):
+    return gs(chat, "disable_help")
 
 
 CMD_STARTERS = tuple(CMD_STARTERS)
