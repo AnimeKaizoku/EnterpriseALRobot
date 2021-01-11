@@ -148,12 +148,10 @@ def check_afk(update, context, user_id, fst_name, userc_id):
 def __gdpr__(user_id):
     sql.rm_afk(user_id)
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- - /afk <reason>: mark yourself as AFK(away from keyboard).
- - brb <reason>: same as the afk command - but not a command.
-When marked as AFK, any mentions will be replied to with a message to say you're not available!
-"""
+def get_help(chat):
+    return gs(chat, "afk_help")
 
 AFK_HANDLER = DisableAbleCommandHandler("afk", afk, run_async=True)
 AFK_REGEX_HANDLER = DisableAbleMessageHandler(

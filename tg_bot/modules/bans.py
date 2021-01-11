@@ -384,16 +384,11 @@ def selfunban(context: CallbackContext, update: Update) -> str:
 
     return log
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- - /kickme: kicks the user who issued the command
+def get_help(chat):
+    return gs(chat, "bans_help")
 
-*Admin only:*
- - /ban <userhandle>: bans a user. (via handle, or reply)
- - /tban <userhandle> x(m/h/d): bans a user for x time. (via handle, or reply). m = minutes, h = hours, d = days.
- - /unban <userhandle>: unbans a user. (via handle, or reply)
- - /kick <userhandle>: kick a user out of the group, (via handle, or reply)
-"""
 
 BAN_HANDLER = CommandHandler("ban", ban, pass_args=True, run_async=True)
 TEMPBAN_HANDLER = CommandHandler(

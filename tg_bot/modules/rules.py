@@ -113,13 +113,11 @@ def __migrate__(old_chat_id, new_chat_id):
 def __chat_settings__(chat_id, user_id):
     return f"This chat has had it's rules set: `{bool(sql.get_rules(chat_id))}`"
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- • `/rules`*:* get the rules for this chat.
-*Admins only:*
- • `/setrules <your rules here>`*:* set the rules for this chat.
- • `/clearrules`*:* clear the rules for this chat.
-"""
+def get_help(chat):
+    return gs(chat, "rules_help")
+
 
 __mod_name__ = "Rules"
 

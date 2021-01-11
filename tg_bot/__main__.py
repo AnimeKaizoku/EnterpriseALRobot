@@ -46,6 +46,7 @@ from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot.modules.language import gs
 
 PM_START_TEXT = """
 Hi {}, my name is {}!
@@ -91,7 +92,7 @@ for module_name in ALL_MODULES:
     else:
         raise Exception("Can't have two modules with the same name! Please change one")
 
-    if hasattr(imported_module, "__help__") and imported_module.__help__:
+    if hasattr(imported_module, "get_help") and imported_module.get_help:
         HELPABLE[imported_module.__mod_name__.lower()] = imported_module
 
     # Chats to migrate on chat_migrated events
@@ -154,12 +155,12 @@ def start(update: Update, context: CallbackContext):
         update: Update           -
         context: CallbackContext -
     '''
-
+    chat = update.effective_chat
     args = context.args
     if update.effective_chat.type == "private":
         if len(args) >= 1:
             if args[0].lower() == "help":
-                send_help(update.effective_chat.id, HELP_STRINGS)
+                send_help(update.effective_chat.id, (gs(chat.id, "pm_help_text")))
             elif args[0].lower() == "markdownhelp":
                 IMPORTED["extras"].markdown_help_sender(update)
             elif args[0].lower() == "nations":
@@ -179,8 +180,8 @@ def start(update: Update, context: CallbackContext):
         else:
             first_name = update.effective_user.first_name
             update.effective_message.reply_photo(
-                KIGYO_IMG,
-                PM_START_TEXT.format(
+                photo=KIGYO_IMG,
+                caption=gs(chat.id, "pm_start_text").format(
                     escape_markdown(first_name),
                     escape_markdown(context.bot.first_name),
                     OWNER_ID,
@@ -190,7 +191,7 @@ def start(update: Update, context: CallbackContext):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Add Kigyo to your group",
+                                text=gs(chat.id, "add_bot_to_group_btn"),
                                 url="t.me/{}?startgroup=true".format(
                                     context.bot.username
                                 ),
@@ -198,17 +199,17 @@ def start(update: Update, context: CallbackContext):
                         ],
                         [
                             InlineKeyboardButton(
-                                text="Support Chat // Eagle Union",
+                                text=gs(chat.id, "support_chat_link_btn"),
                                 url=f"https://t.me/YorktownEagleUnion",
                             ),
                             InlineKeyboardButton(
-                                text="Kigyo Updates Channel",
+                                text=gs(chat.id, "updates_channel_link_btn"),
                                 url="https://t.me/KigyoUpdates",
                             ),
                         ],
                         [
                             InlineKeyboardButton(
-                                text="Source code (Licensed under GPLv3)",
+                                text=gs(chat.id, "src_btn"),
                                 url="https://github.com/Dank-del/EnterpriseALRobot",
                             )
                         ],
@@ -216,7 +217,7 @@ def start(update: Update, context: CallbackContext):
                 ),
             )
     else:
-        update.effective_message.reply_text("Hi, I'm Kigyo.")
+        update.effective_message.reply_text(gs(chat.id, "grp_start_text"))
 
 
 # for test purposes
@@ -262,7 +263,7 @@ def help_button(update, context):
     prev_match = re.match(r"help_prev\((.+?)\)", query.data)
     next_match = re.match(r"help_next\((.+?)\)", query.data)
     back_match = re.match(r"help_back", query.data)
-
+    chat = update.effective_chat
     print(query.message.chat.id)
 
     try:
@@ -272,7 +273,7 @@ def help_button(update, context):
                 "Here is the help for the *{}* module:\n".format(
                     HELPABLE[module].__mod_name__
                 )
-                + HELPABLE[module].__help__
+                + HELPABLE[module].get_help(update.effective_chat.id)
             )
             query.message.edit_text(
                 text=text,
@@ -285,7 +286,7 @@ def help_button(update, context):
         elif prev_match:
             curr_page = int(prev_match.group(1))
             query.message.edit_text(
-                text=HELP_STRINGS,
+                text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(curr_page - 1, HELPABLE, "help")
@@ -295,7 +296,7 @@ def help_button(update, context):
         elif next_match:
             next_page = int(next_match.group(1))
             query.message.edit_text(
-                text=HELP_STRINGS,
+                text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(next_page + 1, HELPABLE, "help")
@@ -304,7 +305,7 @@ def help_button(update, context):
 
         elif back_match:
             query.message.edit_text(
-                text=HELP_STRINGS,
+                text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(0, HELPABLE, "help")
@@ -364,7 +365,7 @@ def get_help(update, context):
         )
 
     else:
-        send_help(chat.id, HELP_STRINGS)
+        send_help(chat.id, (gs(chat.id, "pm_help_text")))
 
 def send_settings(chat_id, user_id, user=False):
     '''#TODO

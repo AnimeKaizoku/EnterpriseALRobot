@@ -2318,34 +2318,10 @@ def get_chat(chat_id, chat_data):
 
 __mod_name__ = "Federations"
 
-__help__ = """
-Ah, group management. Everything is fun, until the spammer starts entering your group, and you have to block it. Then you need to start banning more, and more, and it hurts.
-But then you have many groups, and you don't want this spammer to be in one of your groups - how can you deal? Do you have to manually block it, in all your groups?
+from tg_bot.modules.language import gs
 
-No longer! With Federation, you can make a ban in one chat overlap with all other chats.
-You can even designate admin federations, so your trusted admin can ban all the chats you want to protect.
-
-*Commands Available*:
-
- • /newfed <fedname>: Create a new Federation with the name given. Users are only allowed to have one Federation. This method can also be used to rename the Federation. (max. 64 characters)
- • /delfed: Delete your Federation, and any information related to it. Will not cancel blocked users.
- • /fedinfo <FedID>: Information about the specified Federation.
- • /joinfed <FedID>: Join the current chat to the Federation. Only chat owners can do this. Every chat can only be in one Federation.
- • /leavefed <FedID>: Leave the Federation given. Only chat owners can do this.
- • /fpromote <user>: Promote Users to give fed admin. Fed owner only.
- • /fdemote <user>: Drops the User from the admin Federation to a normal User. Fed owner only.
- • /fban <user>: Prohibits users from all federations where this chat takes place, and executors have control over.
- • /unfban <user>: Cancel User from all federations where this chat takes place, and that the executor has control over.
- • /setfrules: Arrange Federation rules.
- • /frules: See Federation regulations.
- • /chatfed: See the Federation in the current chat.
- • /fedadmins: Show Federation admin.
- • /fbanlist: Displays all users who are victimized at the Federation at this time.
- • /fednotif <on / off>: Federation settings not in PM when there are users who are fban / unfban.
- • /fedchats: Get all the chats that are connected in the Federation.
- • /importfbans: Reply to the Federation backup message file to import the banned list to the Federation now. (disabled for now.)
-"""
-
+def get_help(chat):
+    return gs(chat, "feds_help")
 
 NEW_FED_HANDLER = CommandHandler("newfed", new_fed)
 DEL_FED_HANDLER = CommandHandler("delfed", del_fed, pass_args=True)

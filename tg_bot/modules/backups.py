@@ -337,13 +337,10 @@ def export_data(update, context):
     )
     os.remove("KigyoRobot{}.backup".format(chat_id))  # Cleaning file
 
+from tg_bot.modules.language import gs
 
-__help__ = """
-*Admin only:*
- - /import: reply to a group butler backup file to import as much as possible, making the transfer super simple! Note \
-that files/photos can't be imported due to telegram restrictions.
- - /export: !!! This isn't a command yet, but should be coming soon!
-"""
+def get_help(chat):
+    return gs(chat, "backup_help")
 
 IMPORT_HANDLER = CommandHandler("import", import_data, run_async=True)
 EXPORT_HANDLER = CommandHandler("export", export_data, run_async=True)

@@ -129,15 +129,10 @@ def devlist(update: Update, context: CallbackContext):
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-__help__ = """
- - /eagle - Lists all Eagle Union members.
- - /royals - Lists all Royal Nations.
- - /sakuras - Lists all Sakura Nations.
- - /sardegnas - Lists all Sardegnas Nations.
- - /neptunians - Lists all Neptunia Nations.
- Note: These commands list users with special bot priveleges and can only be used by them.
- You can visit @YorktownEagleUnion to query more about these.
-"""
+from tg_bot.modules.language import gs
+
+def get_help(chat):
+    return gs(chat, "nation_help")
 
 WHITELISTLIST_HANDLER = CommandHandler(
     ["whitelistlist", "neptunians"], whitelistlist, run_async=True
