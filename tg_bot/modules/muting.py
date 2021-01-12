@@ -232,13 +232,8 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
 
     return ""
 
-
-__help__ = """
-*Admins only:*
- • `/mute <userhandle>`*:* silences a user. Can also be used as a reply, muting the replied to user.
- • `/tmute <userhandle> x(m/h/d)`*:* mutes a user for x time. (via handle, or reply). `m` = `minutes`, `h` = `hours`, `d` = `days`.
- • `/unmute <userhandle>`*:* unmutes a user. Can also be used as a reply, muting the replied to user.
-"""
+def get_help(chat):
+    return gs(chat, "muting_help")
 
 MUTE_HANDLER = CommandHandler("mute", mute, run_async=True)
 UNMUTE_HANDLER = CommandHandler("unmute", unmute, run_async=True)

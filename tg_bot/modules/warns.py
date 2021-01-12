@@ -375,7 +375,7 @@ def reply_filter(update: Update, context: CallbackContext) -> str:
         return
     if is_approved(chat.id, user.id):
         return
-        
+
     chat_warn_filters = sql.get_chat_warn_triggers(chat.id)
     to_match = extract_text(message)
     if not to_match:
@@ -491,19 +491,10 @@ def __chat_settings__(chat_id, user_id):
     )
 
 
-__help__ = """
- • `/warns <userhandle>`*:* get a user's number, and reason, of warns.
- • `/warnlist`*:* list of all current warning filters
+from tg_bot.modules.language import gs
 
-*Admins only:*
- • `/warn <userhandle>`*:* warn a user. After 3 warns, the user will be banned from the group. Can also be used as a reply.
- • `/resetwarn <userhandle>`*:* reset the warns for a user. Can also be used as a reply.
- • `/addwarn <keyword> <reply message>`*:* set a warning filter on a certain keyword. If you want your keyword to \
-be a sentence, encompass it with quotes, as such: `/addwarn "very angry" This is an angry user`.
- • `/nowarn <keyword>`*:* stop a warning filter
- • `/warnlimit <num>`*:* set the warning limit
- • `/strongwarn <on/yes/off/no>`*:* If set to on, exceeding the warn limit will result in a ban. Else, will just kick.
-"""
+def get_help(chat):
+    return gs(chat, "warns_help")
 
 __mod_name__ = "Warnings"
 

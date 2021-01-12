@@ -387,15 +387,10 @@ def connect_button(update, context):
         connect_chat(update, context)
 
 
-__help__ = """
- - /connect: connect a chat (Can be done in a group by /connect or /connect <chat id> in PM)
- - /connection: list connected chats
- - /disconnect: disconnect from a chat
- - /helpconnect: list available commands that can be done remotely
+from tg_bot.modules.language import gs
 
-*Admin only:*
- - /allowconnect <yes/no>: allow a user to connect to a chat
-"""
+def get_help(chat):
+    return gs(chat, "connections_help")
 
 CONNECT_CHAT_HANDLER = CommandHandler("connect", connect_chat, pass_args=True)
 CONNECTION_CHAT_HANDLER = CommandHandler("connection", connection_chat, run_async=True)

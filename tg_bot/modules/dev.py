@@ -2,8 +2,8 @@ import os
 import subprocess
 import sys
 from time import sleep
-
-from tg_bot import dispatcher
+from threading import Thread
+from tg_bot import dispatcher, updater, kp
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from telegram import TelegramError, Update
 from telegram.ext import CallbackContext, CommandHandler
@@ -42,15 +42,16 @@ def gitpull(update: Update, context: CallbackContext):
     os.system("restart.bat")
     os.execv("start.bat", sys.argv)
 
+def stop_and_restart():
+        """Gracefully stop the Updater and replace the current process with a new one"""
+        updater.stop()
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
 @dev_plus
 def restart(update: Update, context: CallbackContext):
-    update.effective_message.reply_text(
-        "Starting a new instance and shutting down this one"
-    )
-
-    os.system("restart.bat")
-    os.execv("start.bat", sys.argv)
+    update.message.reply_text('Bot is restarting...')
+    Thread(target=stop_and_restart).start()
+    kp.restart()
 
 
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)

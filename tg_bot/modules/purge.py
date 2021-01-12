@@ -70,13 +70,13 @@ async def delete_messages(event):
     del_message = [message, event.message]
     await event.client.delete_messages(chat, del_message)
 
+from tg_bot.modules.language import gs
 
-__help__ = """
-*Admin only:*
- • /del: deletes the message you replied to
- • /purge: deletes all messages between this and the replied to message.
- • /purge <integer X>: deletes the replied message, and X messages following it if replied to a message.
-"""
+def get_help(chat):
+    return gs(chat, "purge_help")
+
+
+
 
 PURGE_HANDLER = purge_messages, events.NewMessage(pattern="^[!/]purge$")
 DEL_HANDLER = delete_messages, events.NewMessage(pattern="^[!/]del$")

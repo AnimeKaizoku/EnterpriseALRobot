@@ -220,13 +220,10 @@ def bluetext_ignore_list(update: Update, context: CallbackContext):
     message.reply_text(text, parse_mode=ParseMode.HTML)
     return
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- - /cleanbluetext <on/off/yes/no> - clean commands after sending
- - /ignorecleanbluetext <word> - prevent auto cleaning of the command
- - /unignorecleanbluetext <word> - remove prevent auto cleaning of the command
- - /listcleanbluetext - list currently whitelisted commands
-"""
+def get_help(chat):
+    return gs(chat, "cleaner_help")
 
 SET_CLEAN_BLUE_TEXT_HANDLER = CommandHandler(
     "cleanbluetext", set_blue_text_must_click, pass_args=True, run_async=True

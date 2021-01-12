@@ -159,23 +159,11 @@ def table(update: Update, context: CallbackContext):
     )
     reply_text(random.choice(fun_strings.TABLE))
 
+from tg_bot.modules.language import gs
 
-__help__ = """
- • /runs: reply a random string from an array of replies.
- • /pat: pat a person, cool thing to have for cute ones :3
- • /slap: slap a user, or get slapped if not a reply.
- • /shrug : get shrug XD.
- • /table : get flip/unflip :v.
- • /decide : Randomly answers yes/no/maybe
- • /toss : Tosses A coin
- • /roll : Roll a dice.
- • /rlg : Join ears,nose,mouth and create an emo ;-;
- • /shout <keyword>: write anything you want to give loud shout.
- • /stickerid: reply to a sticker to get its ID.
- • /getsticker: reply to a sticker to get the raw PNG image.
- • /steal: reply to a sticker or image to add it to your pack.
- • /stickers: search stickers in combot sticker finder.
-"""
+def get_help(chat):
+    return gs(chat, "fun_help")
+
 
 RUNS_HANDLER = DisableAbleCommandHandler("runs", runs, run_async=True)
 SLAP_HANDLER = DisableAbleCommandHandler("slap", slap, pass_args=True, run_async=True)
