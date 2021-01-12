@@ -16,6 +16,7 @@ from telegram import Bot, Chat, ChatPermissions, ParseMode, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler
 from telegram.utils.helpers import mention_html
+from tg_bot.modules.language import gs
 
 
 def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
