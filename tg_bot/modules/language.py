@@ -6,7 +6,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 
 from tg_bot import dispatcher
 import tg_bot.modules.sql.language_sql as sql
-from tg_bot.modules.helper_funcs.chat_status import user_admin
+from tg_bot.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply
 from tg_bot.langs import get_string, get_languages, get_language
 
 
@@ -60,7 +60,7 @@ def set_lang(update: Update, _) -> None:
     msg.reply_text(msg_text, reply_markup=InlineKeyboardMarkup(keyb))
 
 
-@user_admin
+@user_admin_no_reply
 def lang_button(update: Update, _) -> None:
     query = update.callback_query
     chat = update.effective_chat
