@@ -263,7 +263,7 @@ log_help: |
       • forwarding the `/setlog` to the group
 
 markdown_help_text: |
-      Markdown is a very powerful formatting tool supported by telegram. {dispatcher.bot.first_name} has some enhancements, to make sure that
+      Markdown is a very powerful formatting tool supported by telegram. Kigyo has some enhancements, to make sure that
       saved messages are correctly parsed, and to allow you to create buttons.
 
       - <code>_italic_</code>: wrapping text with '_' will produce italic text
@@ -368,7 +368,7 @@ warns_help: |
       *Admins only:*
       • `/warn <userhandle>`*:* warn a user. After 3 warns, the user will be banned from the group. Can also be used as a reply.
       • `/resetwarn <userhandle>`*:* reset the warns for a user. Can also be used as a reply.
-      • `/addwarn <keyword> <reply message>`*:* set a warning filter on a certain keyword. If you want your keyword to \
+      • `/addwarn <keyword> <reply message>`*:* set a warning filter on a certain keyword. If you want your keyword to
       be a sentence, encompass it with quotes, as such: `/addwarn "very angry" This is an angry user`.
       • `/nowarn <keyword>`*:* stop a warning filter
       • `/warnlimit <num>`*:* set the warning limit
