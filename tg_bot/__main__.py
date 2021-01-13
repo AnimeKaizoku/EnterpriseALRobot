@@ -354,7 +354,7 @@ def get_help(update, context):
             "Here is the available help for the *{}* module:\n".format(
                 HELPABLE[module].__mod_name__
             )
-            + HELPABLE[module].__help__
+            + HELPABLE[module].get_help
         )
         send_help(
             chat.id,
