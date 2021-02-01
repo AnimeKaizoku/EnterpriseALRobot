@@ -407,14 +407,16 @@ def gbanlist(update: Update, context: CallbackContext):
 def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
-    
+
     try:
-        status = client.check_blacklist(int(user_id))
-        if status.attributes.is_blacklisted is True:
+        status = client.raw_output(int(user_id))
+        bl_check = (status["results"]["attributes"]["is_blacklisted"])
+        if bl_check is True:
+            bl_res = (status["results"]["attributes"]["blacklist_reason"])
             update.effective_chat.kick_member(user_id)
             if should_message:
                 update.effective_message.reply_text(
-                f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{status.attributes.blacklist_reason}</code>",
+                f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{bl_res}</code>",
                 parse_mode=ParseMode.HTML,
             )
     except HostDownError:
