@@ -30,7 +30,7 @@ from telegram.error import BadRequest, TelegramError
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
 from spamprotection.sync import SPBClient
-
+from spamprotection.errors import HostDownError
 client = SPBClient()
 
 GBAN_ENFORCE_GROUP = 6
