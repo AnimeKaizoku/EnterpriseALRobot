@@ -410,7 +410,11 @@ def check_and_ban(update, user_id, should_message=True):
 
     try:
         status = client.raw_output(int(user_id))
-        bl_check = (status["results"]["attributes"]["is_blacklisted"])
+        try:
+            bl_check = (status["results"]["attributes"]["is_blacklisted"])
+        except:
+            bl_check = False
+
         if bl_check is True:
             bl_res = (status["results"]["attributes"]["blacklist_reason"])
             update.effective_chat.kick_member(user_id)
