@@ -15,6 +15,7 @@ from tg_bot import (
     WHITELIST_USERS,
     sw,
     dispatcher,
+    log
 )
 from tg_bot.modules.helper_funcs.chat_status import (
     is_user_admin,
@@ -28,6 +29,9 @@ from telegram import ParseMode, Update
 from telegram.error import BadRequest, TelegramError
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
+from spamprotection.sync import SPBClient
+from spamprotection.errors import HostDownError
+client = SPBClient()
 
 GBAN_ENFORCE_GROUP = 6
 
@@ -403,6 +407,25 @@ def gbanlist(update: Update, context: CallbackContext):
 def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
+
+    try:
+        status = client.raw_output(int(user_id))
+        try:
+            bl_check = (status["results"]["attributes"]["is_blacklisted"])
+        except:
+            bl_check = False
+
+        if bl_check is True:
+            bl_res = (status["results"]["attributes"]["blacklist_reason"])
+            update.effective_chat.kick_member(user_id)
+            if should_message:
+                update.effective_message.reply_text(
+                f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{bl_res}</code>",
+                parse_mode=ParseMode.HTML,
+            )
+    except HostDownError:
+        log.warning("Spam Protection API is unreachable.")
+
     try:
         sw_ban = sw.get_ban(int(user_id))
     except AttributeError:
