@@ -29,9 +29,9 @@ from telegram import ParseMode, Update
 from telegram.error import BadRequest, TelegramError
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
+from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from spamprotection.sync import SPBClient
 from spamprotection.errors import HostDownError
-client = SPBClient()
 
 GBAN_ENFORCE_GROUP = 6
 
@@ -62,6 +62,32 @@ UNGBAN_ERRORS = {
     "Peer_id_invalid",
     "User not found",
 }
+
+
+
+
+SPB_MODE = True
+client = SPBClient()
+
+@dev_plus
+def spbtoggle(update: Update, context: CallbackContext):
+    global SPB_MODE
+    args = update.effective_message.text.split(None, 1)
+    message = update.effective_message
+    print(SPB_MODE)
+    if len(args) > 1:
+        if args[1] in ("yes", "on"):
+            SPB_MODE = True
+            message.reply_text("SpamProtection API bans are now enabled.\nAll hail @Intellivoid.")
+        elif args[1] in ("no", "off"):
+            SPB_MODE = False
+            message.reply_text("SpamProtection API bans are now disabled.")
+    else:
+        if SPB_MODE:
+            message.reply_text("SpamProtection API bans are currently enabled.")
+        else:
+            message.reply_text("SpamProtection API bans are currenty disabled.")
+
 
 
 @support_plus
@@ -407,24 +433,24 @@ def gbanlist(update: Update, context: CallbackContext):
 def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
-
-    try:
-        status = client.raw_output(int(user_id))
+    if SPB_MODE:
         try:
-            bl_check = (status["results"]["attributes"]["is_blacklisted"])
-        except:
-            bl_check = False
+            status = client.raw_output(int(user_id))
+            try:
+                bl_check = (status["results"]["attributes"]["is_blacklisted"])
+            except:
+                bl_check = False
 
-        if bl_check is True:
-            bl_res = (status["results"]["attributes"]["blacklist_reason"])
-            update.effective_chat.kick_member(user_id)
-            if should_message:
-                update.effective_message.reply_text(
-                f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{bl_res}</code>",
-                parse_mode=ParseMode.HTML,
-            )
-    except HostDownError:
-        log.warning("Spam Protection API is unreachable.")
+            if bl_check is True:
+                bl_res = (status["results"]["attributes"]["blacklist_reason"])
+                update.effective_chat.kick_member(user_id)
+                if should_message:
+                    update.effective_message.reply_text(
+                    f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{bl_res}</code>",
+                    parse_mode=ParseMode.HTML,
+                )
+        except HostDownError:
+            log.warning("Spam Protection API is unreachable.")
 
     try:
         sw_ban = sw.get_ban(int(user_id))
@@ -562,6 +588,8 @@ GBAN_ENFORCER = MessageHandler(
     Filters.all & Filters.chat_type.groups, enforce_gban, run_async=True
 )
 
+SPBTOGGLE_HANDLER = CommandHandler("spb", spbtoggle)
+dispatcher.add_handler(SPBTOGGLE_HANDLER)
 dispatcher.add_handler(GBAN_HANDLER)
 dispatcher.add_handler(UNGBAN_HANDLER)
 dispatcher.add_handler(GBAN_LIST)
