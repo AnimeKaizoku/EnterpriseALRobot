@@ -15,13 +15,14 @@ StartTime = time.time()
 # enable logging
 FORMAT = "%(message)s"
 logging.basicConfig(handlers=[RichHandler()], level=logging.INFO, format=FORMAT, datefmt="[%X]")
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 log = logging.getLogger("rich")
 
-
-log.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
+log.info("Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
 
 log.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
 log.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
+
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     log.error(
@@ -48,7 +49,6 @@ STRICT_GBAN = kigconfig.getboolean("STRICT_GBAN")
 ALLOW_EXCL = kigconfig.getboolean("ALLOW_EXCL")
 CUSTOM_CMD = kigconfig.get("CUSTOM_CMD")
 BAN_STICKER = kigconfig.get("BAN_STICKER")
-WORKERS = kigconfig.getint("WORKERS")
 TOKEN = kigconfig.get("TOKEN")
 DB_URI = kigconfig.get("SQLALCHEMY_DATABASE_URI")
 LOAD = kigconfig.get("LOAD").split()
@@ -90,11 +90,11 @@ else:
         sw = None
         log.warning("Can't connect to SpamWatch!")
 
-updater = tg.Updater(TOKEN, workers=WORKERS)
+updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
 telethn = TelegramClient("kigyo", APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
-kp = Client("KigyoPyro", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN)
+kp = Client("KigyoPyro", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN, workers=min(32, os.cpu_count() + 4))
 apps = []
 apps.append(kp)
 
