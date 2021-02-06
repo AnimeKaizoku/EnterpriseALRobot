@@ -74,6 +74,12 @@ CASH_API_KEY = kigconfig.get("CASH_API_KEY")
 TIME_API_KEY = kigconfig.get("TIME_API_KEY")
 WALL_API = kigconfig.get("WALL_API")
 LASTFM_API_KEY = kigconfig.get("LASTFM_API_KEY")
+try:
+    CF_API_KEY = kigconfig.get("CF_API_KEY")
+    log.info("AI antispam powered by Intellivoid.")
+except:
+    log.info("No Coffeehouse API key provided.")
+    CF_API_KEY = None
 
 
 SUDO_USERS.append(OWNER_ID)
