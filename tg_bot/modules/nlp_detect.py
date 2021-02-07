@@ -69,7 +69,7 @@ async def detect_spam(client, message):
     user = message.from_user
     chat = message.chat
     chat_state = sql.does_chat_nlp(chat.id)
-    if SPB_MODE:
+    if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
             result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={message.text}',params={'access_key' : CF_API_KEY})
             res_json = result.json()
