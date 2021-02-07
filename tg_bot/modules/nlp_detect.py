@@ -22,15 +22,15 @@ def nlpstat(update: Update, context: CallbackContext):
     args = context.args
     if len(args) > 0:
         if args[0].lower() in ["on", "yes"]:
-            sql.enable_nlp_bans(update.effective_chat.id)
+            sql.enable_nlp_mode(update.effective_chat.id)
             update.effective_message.reply_text(
                 "I've enabled NLP in this group. This will help protect you "
                 "from spammers, unsavoury characters, and the biggest trolls."
             )
         elif args[0].lower() in ["off", "no"]:
-            sql.disable_nlp_bans(update.effective_chat.id)
+            sql.disable_nlp_mode(update.effective_chat.id)
             update.effective_message.reply_text(
-                "I've disabled NLP in this group. The AI based bans wont affect your users "
+                "I've disabled NLP in this group. The AI message processing wont affect your users "
                 "anymore. You'll be less protected from any trolls and spammers "
                 "though!"
             )
@@ -40,40 +40,49 @@ def nlpstat(update: Update, context: CallbackContext):
             "Your current setting is: {}\n"
             "When True, @Intellivoid's coffehouse AI will keep track of Spammers. "
             "When False, they won't, leaving you at the possible mercy of "
-            "spammers.".format(sql.does_chat_nlp_ban(update.effective_chat.id))
+            "spammers.".format(sql.does_chat_nlp(update.effective_chat.id))
         )
 
 @user_admin
-def set_nlp_action(update, context):
+def nlpalert(update: Update, context: CallbackContext):
+    print("ok")
     args = context.args
-    chat_id = update.effective_chat.id
-    
-    if args[0].lower() == "ban":
-        settypeaction = "ban"
-        sql.set_action(chat_id, 1, "0")
-        update.effective_message.reply_text("NLP mode set to ban")
-    elif args[0].lower() == "notify":
-        settypeaction = "notify"
-        sql.set_action(chat_id, 2, "0")
-        update.effective_message.reply_text("NLP mode set to notify")
+    if len(args) > 0:
+        if args[0].lower() in ["alert", "noban"]:
+            sql.alert_true(update.effective_chat.id)
+            update.effective_message.reply_text(
+                "NLP Alerts are on."
+                "Spammers won't be banned."
+            )
+        elif args[0].lower() in ["ban", "strict"]:
+            sql.alert_and_ban(update.effective_chat.id)
+            update.effective_message.reply_text(
+                "NLP Alerts are on."
+                "Spammers will be banned."
+            )
     else:
-        update.effective_message.reply_text("I only understand ban/notify!"
+        update.effective_message.reply_text(
+            "Give me some arguments to choose a setting! alert/ban, noban/strict!\n\n"
+            "Your current setting is: {}\n"
+            "When strict, @Intellivoid's coffehouse AI will ban users who post spam. "
+            "When on alert, it won't, leaving you at the possible mercy of "
+            "spammers.".format(sql.does_chat_nlp_ban(update.effective_chat.id))
         )
-
 
 
 def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
     msg = update.effective_message.text
-    getmode, getvalue = sql.get_nlp_mode(chat.id)
+    no_ban = sql.does_chat_nlp_ban(update.effective_chat.id)
+
     if SPB_MODE and CF_API_KEY:
         try:
             result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={msg}',params={'access_key' : CF_API_KEY})
             res_json = result.json()
             if res_json['success']:
                 spam_check = res_json['results']['spam_prediction']['is_spam']
-                if spam_check == True and getmode == 1:
+                if spam_check == True and no_ban == False:
                     pred = res_json['results']['spam_prediction']['prediction']
                     update.effective_chat.kick_member(user_id)
                     if should_message:
@@ -87,7 +96,7 @@ def check_and_ban(update, user_id, should_message=True):
                             f"*⚠ SPAM DETECTED!*\nSpam Prediction: {pred}\nUser: `{user_id}`\nUser could not be banned due to insufficient admin perms.",
                             parse_mode=ParseMode.MARKDOWN,
                         )
-                if spam_check == True and getmode == 2:
+                if spam_check == True and no_ban == True:
                     pred = res_json['results']['spam_prediction']['prediction']
                     if should_message:
                             update.effective_message.reply_text(
@@ -99,7 +108,7 @@ def check_and_ban(update, user_id, should_message=True):
                 reduced_msg = msg[0:170]
                 result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={reduced_msg}',params={'access_key' : CF_API_KEY})
                 res_json = result.json()
-                if spam_check == True and getmode == 1:
+                if spam_check == True and no_ban == False:
                     spam_check = res_json['results']['spam_prediction']['is_spam']
                     if spam_check:
                         pred = res_json['results']['spam_prediction']['prediction']
@@ -115,7 +124,7 @@ def check_and_ban(update, user_id, should_message=True):
                                 f"*⚠ SPAM DETECTED!*\nSpam Prediction: {pred}\nUser: `{user_id}`\nUser could not be banned due to insufficient admin perms.",
                                 parse_mode=ParseMode.MARKDOWN,
                             )
-                if spam_check == True and getmode == 2:
+                if spam_check == True and no_ban == True:
                     pred = res_json['results']['spam_prediction']['prediction']
                     if should_message:
                             update.effective_message.reply_text(
@@ -132,7 +141,7 @@ def nlp_action(update: Update, context: CallbackContext):
     # Not using @restrict handler to avoid spamming - just ignore if cant gban.
     bot = context.bot
     if (
-        sql.does_chat_nlp_ban(update.effective_chat.id)
+        sql.does_chat_nlp(update.effective_chat.id)
         and update.effective_chat.get_member(bot.id).can_restrict_members
     ):
         user = update.effective_user
@@ -161,9 +170,11 @@ NLP_BAN_ENFORCER = MessageHandler(
     Filters.all & Filters.chat_type.groups, nlp_action, run_async=True
 )
 
-SET_NLP_MODE_HANDLER = CommandHandler("nlpmode", set_nlp_action, pass_args=True, filters=Filters.chat_type.groups, run_async=True,
+NLP_ALERT_STATUS = CommandHandler(
+    "nlpaction", nlpalert, filters=Filters.chat_type.groups, run_async=True
 )
+
 
 dispatcher.add_handler(NLP_ACTION_STATUS)
 dispatcher.add_handler(NLP_BAN_ENFORCER)
-dispatcher.add_handler(SET_NLP_MODE_HANDLER)
+dispatcher.add_handler(NLP_ALERT_STATUS)
