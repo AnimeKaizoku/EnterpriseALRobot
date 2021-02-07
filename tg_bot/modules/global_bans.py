@@ -557,7 +557,7 @@ def __user_info__(user_id):
             text += f"\n<b>Reason:</b> <code>{html.escape(user.reason)}</code>"
         text += f"\n<b>Appeal Chat:</b> @YorkTownEagleUnion"
     else:
-        text = text.format("???")
+        text = text.format("No")
     return text
 
 
