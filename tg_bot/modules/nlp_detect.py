@@ -6,6 +6,12 @@ from pyrogram.errors import BadRequest
 import requests
 from tg_bot.modules.global_bans import SPB_MODE
 import tg_bot.modules.sql.nlp_detect_sql as sql
+from tg_bot.modules.language import gs
+
+__mod_name__ = "NLP"
+
+def get_help(chat):
+    return gs(chat, "nlp_help")
 
 @kp.on_message(filters.command("nlpstat"), group=8)
 async def nlp_mode(client, message):
