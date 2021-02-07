@@ -5,13 +5,41 @@ from pyrogram.types import ChatPermissions
 from pyrogram.errors import BadRequest
 import requests
 from tg_bot.modules.global_bans import SPB_MODE
+import tg_bot.modules.sql.nlp_detect_sql as sql
 
+@kp.on_message(filters.command("nlpstat"), group=8)
+async def nlp_mode(client, message):
+    print("ok")
+    args = message.text.split(None, 1)
+    if len(args) > 1:
+        if args[1].lower() in ["on", "yes"]:
+            sql.enable_nlp(message.chat.id)
+            await message.reply_text(
+                "I've enabled NLP moderation in this group. This will help protect you "
+                "from spammers, unsavoury characters, and the biggest trolls."
+            )
+        elif args[1].lower() in ["off", "no"]:
+            sql.disable_nlp(message.chat.id)
+            await message.reply_text(
+                "I've disabled NLP moderation in this group. NLP wont affect your users "
+                "anymore. You'll be less protected from any trolls and spammers "
+                "though!"
+            )
+    else:
+        await message.reply_text(
+            "Give me some arguments to choose a setting! on/off, yes/no!\n\n"
+            "Your current setting is: {}\n"
+            "When True, any messsages will go through NLP and spammers will be banned. "
+            "When False, they won't, leaving you at the possible mercy of spammers "
+            "NLP powered by @Intellivoid.".format(sql.does_chat_nlp(message.chat.id))
+        )
 
 @kp.on_message(filters.text & filters.group, group=3)
 async def detect_spam(client, message):
     user = message.from_user
     chat = message.chat
-    if SPB_MODE and CF_API_KEY:
+    chat_state = sql.does_chat_nlp
+    if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
             result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={message.text}',params={'access_key' : CF_API_KEY})
             res_json = result.json()
