@@ -3,7 +3,7 @@ from tg_bot import kp, CF_API_KEY, log
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import ChatPermissions, Message
 from pyrogram.errors import BadRequest
-import requests
+import urllib3, json
 from tg_bot.modules.global_bans import SPB_MODE
 import tg_bot.modules.sql.nlp_detect_sql as sql
 from tg_bot.modules.language import gs
@@ -66,13 +66,18 @@ async def nlp_mode(client, message):
 
 @kp.on_message(filters.text & filters.group, group=3)
 async def detect_spam(client, message):
+    url = "https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom"
     user = message.from_user
     chat = message.chat
+    msg = message.text
     chat_state = sql.does_chat_nlp(chat.id)
     if SPB_MODE:
         try:
-            result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={message.text}',params={'access_key' : CF_API_KEY})
-            res_json = result.json()
+            user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+            http = urllib3.PoolManager(10, headers=user_agent)
+            r = http.request('POST', url, fields={'access_key': CF_API_KEY, 'input': msg})
+            resp_body = r.data.decode('utf-8')
+            res_json = json.loads(r.data.decode('utf-8'))
             if res_json['success']:
                 spam_check = res_json['results']['spam_prediction']['is_spam']
                 if spam_check == True:
@@ -90,9 +95,12 @@ async def detect_spam(client, message):
                     )
 
             elif res_json['error']['error_code'] == 21:
-                reduced_msg = message.text[0:170]
-                result = requests.get(f'https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom?input={reduced_msg}',params={'access_key' : CF_API_KEY})
-                res_json = result.json()
+                reduced_msg = msg[0:170]
+                user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
+                http = urllib3.PoolManager(10, headers=user_agent)
+                r = http.request('POST', url, fields={'access_key': CF_API_KEY, 'input': reduced_msg})
+                resp_body = r.data.decode('utf-8')
+                res_json = json.loads(r.data.decode('utf-8'))
                 spam_check = res_json['results']['spam_prediction']['is_spam']
                 if spam_check is True:
                     pred = res_json['results']['spam_prediction']['prediction']
