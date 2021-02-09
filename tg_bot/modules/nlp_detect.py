@@ -71,7 +71,7 @@ async def detect_spam(client, message):
     chat = message.chat
     msg = message.text
     chat_state = sql.does_chat_nlp(chat.id)
-    if SPB_MODE:
+    if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
             user_agent = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'}
             http = urllib3.PoolManager(10, headers=user_agent)
