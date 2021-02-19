@@ -193,6 +193,10 @@ def report(update: Update, context: CallbackContext) -> str:
                 except BadRequest as excp:  # TODO: cleanup exceptions
                     log.exception("Exception while reporting user")
 
+        try:
+            update.effective_message.reply_sticker("CAACAgUAAx0CRSKHWwABAXGoYB2UJauytkH4RJWSStz9DTlxQg0AAlcHAAKAUF41_sNx9Y1z2DQeBA")
+        except:
+            pass
         message.reply_to_message.reply_text(
             f"{mention_html(user.id, user.first_name)} reported the message to the admins.",
             parse_mode=ParseMode.HTML,

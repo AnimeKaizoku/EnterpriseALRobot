@@ -15,13 +15,14 @@ StartTime = time.time()
 # enable logging
 FORMAT = "%(message)s"
 logging.basicConfig(handlers=[RichHandler()], level=logging.INFO, format=FORMAT, datefmt="[%X]")
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 log = logging.getLogger("rich")
 
-
-log.info("Kigyo is now ON. | An Eagle Union Project. | Licensed under GPLv3.")
+log.info("Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
 
 log.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
 log.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
+
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     log.error(
@@ -38,17 +39,16 @@ OWNER_ID = kigconfig.getint("OWNER_ID")
 OWNER_USERNAME = kigconfig.get("OWNER_USERNAME")
 APP_ID = kigconfig.getint("APP_ID")
 API_HASH = kigconfig.get("API_HASH")
-WEBHOOK = kigconfig.getboolean("WEBHOOK")
-URL = kigconfig.get("URL")
-CERT_PATH = kigconfig.get("CERT_PATH")
-PORT = kigconfig.getint("PORT")
-INFOPIC = kigconfig.getboolean("INFOPIC")
-DEL_CMDS = kigconfig.getboolean("DEL_CMDS")
-STRICT_GBAN = kigconfig.getboolean("STRICT_GBAN")
-ALLOW_EXCL = kigconfig.getboolean("ALLOW_EXCL")
-CUSTOM_CMD = kigconfig.get("CUSTOM_CMD")
-BAN_STICKER = kigconfig.get("BAN_STICKER")
-WORKERS = kigconfig.getint("WORKERS")
+WEBHOOK = kigconfig.getboolean("WEBHOOK", False)
+URL = kigconfig.get("URL", None)
+CERT_PATH = kigconfig.get("CERT_PATH", None)
+PORT = kigconfig.getint("PORT", None)
+INFOPIC = kigconfig.getboolean("INFOPIC", False)
+DEL_CMDS = kigconfig.getboolean("DEL_CMDS", False)
+STRICT_GBAN = kigconfig.getboolean("STRICT_GBAN", False)
+ALLOW_EXCL = kigconfig.getboolean("ALLOW_EXCL", False)
+CUSTOM_CMD = kigconfig.get("CUSTOM_CMD", None)
+BAN_STICKER = kigconfig.get("BAN_STICKER", None)
 TOKEN = kigconfig.get("TOKEN")
 DB_URI = kigconfig.get("SQLALCHEMY_DATABASE_URI")
 LOAD = kigconfig.get("LOAD").split()
@@ -74,6 +74,12 @@ CASH_API_KEY = kigconfig.get("CASH_API_KEY")
 TIME_API_KEY = kigconfig.get("TIME_API_KEY")
 WALL_API = kigconfig.get("WALL_API")
 LASTFM_API_KEY = kigconfig.get("LASTFM_API_KEY")
+try:
+    CF_API_KEY = kigconfig.get("CF_API_KEY")
+    log.info("AI antispam powered by Intellivoid.")
+except:
+    log.info("No Coffeehouse API key provided.")
+    CF_API_KEY = None
 
 
 SUDO_USERS.append(OWNER_ID)
@@ -90,11 +96,11 @@ else:
         sw = None
         log.warning("Can't connect to SpamWatch!")
 
-updater = tg.Updater(TOKEN, workers=WORKERS)
+updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
 telethn = TelegramClient("kigyo", APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
-kp = Client("KigyoPyro", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN)
+kp = Client("KigyoPyro", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN, workers=min(32, os.cpu_count() + 4))
 apps = []
 apps.append(kp)
 
