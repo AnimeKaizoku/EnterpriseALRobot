@@ -108,5 +108,6 @@ async def detect_spam(client, message):
                             f"**⚠ SPAM DETECTED!**\nSpam Prediction: `{pred}`\nUser: `{user.id}` was muted.", parse_mode="markdown")
                     except BadRequest:
                         await message.reply_text(f"**⚠ SPAM DETECTED!**\nSpam Prediction: `{pred}`\nUser: `{user.id}`\nUser could not be restricted due to insufficient admin perms.", parse_mode="markdown")
-        except ConnectionError:
+        except (aiohttp.ClientConnectionError, asyncio.TimeoutError):
             log.warning("Can't reach SpamProtection API")
+            await asyncio.sleep(0.5)
