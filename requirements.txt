@@ -30,3 +30,4 @@ loguru
 PyYAML>=5.1.2
 Intellivoid-SPB
 rich
+psutil
