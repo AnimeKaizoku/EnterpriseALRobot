@@ -53,7 +53,7 @@ def set_lang(update: Update, _) -> None:
         [
             InlineKeyboardButton(
                 text="Help us in translations",
-                url="https://github.com/Dank-del/EnterpriseALRobot/tree/translations",
+                url="https://poeditor.com/join/project?hash=oJISpjNcEx",
             )
         ]
     )
