@@ -325,7 +325,7 @@ def stats(update, context):
         "Built with ❤️ using python-telegram-bot\n\n" + status +
         "\n*Bot statistics*:\n"
         + "\n".join([mod.__stats__() for mod in STATS]) +
-        "\n\n© *2020-2021 Dank-del*",
+        "\n\n*SRC*: [GitHub](https://github.com/Dank-del/EnterpriseALRobot) | [GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)",
     parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
