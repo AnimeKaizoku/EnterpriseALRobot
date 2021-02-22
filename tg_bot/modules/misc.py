@@ -306,9 +306,7 @@ def stats(update, context):
     status += "*System:* " + str(uname.system) + "\n"
     status += "*Node name:* " + str(uname.node) + "\n"
     status += "*Release:* " + str(uname.release) + "\n"
-    status += "*Version:* " + str(uname.version) + "\n"
     status += "*Machine:* " + str(uname.machine) + "\n"
-    status += "*Processor:* " + str(uname.processor) + "\n\n"
 
     mem = virtual_memory()
     cpu = cpu_percent()
@@ -318,15 +316,26 @@ def stats(update, context):
     status += "*Storage used:* " + str(disk[3]) + " %\n\n"
     status += "*Python version:* " + python_version() + "\n"
     status += "*Library version:* " + str(__version__) + "\n"
-    update.effective_message.reply_text(
+    try:
+        update.effective_message.reply_text(
 
-        f"*Kigyo (@{context.bot.username}), *\n" +
-        "built by [Dank-del](t.me/dank_as_fuck)\n" +
-        "Built with ❤️ using python-telegram-bot\n\n" + status +
-        "\n*Bot statistics*:\n"
-        + "\n".join([mod.__stats__() for mod in STATS]) +
-        "\n\n© *2020-2021 Dank-del*",
-    parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+            f"*Kigyo (@{context.bot.username}), *\n" +
+            "built by [Dank-del](t.me/dank_as_fuck)\n" +
+            "Built with ❤️ using python-telegram-bot\n\n" + status +
+            "\n*Bot statistics*:\n"
+            + "\n".join([mod.__stats__() for mod in STATS]) +
+            "\n\n*SRC*: [GitHub](https://github.com/Dank-del/EnterpriseALRobot) | [GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)",
+        parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    except BaseException:
+        update.effective_message.reply_text(
+
+            f"*Kigyo (@{context.bot.username}), *\n" +
+            "built by [Dank-del](t.me/dank_as_fuck)\n" +
+            "Built with ❤️ using python-telegram-bot\n" +
+            "\n*Bot statistics*:\n"
+            + "\n".join([mod.__stats__() for mod in STATS]) +
+            "\n\n*SRC*: [GitHub](https://github.com/Dank-del/EnterpriseALRobot) | [GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)",
+        parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def ping(update: Update, _):
