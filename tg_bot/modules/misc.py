@@ -306,9 +306,7 @@ def stats(update, context):
     status += "*System:* " + str(uname.system) + "\n"
     status += "*Node name:* " + str(uname.node) + "\n"
     status += "*Release:* " + str(uname.release) + "\n"
-    status += "*Version:* " + str(uname.version) + "\n"
     status += "*Machine:* " + str(uname.machine) + "\n"
-    status += "*Processor:* " + str(uname.processor) + "\n\n"
 
     mem = virtual_memory()
     cpu = cpu_percent()
