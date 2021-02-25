@@ -42,16 +42,14 @@ def gitpull(update: Update, context: CallbackContext):
     os.system("restart.bat")
     os.execv("start.bat", sys.argv)
 
-def stop_and_restart():
-        """Gracefully stop the Updater and replace the current process with a new one"""
-        updater.stop()
-        os.execl(sys.executable, sys.executable, *sys.argv)
-
 @dev_plus
 def restart(update: Update, context: CallbackContext):
-    update.message.reply_text('Bot is restarting...')
-    Thread(target=stop_and_restart).start()
-    kp.restart()
+    update.effective_message.reply_text(
+        "Starting a new instance and shutting down this one"
+    )
+
+    os.system("restart.bat")
+    os.execv("start.bat", sys.argv)
 
 
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
