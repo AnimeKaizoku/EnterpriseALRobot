@@ -129,8 +129,8 @@ def extract_unt_fedban(
         user_id = get_user_id(user)
         if not user_id and not isinstance(user_id, int):
             message.reply_text(
-                "Saya tidak memiliki pengguna di db saya. Anda akan dapat berinteraksi dengan mereka jika "
-                "Anda membalas pesan orang itu, atau meneruskan salah satu dari pesan pengguna itu."
+                "I don't have users on my DB.You will be able to interact with them if "
+                "you reply to the person's message, or forward one of the user's message"
             )
             return None, None
 
@@ -159,10 +159,10 @@ def extract_unt_fedban(
             user_id, int
         ):
             message.reply_text(
-                "Saya sepertinya tidak pernah berinteraksi dengan pengguna ini "
-                "sebelumnya - silakan meneruskan pesan dari mereka untuk memberi saya kontrol! "
-                "(Seperti boneka voodoo, saya butuh sepotong untuk bisa"
-                "untuk menjalankan perintah tertentu...)"
+                "I seem to have never interacted with this user "
+                "Previously - please forward a message from them to give me control! "
+                "(Like a voodoo doll, I need a piece to be able to "
+                "run a certain command ...)"
             )
             return None, None
         elif excp.message != "Chat not found":
