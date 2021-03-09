@@ -13,20 +13,20 @@ from rich.logging import RichHandler
 StartTime = time.time()
 
 # enable logging
-FORMAT = "%(message)s"
+FORMAT = "[Enterprise] %(message)s"
 logging.basicConfig(handlers=[RichHandler()], level=logging.INFO, format=FORMAT, datefmt="[%X]")
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 log = logging.getLogger("rich")
 
-log.info("Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
+log.info("[KIGYO] Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
 
-log.info("Not affiliated to Azur Lane or Yostar in any way whatsoever.")
-log.info("Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
+log.info("[KIGYO] Not affiliated to Azur Lane or Yostar in any way whatsoever.")
+log.info("[KIGYO] Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
 
 # if version < 3.6, stop bot.
-if sys.version_info[0] < 3 or sys.version_info[1] < 6:
+if sys.version_info[0] < 3 or sys.version_info[1] < 7:
     log.error(
-        "You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting."
+        "[KIGYO] You MUST have a python version of at least 3.7! Multiple features depend on this. Bot quitting."
     )
     quit(1)
 
@@ -76,9 +76,9 @@ WALL_API = kigconfig.get("WALL_API")
 LASTFM_API_KEY = kigconfig.get("LASTFM_API_KEY")
 try:
     CF_API_KEY = kigconfig.get("CF_API_KEY")
-    log.info("AI antispam powered by Intellivoid.")
+    log.info("[NLP] AI antispam powered by Intellivoid.")
 except:
-    log.info("No Coffeehouse API key provided.")
+    log.info("[NLP] No Coffeehouse API key provided.")
     CF_API_KEY = None
 
 
