@@ -35,6 +35,408 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
         reply = None
     return reply
 
+@dev_plus
+@gloggable
+def addsudo(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+    rt = ""
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUDO_USERS:
+        message.reply_text("This member is already a Sudo user")
+        return ""
+
+    if user_id in SUPPORT_USERS:
+        rt += "Requested Eagle Union to promote a Support user to Sudo."
+        data["supports"].remove(user_id)
+        SUPPORT_USERS.remove(user_id)
+
+    if user_id in WHITELIST_USERS:
+        rt += "Requested Eagle Union to promote a Whitelist user to Sudo."
+        data["whitelists"].remove(user_id)
+        WHITELIST_USERS.remove(user_id)
+
+    data["sudos"].append(user_id)
+    SUDO_USERS.append(user_id)
+
+    with open(ELEVATED_USERS_FILE, "w") as outfile:
+        json.dump(data, outfile, indent=4)
+
+    update.effective_message.reply_text(
+        rt
+        + "\nSuccessfully promoted {} to Sudo!".format(
+            user_member.first_name
+        )
+    )
+
+    log_message = (
+        f"#SUDO\n"
+        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+        f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+    )
+
+    if chat.type != "private":
+        log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+    return log_message
+
+
+
+@sudo_plus
+@gloggable
+def addsupport(
+    update: Update,
+    context: CallbackContext,
+) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+    rt = ""
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUDO_USERS:
+        rt += "Requested Eagle Union to demote this Sudo to Demon"
+        data["sudos"].remove(user_id)
+        SUDO_USERS.remove(user_id)
+
+    if user_id in SUPPORT_USERS:
+        message.reply_text("This user is already a Support user.")
+        return ""
+
+    if user_id in WHITELIST_USERS:
+        rt += "Requested Eagle Union to promote this Whitelist user to Demon"
+        data["whitelists"].remove(user_id)
+        WHITELIST_USERS.remove(user_id)
+
+    data["supports"].append(user_id)
+    SUPPORT_USERS.append(user_id)
+
+    with open(ELEVATED_USERS_FILE, "w") as outfile:
+        json.dump(data, outfile, indent=4)
+
+    update.effective_message.reply_text(
+        rt + f"\n{user_member.first_name} was added as a Support user!"
+    )
+
+    log_message = (
+        f"#SUPPORT\n"
+        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+        f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+    )
+
+    if chat.type != "private":
+        log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+    return log_message
+
+
+
+@sudo_plus
+@gloggable
+def addwhitelist(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+    rt = ""
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUDO_USERS:
+        rt += "This member is a Sudo user, Demoting to Whitelisted user."
+        data["sudos"].remove(user_id)
+        SUDO_USERS.remove(user_id)
+
+    if user_id in SUPPORT_USERS:
+        rt += "This user is already a Support user, Demoting to Whitelisted user."
+        data["supports"].remove(user_id)
+        SUPPORT_USERS.remove(user_id)
+
+    if user_id in WHITELIST_USERS:
+        message.reply_text("This user is already a Whitelist user.")
+        return ""
+
+    data["whitelists"].append(user_id)
+    WHITELIST_USERS.append(user_id)
+
+    with open(ELEVATED_USERS_FILE, "w") as outfile:
+        json.dump(data, outfile, indent=4)
+
+    update.effective_message.reply_text(
+        rt + f"\nSuccessfully promoted {user_member.first_name} to a Whitelist user!"
+    )
+
+    log_message = (
+        f"#WHITELIST\n"
+        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))} \n"
+        f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+    )
+
+    if chat.type != "private":
+        log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+    return log_message
+
+
+
+@sudo_plus
+@gloggable
+def addsardegna(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+    rt = ""
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUDO_USERS:
+        rt += "This member is a Sudo user, Demoting to Sardegna."
+        data["sudos"].remove(user_id)
+        SUDO_USERS.remove(user_id)
+
+    if user_id in SUPPORT_USERS:
+        rt += "This user is already a Support user, Demoting to Sardegna."
+        data["supports"].remove(user_id)
+        SUPPORT_USERS.remove(user_id)
+
+    if user_id in WHITELIST_USERS:
+        rt += "This user is already a Whitelist user, Demoting to Sardegna."
+        data["whitelists"].remove(user_id)
+        WHITELIST_USERS.remove(user_id)
+
+    if user_id in SARDEGNA_USERS:
+        message.reply_text("This user is already a Sardegna.")
+        return ""
+
+    data["sardegnas"].append(user_id)
+    SARDEGNA_USERS.append(user_id)
+
+    with open(ELEVATED_USERS_FILE, "w") as outfile:
+        json.dump(data, outfile, indent=4)
+
+    update.effective_message.reply_text(
+        rt + f"\nSuccessfully promoted {user_member.first_name} to a Sardegna Nation!"
+    )
+
+    log_message = (
+        f"#SARDEGNA\n"
+        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))} \n"
+        f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+    )
+
+    if chat.type != "private":
+        log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+    return log_message
+
+
+
+@dev_plus
+@gloggable
+def removesudo(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUDO_USERS:
+        message.reply_text("Requested Eagle Union to demote this user to Civilian")
+        SUDO_USERS.remove(user_id)
+        data["sudos"].remove(user_id)
+
+        with open(ELEVATED_USERS_FILE, "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        log_message = (
+            f"#UNSUDO\n"
+            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+            f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+        )
+
+        if chat.type != "private":
+            log_message = "<b>{}:</b>\n".format(html.escape(chat.title)) + log_message
+
+        return log_message
+
+    else:
+        message.reply_text("This user is not a Sudo user!")
+        return ""
+
+
+
+@sudo_plus
+@gloggable
+def removesupport(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SUPPORT_USERS:
+        message.reply_text("Requested Eagle Union to demote this user to Civilian")
+        SUPPORT_USERS.remove(user_id)
+        data["supports"].remove(user_id)
+
+        with open(ELEVATED_USERS_FILE, "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        log_message = (
+            f"#UNSUPPORT\n"
+            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+            f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+        )
+
+        if chat.type != "private":
+            log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+        return log_message
+
+    else:
+        message.reply_text("This user is not a Support user!")
+        return ""
+
+
+
+@sudo_plus
+@gloggable
+def removewhitelist(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in WHITELIST_USERS:
+        message.reply_text("Demoting to normal user")
+        WHITELIST_USERS.remove(user_id)
+        data["whitelists"].remove(user_id)
+
+        with open(ELEVATED_USERS_FILE, "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        log_message = (
+            f"#UNWHITELIST\n"
+            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+            f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+        )
+
+        if chat.type != "private":
+            log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+        return log_message
+    else:
+        message.reply_text("This user is not a Whitelist user!")
+        return ""
+
+
+
+@sudo_plus
+@gloggable
+def removesardegna(update: Update, context: CallbackContext) -> str:
+    message = update.effective_message
+    user = update.effective_user
+    chat = update.effective_chat
+    bot, args = context.bot, context.args
+    user_id = extract_user(message, args)
+    user_member = bot.getChat(user_id)
+
+    reply = check_user_id(user_id, bot)
+    if reply:
+        message.reply_text(reply)
+        return ""
+
+    with open(ELEVATED_USERS_FILE, "r") as infile:
+        data = json.load(infile)
+
+    if user_id in SARDEGNA_USERS:
+        message.reply_text("Demoting to normal user")
+        SARDEGNA_USERS.remove(user_id)
+        data["sardegnas"].remove(user_id)
+
+        with open(ELEVATED_USERS_FILE, "w") as outfile:
+            json.dump(data, outfile, indent=4)
+
+        log_message = (
+            f"#UNSARDEGNA\n"
+            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
+            f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
+        )
+
+        if chat.type != "private":
+            log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+
+        return log_message
+    else:
+        message.reply_text("This user is not a Sardegna Nation!")
+        return ""
 
 # I added extra new lines
 nations = """ Kigyō has bot access levels we call as *"Nation Levels"*
@@ -134,6 +536,25 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "nation_help")
 
+SUDO_HANDLER = CommandHandler(("addsudo", "adddragon"), addsudo)
+SUPPORT_HANDLER = CommandHandler(("addsupport", "adddemon"), addsupport)
+SD_HANDLER = CommandHandler(("addsardegna"), addsardegna)
+WHITELIST_HANDLER = CommandHandler(("addwhitelist", "addwolf"), addwhitelist)
+UNSUDO_HANDLER = CommandHandler(("removesudo", "removedragon"), removesudo)
+UNSUPPORT_HANDLER = CommandHandler(("removesupport", "removedemon"), removesupport)
+UNSD_HANDLER = CommandHandler(("removesardegna"), removesardegna)
+UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "removewolf"), removewhitelist)
+
+dispatcher.add_handler(SUDO_HANDLER)
+dispatcher.add_handler(SUPPORT_HANDLER)
+dispatcher.add_handler(SD_HANDLER)
+dispatcher.add_handler(WHITELIST_HANDLER)
+dispatcher.add_handler(UNSUDO_HANDLER)
+dispatcher.add_handler(UNSUPPORT_HANDLER)
+dispatcher.add_handler(UNSD_HANDLER)
+dispatcher.add_handler(UNWHITELIST_HANDLER)
+
+
 WHITELISTLIST_HANDLER = CommandHandler(
     ["whitelistlist", "neptunians"], whitelistlist, run_async=True
 )
@@ -152,6 +573,14 @@ dispatcher.add_handler(DEVLIST_HANDLER)
 
 __mod_name__ = "Nations"
 __handlers__ = [
+    SUDO_HANDLER,
+    SUPPORT_HANDLER,
+    SD_HANDLER,
+    WHITELIST_HANDLER,
+    UNSUDO_HANDLER,
+    UNSUPPORT_HANDLER,
+    UNSD_HANDLER,
+    UNWHITELIST_HANDLER,
     WHITELISTLIST_HANDLER,
     SARDEGNALIST_HANDLER,
     SUPPORTLIST_HANDLER,

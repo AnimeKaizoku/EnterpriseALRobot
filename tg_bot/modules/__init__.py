@@ -20,7 +20,7 @@ def __list_all_modules():
                 any(mod == module_name for module_name in all_modules)
                 for mod in to_load
             ):
-                log.error("Invalid loadorder names. Quitting.")
+                log.error("[KIGYO] Invalid loadorder names. Quitting.")
                 quit(1)
 
             all_modules = sorted(set(all_modules) - set(to_load))
@@ -39,5 +39,5 @@ def __list_all_modules():
 
 
 ALL_MODULES = __list_all_modules()
-log.info("Modules to load: %s", str(ALL_MODULES))
+log.info("[KIGYO] Modules to load: %s", str(ALL_MODULES))
 __all__ = ALL_MODULES + ["ALL_MODULES"]
