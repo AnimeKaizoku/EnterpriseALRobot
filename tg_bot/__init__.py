@@ -1,6 +1,6 @@
 import logging
 import os
-import sys
+import sys, json
 import time
 import spamwatch
 import telegram.ext as tg
@@ -11,6 +11,10 @@ from pyrogram.types import Chat, User
 from configparser import ConfigParser
 from rich.logging import RichHandler
 StartTime = time.time()
+
+def get_user_list(__init__, key):
+    with open("{}/tg_bot/{}".format(os.getcwd(), __init__), "r") as json_file:
+        return json.load(json_file)[key]
 
 # enable logging
 FORMAT = "[Enterprise] %(message)s"
@@ -57,18 +61,12 @@ MESSAGE_DUMP = kigconfig.getfloat("MESSAGE_DUMP")
 GBAN_LOGS = kigconfig.getfloat("GBAN_LOGS")
 NO_LOAD = kigconfig.get("NO_LOAD").split()
 NO_LOAD = list(map(str, NO_LOAD))
-SUDO_USERS = kigconfig.get("SUDO_USERS").split()
-SUDO_USERS = list(map(int, SUDO_USERS))
-DEV_USERS = kigconfig.get("DEV_USERS").split()
-DEV_USERS = list(map(int, DEV_USERS))
-SUPPORT_USERS = kigconfig.get("SUPPORT_USERS").split()
-SUPPORT_USERS = list(map(int, SUPPORT_USERS))
-SARDEGNA_USERS = kigconfig.get("SARDEGNA_USERS").split()
-SARDEGNA_USERS = list(map(int, SARDEGNA_USERS))
-WHITELIST_USERS = kigconfig.get("WHITELIST_USERS").split()
-WHITELIST_USERS = list(map(int, WHITELIST_USERS))
-SPAMMERS = kigconfig.get("SPAMMERS").split()
-SPAMMERS = list(map(int, SPAMMERS))
+SUDO_USERS = get_user_list("elevated_users.json", "sudos")
+DEV_USERS = get_user_list("elevated_users.json", "devs")
+SUPPORT_USERS = get_user_list("elevated_users.json", "supports")
+SARDEGNA_USERS = get_user_list("elevated_users.json", "sardegnas")
+WHITELIST_USERS = get_user_list("elevated_users.json", "whitelists")
+SPAMMERS = get_user_list("elevated_users.json", "spammers")
 spamwatch_api = kigconfig.get("spamwatch_api")
 CASH_API_KEY = kigconfig.get("CASH_API_KEY")
 TIME_API_KEY = kigconfig.get("TIME_API_KEY")
