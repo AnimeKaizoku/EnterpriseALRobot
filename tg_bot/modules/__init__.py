@@ -30,7 +30,7 @@ def __list_all_modules():
             to_load = all_modules
 
         if NO_LOAD:
-            log.info("Not loading: {}".format(NO_LOAD))
+            log.info("[KIGYO] Not loading: {}".format(NO_LOAD))
             return [item for item in to_load if item not in NO_LOAD]
 
         return to_load

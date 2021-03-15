@@ -20,8 +20,7 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     CallbackQueryHandler,
-    Filters,
-    messagequeue
+    Filters
 )
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
@@ -610,7 +609,6 @@ def main():
     dispatcher.add_handler(migrate_handler)
     dispatcher.add_handler(donate_handler)
     dispatcher.add_error_handler(error_callback)
-    _message_queue = messagequeue.MessageQueue(autostart=False)
     # dispatcher.add_error_handler(error_handler)
 
     if WEBHOOK:
@@ -623,19 +621,17 @@ def main():
             updater.bot.set_webhook(url=URL + TOKEN)
 
     else:
-        log.info("Using long polling.")
-        _message_queue.start()
-        updater.start_polling(timeout=15, read_latency=4, clean=True)
+        log.info("Kigyo started, Using long polling.")
+        updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True)
     if len(argv) not in (1, 3, 4):
         telethn.disconnect()
     else:
         telethn.run_until_disconnected()
     updater.idle()
-    _message_queue.stop()
 
 if __name__ == "__main__":
     kp.start()
-    log.info("Successfully loaded modules: " + str(ALL_MODULES))
+    log.info("[KIGYO] Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     main()
     idle()

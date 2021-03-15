@@ -32,6 +32,9 @@ from psutil import cpu_percent, virtual_memory, disk_usage, boot_time
 import datetime
 import platform
 from platform import python_version
+from spamprotection.sync import SPBClient
+from spamprotection.errors import HostDownError
+client = SPBClient()
 
 MARKDOWN_HELP = f"""
 Markdown is a very powerful formatting tool supported by telegram. {dispatcher.bot.first_name} has some enhancements, to make sure that \
@@ -140,7 +143,7 @@ def info(update: Update, context: CallbackContext):
         return
 
     text = (
-        f"<b>Characteristics:</b>\n"
+        f"<b>General:</b>\n"
         f"ID: <code>{user.id}</code>\n"
         f"First Name: {html.escape(user.first_name)}"
     )
@@ -156,13 +159,42 @@ def info(update: Update, context: CallbackContext):
     try:
         spamwtc = sw.get_ban(int(user.id))
         if spamwtc:
-            text += "\n\n<b>This person is banned in Spamwatch!</b>"
+            text += "<b>\n\nSpamWatch:\n</b>"
+            text += "<b>This person is banned in Spamwatch!</b>"
             text += f"\nReason: <pre>{spamwtc.reason}</pre>"
             text += "\nAppeal at @SpamWatchSupport"
         else:
-            pass
+            text += "<b>\n\nSpamWatch:</b>\n Not banned"
     except:
         pass  # don't crash if api is down somehow...
+
+    try:
+        status = client.raw_output(int(user.id))
+        ptid = status["results"]["private_telegram_id"]
+        op = status["results"]["attributes"]["is_operator"]
+        ag = status["results"]["attributes"]["is_agent"]
+        wl = status["results"]["attributes"]["is_whitelisted"]
+        ps = status["results"]["attributes"]["is_potential_spammer"]
+        sp = status["results"]["spam_prediction"]["spam_prediction"]
+        hamp = status["results"]["spam_prediction"]["ham_prediction"]
+        blc = status["results"]["attributes"]["is_blacklisted"]
+        if blc:
+            blres = status["results"]["attributes"]["blacklist_reason"]
+        else:
+            blres = None
+        text += "\n\n<b>SpamProtection:</b>"
+        text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
+        text += f"<b>Operator:</b> <code>{op}</code>\n"
+        text += f"<b>Agent:</b> <code>{ag}</code>\n"
+        text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
+        text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
+        text += f"<b>Ham Prediction ID:</b> <code>{hamp}</code>\n"
+        text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
+        text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
+        text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
+    except HostDownError:
+        text += "\n\n<b>SpamProtection:</b>"
+        text += "\nCan't connect to Intellivoid SpamProtection API\n"
 
     Nation_level_present = False
 
@@ -181,6 +213,7 @@ def info(update: Update, context: CallbackContext):
                 text += f"\nThis user holds the title <b>{custom_title}</b> here."
     except BadRequest:
         pass
+
 
     if user.id == OWNER_ID:
         text += f"\nThis person is my owner"

@@ -4,7 +4,7 @@ from pyrogram.handlers import MessageHandler
 from pyrogram.types import ChatPermissions, Message
 from pyrogram.errors import BadRequest
 import aiohttp, json, asyncio
-from tg_bot.modules.global_bans import SPB_MODE
+from tg_bot.modules.antispam import SPB_MODE
 import tg_bot.modules.sql.nlp_detect_sql as sql
 from tg_bot.modules.language import gs
 
