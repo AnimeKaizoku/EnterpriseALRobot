@@ -117,7 +117,7 @@ def addsupport(
         data = json.load(infile)
 
     if user_id in SUDO_USERS:
-        rt += "Requested Eagle Union to demote this Sudo to Demon"
+        rt += "Requested Eagle Union to demote this Sudo to Support"
         data["sudos"].remove(user_id)
         SUDO_USERS.remove(user_id)
 
@@ -126,7 +126,7 @@ def addsupport(
         return ""
 
     if user_id in WHITELIST_USERS:
-        rt += "Requested Eagle Union to promote this Whitelist user to Demon"
+        rt += "Requested Eagle Union to promote this Whitelist user to Support"
         data["whitelists"].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
