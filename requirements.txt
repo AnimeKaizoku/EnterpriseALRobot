@@ -3,7 +3,7 @@ emoji
 beautifulsoup4
 requests
 sqlalchemy
-python-telegram-bot==13.1
+python-telegram-bot==13.4.1
 psycopg2-binary
 feedparser
 markdown2
