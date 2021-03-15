@@ -1,6 +1,6 @@
 from time import sleep
 
-import tg_bot.modules.sql.global_bans_sql as gban_sql
+import tg_bot.modules.sql.antispam_sql as gban_sql
 import tg_bot.modules.sql.users_sql as user_sql
 from tg_bot import DEV_USERS, OWNER_ID, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
