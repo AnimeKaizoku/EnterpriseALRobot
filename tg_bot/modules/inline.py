@@ -1,7 +1,8 @@
+from datetime import datetime
 import html
 from platform import python_version
 from uuid import uuid4
-
+import requests, json
 from spamprotection.errors import HostDownError
 from spamprotection.sync import SPBClient
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update, InlineKeyboardMarkup, \
@@ -35,7 +36,7 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
     search = query.split(" ", 1)[1]
     try:
         user = bot.get_chat(int(search))
-    except BadRequest:
+    except (BadRequest, ValueError):
         user = bot.get_chat(user_id)
 
     chat = update.effective_chat
@@ -87,7 +88,7 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
         text += f"<b>Agent:</b> <code>{ag}</code>\n"
         text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
         text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
-        text += f"<b>Ham Prediction ID:</b> <code>{hamp}</code>\n"
+        text += f"<b>Ham Prediction:</b> <code>{hamp}</code>\n"
         text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
         text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
         text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
@@ -184,8 +185,66 @@ def about(update: Update, context: CallbackContext) -> None:
        )
     update.inline_query.answer(results)
 
+def spb(update: Update, context: CallbackContext) -> None:
+    """Handle the inline query."""
+    query = update.inline_query.query
+    search = query.split(" ", 1)[1]
+    user_id = update.effective_user.id
+    if search:
+        srdata = search
+    else:
+        srdata = user_id
+
+    url = f"https://api.intellivoid.net/spamprotection/v1/lookup?query={srdata}"
+    r = requests.get(url)
+    a = r.json()
+    response = a["success"]
+    if response is True:
+        date = a["results"]["last_updated"]
+        stats = f"*◢ Intellivoid• SpamProtection Info*:\n"
+        stats += f' • *Updated on*: `{datetime.fromtimestamp(date).strftime("%Y-%m-%d %I:%M:%S %p")}`\n'
+
+        if a["results"]["attributes"]["is_potential_spammer"] is True:
+            stats += f" • *User*: `USERxSPAM`\n"
+        elif a["results"]["attributes"]["is_operator"] is True:
+            stats += f" • *User*: `USERxOPERATOR`\n"
+        elif a["results"]["attributes"]["is_agent"] is True:
+            stats += f" • *User*: `USERxAGENT`\n"
+        elif a["results"]["attributes"]["is_whitelisted"] is True:
+            stats += f" • *User*: `USERxWHITELISTED`\n"
+
+        stats += f' • *Type*: `{a["results"]["entity_type"]}`\n'
+        stats += (
+            f' • *Language*: `{a["results"]["language_prediction"]["language"]}`\n'
+        )
+        stats += f' • *Language Probability*: `{a["results"]["language_prediction"]["probability"]}`\n'
+        stats += f"*Spam Prediction*:\n"
+        stats += f' • *Ham Prediction*: `{a["results"]["spam_prediction"]["ham_prediction"]}`\n'
+        stats += f' • *Spam Prediction*: `{a["results"]["spam_prediction"]["spam_prediction"]}`\n'
+        stats += f'*Blacklisted*: `{a["results"]["attributes"]["is_blacklisted"]}`\n'
+        if a["results"]["attributes"]["is_blacklisted"] is True:
+            stats += (
+                f' • *Reason*: `{a["results"]["attributes"]["blacklist_reason"]}`\n'
+            )
+            stats += f' • *Flag*: `{a["results"]["attributes"]["blacklist_flag"]}`\n'
+        stats += f'*PTID*:\n`{a["results"]["private_telegram_id"]}`\n'
+
+    else:
+        stats = "`cannot reach SpamProtection API`"
+
+    results = [
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title=f"SpamProtection API info of {srdata}",
+            input_message_content=InputTextMessageContent(stats, parse_mode=ParseMode.MARKDOWN,
+                                                          disable_web_page_preview=True),
+        ),
+    ]
+
+    update.inline_query.answer(results, cache_time=5)
 
 
+dispatcher.add_handler(InlineQueryHandler(spb, pattern="spb .*"))
 
 dispatcher.add_handler(InlineQueryHandler(inlineinfo, pattern="info .*"))
 

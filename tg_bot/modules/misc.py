@@ -188,7 +188,7 @@ def info(update: Update, context: CallbackContext):
         text += f"<b>Agent:</b> <code>{ag}</code>\n"
         text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
         text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
-        text += f"<b>Ham Prediction ID:</b> <code>{hamp}</code>\n"
+        text += f"<b>Ham Prediction:</b> <code>{hamp}</code>\n"
         text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
         text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
         text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
