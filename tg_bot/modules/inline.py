@@ -1,26 +1,30 @@
-from uuid import uuid4
 import html
-from telegram.utils.helpers import mention_html
-from telegram.error import BadRequest
-from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update
-from telegram.ext import Updater, InlineQueryHandler, CommandHandler, CallbackContext
-from telegram.utils.helpers import escape_markdown
-from tg_bot import (
-dispatcher,
-OWNER_ID,
-SUDO_USERS,
-SUPPORT_USERS,
-DEV_USERS,
-SARDEGNA_USERS,
-WHITELIST_USERS,
-sw, log
-)
-from tg_bot.modules.helper_funcs.extraction import extract_user
-from tg_bot.__main__ import USER_INFO
-import tg_bot.modules.sql.users_sql as sql
-from spamprotection.sync import SPBClient
+from platform import python_version
+from uuid import uuid4
+
 from spamprotection.errors import HostDownError
+from spamprotection.sync import SPBClient
+from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update, InlineKeyboardMarkup, \
+    InlineKeyboardButton
+from telegram import __version__
+from telegram.error import BadRequest
+from telegram.ext import InlineQueryHandler, CallbackContext
+from telegram.utils.helpers import mention_html
+
+import tg_bot.modules.sql.users_sql as sql
+from tg_bot import (
+    dispatcher,
+    OWNER_ID,
+    SUDO_USERS,
+    SUPPORT_USERS,
+    DEV_USERS,
+    SARDEGNA_USERS,
+    WHITELIST_USERS,
+    sw, log
+)
+
 client = SPBClient()
+
 
 def inlineinfo(update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
@@ -35,6 +39,8 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
         user = bot.get_chat(user_id)
 
     chat = update.effective_chat
+    sql.update_user(user.id, user.username, chat.id, chat.title)
+
     text = (
         f"<b>General:</b>\n"
         f"ID: <code>{user.id}</code>\n"
@@ -89,42 +95,95 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
         text += "\n\n<b>SpamProtection:</b>"
         text += "\nCan't connect to Intellivoid SpamProtection API\n"
 
-    Nation_level_present = False
+    nation_level_present = False
 
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\nChat count: <code>{num_chats}</code>"
 
     if user.id == OWNER_ID:
         text += f"\nThis person is my owner"
-        Nation_level_present = True
+        nation_level_present = True
     elif user.id in DEV_USERS:
         text += f"\nThis Person is a part of Eagle Union"
-        Nation_level_present = True
+        nation_level_present = True
     elif user.id in SUDO_USERS:
         text += f"\nThe Nation level of this person is Royal"
-        Nation_level_present = True
+        nation_level_present = True
     elif user.id in SUPPORT_USERS:
         text += f"\nThe Nation level of this person is Sakura"
-        Nation_level_present = True
+        nation_level_present = True
     elif user.id in SARDEGNA_USERS:
         text += f"\nThe Nation level of this person is Sardegna"
-        Nation_level_present = True
+        nation_level_present = True
     elif user.id in WHITELIST_USERS:
         text += f"\nThe Nation level of this person is Neptunia"
-        Nation_level_present = True
+        nation_level_present = True
 
-    if Nation_level_present:
+    if nation_level_present:
         text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(bot.username)
-
 
     results = [
         InlineQueryResultArticle(
             id=str(uuid4()),
             title=f"User info of {html.escape(user.first_name)}",
-            input_message_content=InputTextMessageContent(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True),
+            input_message_content=InputTextMessageContent(text, parse_mode=ParseMode.HTML,
+                                                          disable_web_page_preview=True),
         ),
-        ]
+    ]
 
     update.inline_query.answer(results, cache_time=5)
 
+
+def about(update: Update, context: CallbackContext) -> None:
+    """Handle the inline query."""
+    query = update.inline_query.query
+    about_text = f"""
+    Kigyo (@{context.bot.username})
+    Maintained by [Dank-del](t.me/dank_as_fuck)
+    Built with ❤️ using python-telegram-bot v{str(__version__)}
+    Running on Python {python_version()}
+    """
+    results: list = []
+    kb = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text="Support",
+                    url=f"https://t.me/YorktownEagleUnion",
+                ),
+                InlineKeyboardButton(
+                    text="Channel",
+                    url=f"https://t.me/KigyoUpdates",
+                ),
+
+            ],
+            [
+                InlineKeyboardButton(
+                    text="GitLab",
+                    url=f"https://www.gitlab.com/Dank-del/EnterpriseALRobot",
+                ),
+                InlineKeyboardButton(
+                    text="GitHub",
+                    url="https://www.github.com/Dank-del/EnterpriseALRobot",
+                ),
+            ],
+        ])
+
+    results.append(
+
+        InlineQueryResultArticle
+            (
+            id=str(uuid4()),
+            title=f"About Kigyo (@{context.bot.username})",
+            input_message_content=InputTextMessageContent(about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True),
+            reply_markup=kb
+            )
+       )
+    update.inline_query.answer(results)
+
+
+
+
 dispatcher.add_handler(InlineQueryHandler(inlineinfo, pattern="info .*"))
+
+dispatcher.add_handler(InlineQueryHandler(about))
