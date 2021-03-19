@@ -39,7 +39,7 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
         user = bot.get_chat(user_id)
 
     chat = update.effective_chat
-    sql.update_user(user.id, user.username, chat.id, chat.title)
+    sql.update_user(user.id, user.username)
 
     text = (
         f"<b>General:</b>\n"
@@ -137,6 +137,9 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
 def about(update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
     query = update.inline_query.query
+    user_id = update.effective_user.id
+    user = context.bot.get_chat(user_id)
+    sql.update_user(user.id, user.username)
     about_text = f"""
     Kigyo (@{context.bot.username})
     Maintained by [Dank-del](t.me/dank_as_fuck)
