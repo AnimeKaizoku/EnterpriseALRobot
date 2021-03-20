@@ -194,7 +194,16 @@ def start(update: Update, context: CallbackContext):
                                 url="t.me/{}?startgroup=true".format(
                                     context.bot.username
                                 ),
-                            )
+                            ),
+
+                            InlineKeyboardButton(
+                                text="Help",
+                                url="t.me/{}?start=help".format(
+                                    context.bot.username
+                                ),
+
+                            ),
+
                         ],
                         [
                             InlineKeyboardButton(
@@ -210,7 +219,12 @@ def start(update: Update, context: CallbackContext):
                             InlineKeyboardButton(
                                 text=gs(chat.id, "src_btn"),
                                 url="https://github.com/Dank-del/EnterpriseALRobot",
-                            )
+                            ),
+
+                             InlineKeyboardButton(
+                                 text="Try inline mode",
+                                 switch_inline_query_current_chat="",
+                             )
                         ],
                     ]
                 ),
