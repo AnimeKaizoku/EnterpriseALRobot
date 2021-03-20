@@ -11,8 +11,8 @@ set_chat_lang: "Great, {} it is from now on!"
 pm_start_text: |
    Hi {}, my name is {}!
    I am an Anime themed group management bot with some fun extras ;)
-
-   You can find the list of available commands with /help.
+   Try the buttons below to know how I work.
+   
 grp_start_text: "Hi, I'm Kigyo."
 
 pm_help_text: |

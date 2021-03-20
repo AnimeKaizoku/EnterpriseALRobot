@@ -11,7 +11,7 @@ from telegram import __version__
 from telegram.error import BadRequest
 from telegram.ext import InlineQueryHandler, CallbackContext
 from telegram.utils.helpers import mention_html
-
+from tg_bot.modules.helper_funcs.misc import article
 import tg_bot.modules.sql.users_sql as sql
 from tg_bot import (
     dispatcher,
@@ -27,13 +27,88 @@ from tg_bot import (
 client = SPBClient()
 
 
-def inlineinfo(update: Update, context: CallbackContext) -> None:
+def remove_prefix(text, prefix):
+    if text.startswith(prefix):
+        text = text.replace(prefix, "", 1)
+    return text
+
+def inlinequery(update: Update, _) -> None:
+    """
+    Main InlineQueryHandler callback.
+    """
+    query = update.inline_query.query
+    user = update.effective_user
+
+    results: List = []
+    inline_help_dicts = [
+        {
+            "title": "SpamProtection INFO",
+            "description": "Look up a person on @Intellivoid SpamProtection API",
+            "message_text":"Click the button below to look up a person on @Intellivoid SpamProtection API using username or telegram id",
+            "thumb_urL": "https://telegra.ph/file/3ce9045b1c7faf7123c67.jpg",
+            "keyboard": ".spb ",
+        },
+        {
+            "title": "User info on Kigyo",
+            "description": "Look up a person in Kigyo database",
+            "message_text": "Click the button below to look up a person in Kigyo database using their Telegram ID",
+            "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
+            "keyboard": ".info ",
+        },
+        {
+            "title": "About",
+            "description": "Know about Kigyo",
+            "message_text": "Click the button below to get to know about Kigyo.",
+            "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
+            "keyboard": ".about ",
+        },
+    ]
+
+    inline_funcs = {
+        ".spb": spb,
+        ".info": inlineinfo,
+        ".about": about,
+    }
+
+    if (f := query.split(" ", 1)[0]) in inline_funcs:
+        inline_funcs[f](remove_prefix(query, f).strip(), update, user)
+    else:
+        for ihelp in inline_help_dicts:
+            results.append(
+                article(
+                    title=ihelp["title"],
+                    description=ihelp["description"],
+                    message_text=ihelp["message_text"],
+                    thumb_url=ihelp["thumb_urL"],
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="Click Here",
+                                    switch_inline_query_current_chat=ihelp[
+                                        "keyboard"
+                                    ],
+                                )
+                            ]
+                        ]
+                    ),
+                )
+            )
+
+        update.inline_query.answer(results, cache_time=5)
+
+def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
-    bot, args = context.bot, context.args
+    bot = context.bot
     query = update.inline_query.query
     log.info(query)
     user_id = update.effective_user.id
-    search = query.split(" ", 1)[1]
+
+    try:
+        search = query.split(" ", 1)[1]
+    except IndexError:
+        search = user_id
+
     try:
         user = bot.get_chat(int(search))
     except (BadRequest, ValueError):
@@ -135,7 +210,7 @@ def inlineinfo(update: Update, context: CallbackContext) -> None:
     update.inline_query.answer(results, cache_time=5)
 
 
-def about(update: Update, context: CallbackContext) -> None:
+def about(query: str, update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
     query = update.inline_query.query
     user_id = update.effective_user.id
@@ -185,11 +260,16 @@ def about(update: Update, context: CallbackContext) -> None:
        )
     update.inline_query.answer(results)
 
-def spb(update: Update, context: CallbackContext) -> None:
+def spb(query: str, update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
     query = update.inline_query.query
-    search = query.split(" ", 1)[1]
     user_id = update.effective_user.id
+
+    try:
+        search = query.split(" ", 1)[1]
+    except IndexError:
+        search = user_id
+
     if search:
         srdata = search
     else:
@@ -244,8 +324,4 @@ def spb(update: Update, context: CallbackContext) -> None:
     update.inline_query.answer(results, cache_time=5)
 
 
-dispatcher.add_handler(InlineQueryHandler(spb, pattern="spb .*"))
-
-dispatcher.add_handler(InlineQueryHandler(inlineinfo, pattern="info .*"))
-
-dispatcher.add_handler(InlineQueryHandler(about))
+dispatcher.add_handler(InlineQueryHandler(inlinequery))
