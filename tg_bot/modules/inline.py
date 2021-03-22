@@ -1,12 +1,11 @@
-from datetime import datetime
 import html
-import re
-import time
 import json
-from html.parser import HTMLParser
+from datetime import datetime
 from platform import python_version
+from typing import List
 from uuid import uuid4
-import requests, json
+
+import requests
 from spamprotection.errors import HostDownError
 from spamprotection.sync import SPBClient
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update, InlineKeyboardMarkup, \
@@ -15,7 +14,7 @@ from telegram import __version__
 from telegram.error import BadRequest
 from telegram.ext import InlineQueryHandler, CallbackContext
 from telegram.utils.helpers import mention_html
-from tg_bot.modules.helper_funcs.misc import article
+
 import tg_bot.modules.sql.users_sql as sql
 from tg_bot import (
     dispatcher,
@@ -27,6 +26,7 @@ from tg_bot import (
     WHITELIST_USERS,
     sw, log
 )
+from tg_bot.modules.helper_funcs.misc import article
 
 client = SPBClient()
 
@@ -35,6 +35,7 @@ def remove_prefix(text, prefix):
     if text.startswith(prefix):
         text = text.replace(prefix, "", 1)
     return text
+
 
 def inlinequery(update: Update, _) -> None:
     """
@@ -48,7 +49,8 @@ def inlinequery(update: Update, _) -> None:
         {
             "title": "SpamProtection INFO",
             "description": "Look up a person on @Intellivoid SpamProtection API",
-            "message_text":"Click the button below to look up a person on @Intellivoid SpamProtection API using username or telegram id",
+            "message_text": "Click the button below to look up a person on @Intellivoid SpamProtection API using "
+                            "username or telegram id",
             "thumb_urL": "https://telegra.ph/file/3ce9045b1c7faf7123c67.jpg",
             "keyboard": ".spb ",
         },
@@ -108,6 +110,7 @@ def inlinequery(update: Update, _) -> None:
             )
 
         update.inline_query.answer(results, cache_time=5)
+
 
 def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
@@ -266,11 +269,13 @@ def about(query: str, update: Update, context: CallbackContext) -> None:
             (
             id=str(uuid4()),
             title=f"About Kigyo (@{context.bot.username})",
-            input_message_content=InputTextMessageContent(about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True),
+            input_message_content=InputTextMessageContent(about_text, parse_mode=ParseMode.MARKDOWN,
+                                                          disable_web_page_preview=True),
             reply_markup=kb
-            )
-       )
+        )
+    )
     update.inline_query.answer(results)
+
 
 def spb(query: str, update: Update, context: CallbackContext) -> None:
     """Handle the inline query."""
@@ -380,7 +385,9 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
     try:
         search = query.split(" ", 1)[1]
         results: List = []
-        r = requests.post('https://graphql.anilist.co', data=json.dumps({'query': MEDIA_QUERY, 'variables': {'search': search}}), headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
+        r = requests.post('https://graphql.anilist.co',
+                          data=json.dumps({'query': MEDIA_QUERY, 'variables': {'search': search}}),
+                          headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
         res = r.json()
         data = res['data']['Page']['media']
         res = data
@@ -395,6 +402,14 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
             except AttributeError:
                 description = data.get("description")
 
+            try:
+                description = html.escape(description)
+            except AttributeError:
+                description = description or "N/A"
+
+            if len((str(description))) > 700:
+                description = description[0:700] + "....."
+
             avgsc = data.get("averageScore") or "N/A"
             status = data.get("status") or "N/A"
             genres = data.get("genres") or "N/A"
@@ -408,9 +423,9 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                             text="Read More",
                             url=aurl,
                         )
-                        ]
+                    ]
 
-                    ])
+                ])
 
             txt = f"{title_en} | {title_ja}\n"
             txt += f"Format: {format}\n"
@@ -428,37 +443,36 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                     title=f"{title_en} | {title_ja}",
                     thumb_url=img,
                     description=f"{description}",
-                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML, disable_web_page_preview=False),
+                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML,
+                                                                  disable_web_page_preview=False),
                     reply_markup=kb
-                    )
-        )
+                )
+            )
     except (IndexError):
         kb = InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton(
-                            text="Report error",
-                            url="t.me/YorkTownEagleUnion",
-                        )
-                        ]
+                    InlineKeyboardButton(
+                        text="Report error",
+                        url="t.me/YorkTownEagleUnion",
+                    )
+                ]
 
-                    ])
+            ])
         results.append(
 
             InlineQueryResultArticle
                 (
                 id=str(uuid4()),
                 title=f"Media {query} not found",
-                input_message_content=InputTextMessageContent(f"Media {query} not found", parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True),
+                input_message_content=InputTextMessageContent(f"Media {query} not found", parse_mode=ParseMode.MARKDOWN,
+                                                              disable_web_page_preview=True),
                 reply_markup=kb
-                )
-                
-           )
+            )
+
+        )
 
     update.inline_query.answer(results, cache_time=5)
-
-
-
 
 
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
