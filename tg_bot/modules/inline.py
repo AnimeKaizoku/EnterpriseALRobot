@@ -428,18 +428,31 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                     title=f"{title_en} | {title_ja}",
                     thumb_url=img,
                     description=f"{description}",
-                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML, disable_web_page_preview=False)
+                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML, disable_web_page_preview=False),
+                    reply_markup=kb
                     )
         )
     except (IndexError):
+        kb = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Report error",
+                            url="t.me/YorkTownEagleUnion",
+                        )
+                        ]
+
+                    ])
         results.append(
 
             InlineQueryResultArticle
                 (
                 id=str(uuid4()),
                 title=f"Media {query} not found",
-                input_message_content=InputTextMessageContent(f"Media {query} not found", reply_markup=kb, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                input_message_content=InputTextMessageContent(f"Media {query} not found", parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True),
+                reply_markup=kb
                 )
+                
            )
 
     update.inline_query.answer(results, cache_time=5)
