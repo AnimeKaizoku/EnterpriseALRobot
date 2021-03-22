@@ -1,5 +1,9 @@
 from datetime import datetime
 import html
+import re
+import time
+import json
+from html.parser import HTMLParser
 from platform import python_version
 from uuid import uuid4
 import requests, json
@@ -62,12 +66,20 @@ def inlinequery(update: Update, _) -> None:
             "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
             "keyboard": ".about ",
         },
+        {
+            "title": "Anilist",
+            "description": "Search anime and manga on AniList.co",
+            "message_text": "Click the button below to search anime and manga on AniList.co",
+            "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
+            "keyboard": ".anilist ",
+        },
     ]
 
     inline_funcs = {
         ".spb": spb,
         ".info": inlineinfo,
         ".about": about,
+        ".anilist": media_query,
     }
 
     if (f := query.split(" ", 1)[0]) in inline_funcs:
@@ -322,6 +334,118 @@ def spb(query: str, update: Update, context: CallbackContext) -> None:
     ]
 
     update.inline_query.answer(results, cache_time=5)
+
+
+# Anilist stuff begins // queries written by github.com/the-blank-x (t.me/TheKneesocks) // parser by github.com/Dank-del (t.me/dank_as_fuck)
+
+MEDIA_QUERY = '''query ($search: String) {
+  Page (perPage: 10) {
+    media (search: $search) {
+      id
+      title {
+        romaji
+        english
+        native
+      }
+      type
+      format
+      status
+      description
+      episodes
+      duration
+      chapters
+      volumes
+      genres
+      synonyms
+      averageScore
+      airingSchedule(notYetAired: true) {
+        nodes {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+      }
+      siteUrl
+    }
+  }
+}'''
+
+
+def media_query(query: str, update: Update, context: CallbackContext) -> None:
+    """
+    Handle anime inline query.
+    """
+    results: List = []
+
+    try:
+        search = query.split(" ", 1)[1]
+        results: List = []
+        r = requests.post('https://graphql.anilist.co', data=json.dumps({'query': MEDIA_QUERY, 'variables': {'search': search}}), headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
+        res = r.json()
+        data = res['data']['Page']['media']
+        res = data
+        for data in res:
+            title_en = data["title"].get("english") or "N/A"
+            title_ja = data["title"].get("romaji") or "N/A"
+            format = data.get("format") or "N/A"
+            type = data.get("type") or "N/A"
+            try:
+                des = data.get("description").replace("<br>", "").replace("</br>", "")
+                description = des.replace("<i>", "").replace("</i>", "") or "N/A"
+            except AttributeError:
+                description = data.get("description")
+
+            avgsc = data.get("averageScore") or "N/A"
+            status = data.get("status") or "N/A"
+            genres = data.get("genres") or "N/A"
+            genres = ", ".join(genres)
+            img = f"https://img.anili.st/media/{data['id']}" or ""
+            aurl = data.get("siteUrl")
+            kb = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Read More",
+                            url=aurl,
+                        )
+                        ]
+
+                    ])
+
+            txt = f"{title_en} | {title_ja}\n"
+            txt += f"Format: {format}\n"
+            txt += f"Type: {type}\n"
+            txt += f"Average Score: {avgsc}\n"
+            txt += f"Status: {status}\n"
+            txt += f"Genres: {genres}\n"
+            txt += f"Description: {description}\n"
+            txt += f"<a href='{img}'>&#xad</a>"
+
+            results.append(
+                InlineQueryResultArticle
+                    (
+                    id=str(uuid4()),
+                    title=f"{title_en} | {title_ja}",
+                    thumb_url=img,
+                    description=f"{description}",
+                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML, disable_web_page_preview=False)
+                    )
+        )
+    except (IndexError):
+        results.append(
+
+            InlineQueryResultArticle
+                (
+                id=str(uuid4()),
+                title=f"Media {query} not found",
+                input_message_content=InputTextMessageContent(f"Media {query} not found", reply_markup=kb, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                )
+           )
+
+    update.inline_query.answer(results, cache_time=5)
+
+
+
 
 
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
