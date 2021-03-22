@@ -48,15 +48,15 @@ def inlinequery(update: Update, _) -> None:
     inline_help_dicts = [
         {
             "title": "SpamProtection INFO",
-            "description": "Look up a person on @Intellivoid SpamProtection API",
-            "message_text": "Click the button below to look up a person on @Intellivoid SpamProtection API using "
+            "description": "Look up a person/bot/channel/chat on @Intellivoid SpamProtection API",
+            "message_text": "Click the button below to look up a person/bot/channel/chat on @Intellivoid SpamProtection API using "
                             "username or telegram id",
             "thumb_urL": "https://telegra.ph/file/3ce9045b1c7faf7123c67.jpg",
             "keyboard": ".spb ",
         },
         {
-            "title": "User info on Kigyo",
-            "description": "Look up a person in Kigyo database",
+            "title": "Account info on Kigyo",
+            "description": "Look up a Telegram account in Kigyo database",
             "message_text": "Click the button below to look up a person in Kigyo database using their Telegram ID",
             "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
             "keyboard": ".info ",
@@ -427,20 +427,20 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
 
                 ])
 
-            txt = f"{title_en} | {title_ja}\n"
-            txt += f"Format: {format}\n"
-            txt += f"Type: {type}\n"
-            txt += f"Average Score: {avgsc}\n"
-            txt += f"Status: {status}\n"
-            txt += f"Genres: {genres}\n"
-            txt += f"Description: {description}\n"
+            txt = f"<b>{title_en} | {title_ja}</b>\n"
+            txt += f"<b>Format</b>: <code>{format}</code>\n"
+            txt += f"<b>Type</b>: <code>{type}</code>\n"
+            txt += f"<b>Average Score</b>: <code>{avgsc}</code>\n"
+            txt += f"<b>Status</b>: <code>{status}</code>\n"
+            txt += f"<b>Genres</b>: <code>{genres}</code>\n"
+            txt += f"<b>Description</b>: <code>{description}</code>\n"
             txt += f"<a href='{img}'>&#xad</a>"
 
             results.append(
                 InlineQueryResultArticle
                     (
                     id=str(uuid4()),
-                    title=f"{title_en} | {title_ja}",
+                    title=f"{title_en} | {title_ja} | {format}",
                     thumb_url=img,
                     description=f"{description}",
                     input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.HTML,
