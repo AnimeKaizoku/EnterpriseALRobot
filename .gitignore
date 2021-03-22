@@ -24,3 +24,4 @@ config.ini
 log.txt
 shell_output.txt
 .vs
+tg_bot/elevated_users.json
