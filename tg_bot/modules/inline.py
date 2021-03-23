@@ -213,12 +213,30 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     if nation_level_present:
         text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(bot.username)
 
+
+    kb = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text="Report Error",
+                    url=f"https://t.me/YorktownEagleUnion",
+                ),
+                InlineKeyboardButton(
+                    text="Search again",
+                    switch_inline_query_current_chat=".info ",
+                ),
+
+            ],
+        ]
+        )
+
     results = [
         InlineQueryResultArticle(
             id=str(uuid4()),
             title=f"User info of {html.escape(user.first_name)}",
             input_message_content=InputTextMessageContent(text, parse_mode=ParseMode.HTML,
                                                           disable_web_page_preview=True),
+            reply_markup=kb
         ),
     ]
 
@@ -329,12 +347,28 @@ def spb(query: str, update: Update, context: CallbackContext) -> None:
     else:
         stats = "`cannot reach SpamProtection API`"
 
+    kb = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text="Report Error",
+                    url=f"https://t.me/YorktownEagleUnion",
+                ),
+                InlineKeyboardButton(
+                    text="Search again",
+                    switch_inline_query_current_chat=".spb ",
+                ),
+
+            ],
+        ])
+
     results = [
         InlineQueryResultArticle(
             id=str(uuid4()),
             title=f"SpamProtection API info of {srdata}",
             input_message_content=InputTextMessageContent(stats, parse_mode=ParseMode.MARKDOWN,
                                                           disable_web_page_preview=True),
+            reply_markup=kb
         ),
     ]
 
@@ -416,15 +450,21 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
             genres = ", ".join(genres)
             img = f"https://img.anili.st/media/{data['id']}" or "https://telegra.ph/file/cc83a0b7102ad1d7b1cb3.jpg"
             aurl = data.get("siteUrl")
+
+
             kb = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton(
                             text="Read More",
                             url=aurl,
-                        )
-                    ]
+                        ),
+                        InlineKeyboardButton(
+                            text="Search again",
+                            switch_inline_query_current_chat=".anilist ",
+                        ),
 
+                    ],
                 ])
 
             txt = f"<b>{title_en} | {title_ja}</b>\n"
@@ -449,16 +489,22 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                 )
             )
     except Exception as e:
+
         kb = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
                         text="Report error",
-                        url="t.me/YorkTownEagleUnion",
-                    )
-                ]
+                        url="t.me/YorktownEagleUnion",
+                    ),
+                    InlineKeyboardButton(
+                        text="Search again",
+                        switch_inline_query_current_chat=".anilist ",
+                    ),
 
+                ],
             ])
+
         results.append(
 
             InlineQueryResultArticle
