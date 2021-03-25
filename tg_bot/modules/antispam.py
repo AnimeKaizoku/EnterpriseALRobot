@@ -1,5 +1,6 @@
 import html
 import time
+import requests
 from datetime import datetime
 from io import BytesIO
 from tg_bot.modules.sql.users_sql import get_user_com_chats
@@ -434,7 +435,10 @@ def gbanlist(update: Update, context: CallbackContext):
 def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
-    if SPB_MODE:
+
+    apst = requests.get('https://api.intellivoid.net')
+    api_status = apst.status_code
+    if SPB_MODE and api_status == 200:
         try:
             status = client.raw_output(int(user_id))
             try:
