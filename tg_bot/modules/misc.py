@@ -168,12 +168,11 @@ def info(update: Update, context: CallbackContext):
     except:
         pass  # don't crash if api is down somehow...
 
-    apst = requests.get('https://api.intellivoid.net')
+    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={context.bot.username}')
     api_status = apst.status_code
     if (api_status == 200):
         try:
             status = client.raw_output(int(user.id))
-            print(status)
             ptid = status["results"]["private_telegram_id"]
             op = status["results"]["attributes"]["is_operator"]
             ag = status["results"]["attributes"]["is_agent"]
