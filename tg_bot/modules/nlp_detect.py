@@ -72,10 +72,8 @@ async def detect_spam(client, message):
     user = message.from_user
     chat = message.chat
     msg = message.text
-    apst = await session.get('https://api.intellivoid.net')
-    api_status = apst.status
     chat_state = sql.does_chat_nlp(chat.id)
-    if SPB_MODE and CF_API_KEY and chat_state == True and apst == 200:
+    if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
             payload = {'access_key': CF_API_KEY, 'input': msg}
             data = await session.post(url, data=payload)

@@ -158,12 +158,11 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     except:
         pass  # don't crash if api is down somehow...
 
-    apst = requests.get('https://api.intellivoid.net')
+    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={context.bot.username}')
     api_status = apst.status_code
     if (api_status == 200):
         try:
             status = client.raw_output(int(user.id))
-            print(status)
             ptid = status["results"]["private_telegram_id"]
             op = status["results"]["attributes"]["is_operator"]
             ag = status["results"]["attributes"]["is_agent"]
@@ -307,7 +306,7 @@ def spb(query: str, update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     user_id = update.effective_user.id
     srdata = None
-    apst = requests.get('https://api.intellivoid.net')
+    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={context.bot.username}')
     api_status = apst.status_code
     if (api_status != 200):
         stats = f"API RETURNED {api_status}"

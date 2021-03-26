@@ -436,7 +436,7 @@ def check_and_ban(update, user_id, should_message=True):
 
     chat = update.effective_chat  # type: Optional[Chat]
 
-    apst = requests.get('https://api.intellivoid.net')
+    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={update.effective_user.id}')
     api_status = apst.status_code
     if SPB_MODE and api_status == 200:
         try:
