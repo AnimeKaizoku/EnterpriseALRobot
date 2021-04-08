@@ -11,6 +11,9 @@ from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInv
 from pyrogram.types import Chat, User
 from configparser import ConfigParser
 from rich.logging import RichHandler
+from ptbcontrib.postgres_persistence import PostgresPersistence
+
+
 StartTime = time.time()
 
 def get_user_list(__init__, key):
@@ -95,7 +98,11 @@ else:
         sw = None
         log.warning("Can't connect to SpamWatch!")
 
-updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
+
+from tg_bot.modules.sql import SESSION
+
+
+updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(SESSION))
 telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
