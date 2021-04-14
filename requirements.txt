@@ -32,3 +32,4 @@ rich
 ujson
 psutil
 git+https://github.com/python-telegram-bot/ptbcontrib.git
+gitpython
