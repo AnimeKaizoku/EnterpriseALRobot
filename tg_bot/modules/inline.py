@@ -133,28 +133,51 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     sql.update_user(user.id, user.username)
 
     text = (
-        f"<b>General:</b>\n"
-        f"ID: <code>{user.id}</code>\n"
-        f"First Name: {html.escape(user.first_name)}"
+        f"<b>Information:</b>\n"
+        f"• ID: <code>{user.id}</code>\n"
+        f"• First Name: {html.escape(user.first_name)}"
     )
 
     if user.last_name:
-        text += f"\nLast Name: {html.escape(user.last_name)}"
+        text += f"\n• Last Name: {html.escape(user.last_name)}"
 
     if user.username:
-        text += f"\nUsername: @{html.escape(user.username)}"
+        text += f"\n• Username: @{html.escape(user.username)}"
 
-    text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
+    text += f"\n• Permanent user link: {mention_html(user.id, 'link')}"
+
+    nation_level_present = False
+
+    if user.id == OWNER_ID:
+        text += f"\n\nThis person is my owner"
+        nation_level_present = True
+    elif user.id in DEV_USERS:
+        text += f"\n\nThis Person is a part of Eagle Union"
+        nation_level_present = True
+    elif user.id in SUDO_USERS:
+        text += f"\n\nThe Nation level of this person is Royal"
+        nation_level_present = True
+    elif user.id in SUPPORT_USERS:
+        text += f"\n\nThe Nation level of this person is Sakura"
+        nation_level_present = True
+    elif user.id in SARDEGNA_USERS:
+        text += f"\n\nThe Nation level of this person is Sardegna"
+        nation_level_present = True
+    elif user.id in WHITELIST_USERS:
+        text += f"\n\nThe Nation level of this person is Neptunia"
+        nation_level_present = True
+
+    if nation_level_present:
+        text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(bot.username)
 
     try:
         spamwtc = sw.get_ban(int(user.id))
         if spamwtc:
-            text += "<b>\n\nSpamWatch:\n</b>"
-            text += "<b>This person is banned in Spamwatch!</b>"
-            text += f"\nReason: <pre>{spamwtc.reason}</pre>"
-            text += "\nAppeal at @SpamWatchSupport"
+            text += "<b>\n\n• SpamWatched:\n</b> Yes"
+            text += f"\n• Reason: <pre>{spamwtc.reason}</pre>"
+            text += "\n• Appeal at @SpamWatchSupport"
         else:
-            text += "<b>\n\nSpamWatch:</b>\n Not banned"
+            text += "<b>\n\n• SpamWatched:</b> No"
     except:
         pass  # don't crash if api is down somehow...
 
@@ -163,7 +186,7 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     if (api_status == 200):
         try:
             status = client.raw_output(int(user.id))
-            ptid = status["results"]["private_telegram_id"]
+            # ptid = status["results"]["private_telegram_id"]
             op = status["results"]["attributes"]["is_operator"]
             ag = status["results"]["attributes"]["is_agent"]
             wl = status["results"]["attributes"]["is_whitelisted"]
@@ -176,15 +199,14 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
             else:
                 blres = None
             text += "\n\n<b>SpamProtection:</b>"
-            text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
-            text += f"<b>Operator:</b> <code>{op}</code>\n"
-            text += f"<b>Agent:</b> <code>{ag}</code>\n"
-            text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
-            text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
-            text += f"<b>Ham Prediction:</b> <code>{hamp}</code>\n"
-            text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
-            text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
-            text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
+            # text += f"<b>\n• Private Telegram ID:</b> <code>{ptid}</code>\n"
+            text += f"<b>\n• Operator:</b> <code>{op}</code>\n"
+            text += f"<b>• Agent:</b> <code>{ag}</code>\n"
+            text += f"<b>• Whitelisted:</b> <code>{wl}</code>\n"
+            text += f"<b>• Spam/Ham Prediction:</b> <code>{round((sp/hamp*100), 3)}%</code>\n"
+            text += f"<b>• Potential Spammer:</b> <code>{ps}</code>\n"
+            text += f"<b>• Blacklisted:</b> <code>{blc}</code>\n"
+            text += f"<b>• Blacklist Reason:</b> <code>{blres}</code>\n"
         except HostDownError:
             text += "\n\n<b>SpamProtection:</b>"
             text += "\nCan't connect to Intellivoid SpamProtection API\n"
@@ -192,32 +214,10 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
         text += "\n\n<b>SpamProtection:</b>"
         text += f"\n<code>API RETURNED: {api_status}</code>\n"
 
-    nation_level_present = False
-
     num_chats = sql.get_user_num_chats(user.id)
-    text += f"\nChat count: <code>{num_chats}</code>"
+    text += f"\n• Chat count: <code>{num_chats}</code>"
 
-    if user.id == OWNER_ID:
-        text += f"\nThis person is my owner"
-        nation_level_present = True
-    elif user.id in DEV_USERS:
-        text += f"\nThis Person is a part of Eagle Union"
-        nation_level_present = True
-    elif user.id in SUDO_USERS:
-        text += f"\nThe Nation level of this person is Royal"
-        nation_level_present = True
-    elif user.id in SUPPORT_USERS:
-        text += f"\nThe Nation level of this person is Sakura"
-        nation_level_present = True
-    elif user.id in SARDEGNA_USERS:
-        text += f"\nThe Nation level of this person is Sardegna"
-        nation_level_present = True
-    elif user.id in WHITELIST_USERS:
-        text += f"\nThe Nation level of this person is Neptunia"
-        nation_level_present = True
 
-    if nation_level_present:
-        text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(bot.username)
 
 
     kb = InlineKeyboardMarkup(
