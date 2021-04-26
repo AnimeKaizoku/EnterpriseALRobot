@@ -2,7 +2,7 @@ future
 emoji
 beautifulsoup4
 requests
-sqlalchemy
+SQLAlchemy==1.4.11
 python-telegram-bot==13.4.1
 psycopg2-binary
 feedparser
