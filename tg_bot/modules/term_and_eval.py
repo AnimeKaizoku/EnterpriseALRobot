@@ -2,6 +2,7 @@ import traceback
 import sys
 import os
 import re
+import html
 import subprocess
 from io import StringIO, BytesIO
 from tg_bot import kp, OWNER_ID
@@ -42,18 +43,17 @@ async def evaluate(client, message):
     sys.stderr = old_stderr
     evaluation = ""
     if exc:
-        evaluation = exc
-    elif stderr:
-        evaluation = stderr
-    elif stdout:
-        evaluation = stdout
-    else:
-        evaluation = "Success"
-    final_output = f"<b>OUTPUT</b>:\n<code>{evaluation.strip()}</code>"
-    if len(final_output) > 4096:
+        evaluation = f"<b>Exception:</b>\n<code>{html.escape(exc)}</code>\n"
+    if stderr:
+        evaluation += f"<b>STDERR:</b>\n<code>{html.escape(stderr)}</code>\n"
+    if stdout:
+        evaluation += f"<b>STDOUT:</b>\n<code>{html.escape(stdout)}</code>\n"
+    if not evaluation:
+        evaluation = "Success but no output!"
+    if len(evaluation) > 4096:
         filename = 'output.txt'
         with open(filename, "w+", encoding="utf8") as out_file:
-            out_file.write(str(final_output))
+            out_file.write(str(evaluation))
         await message.reply_document(
             document=filename,
             caption=cmd,
@@ -63,7 +63,7 @@ async def evaluate(client, message):
         os.remove(filename)
         await status_message.delete()
     else:
-        await status_message.edit(final_output)
+        await status_message.edit(evaluation)
 
 
 
