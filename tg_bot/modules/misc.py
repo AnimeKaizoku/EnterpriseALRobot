@@ -7,7 +7,7 @@ import requests
 from telegram import Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, CallbackContext
-from telegram.utils.helpers import mention_html, escape_markdown
+from telegram.utils.helpers import mention_html
 from subprocess import Popen, PIPE
 
 from tg_bot import (
@@ -23,7 +23,6 @@ from tg_bot import (
     StartTime
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
-from tg_bot.modules.sql import SESSION
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, sudo_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user
@@ -365,16 +364,15 @@ def get_readable_time(seconds: int) -> str:
 
 @sudo_plus
 def stats(update, context):
-    db_size = SESSION.execute("SELECT pg_size_pretty(pg_database_size(current_database()))").scalar_one_or_none()
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
     botuptime = get_readable_time((time.time() - StartTime))
     status = "*System statistics*\n"
     status += "*• System uptime:* " + str(uptime) + "\n"
     uname = platform.uname()
     status += "*• System:* " + str(uname.system) + "\n"
-    status += "*• Node name:* " + escape_markdown(str(uname.node)) + "\n"
-    status += "*• Release:* " + escape_markdown(str(uname.release)) + "\n"
-    status += "*• Machine:* " + escape_markdown(str(uname.machine)) + "\n"
+    status += "*• Node name:* " + str(uname.node) + "\n"
+    status += "*• Release:* " + str(uname.release) + "\n"
+    status += "*• Machine:* " + str(uname.machine) + "\n"
 
     mem = virtual_memory()
     cpu = cpu_percent()
@@ -385,7 +383,6 @@ def stats(update, context):
     status += "*• Python version:* " + python_version() + "\n"
     status += "*• Library version:* " + str(__version__) + "\n"
     status += "*• Bot uptime:* " + str(botuptime) + "\n"
-    status += "*• Database size:* " + str(db_size) + "\n"
 
     repo = git.Repo(search_parent_directories=True)
     sha = repo.head.object.hexsha

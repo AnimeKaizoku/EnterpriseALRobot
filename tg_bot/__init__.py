@@ -13,13 +13,12 @@ from configparser import ConfigParser
 from rich.logging import RichHandler
 from ptbcontrib.postgres_persistence import PostgresPersistence
 
+
 StartTime = time.time()
 
-def get_user_list(key):
-    # Import here to evade a circular import
-    from tg_bot.modules.sql import nation_sql
-    royals = nation_sql.get_royals(key)
-    return [a.user_id for a in royals]
+def get_user_list(__init__, key):
+    with open("{}/tg_bot/{}".format(os.getcwd(), __init__), "r") as json_file:
+        return json.load(json_file)[key]
 
 # enable logging
 FORMAT = "[Enterprise] %(message)s"
@@ -66,12 +65,12 @@ MESSAGE_DUMP = kigconfig.getfloat("MESSAGE_DUMP")
 GBAN_LOGS = kigconfig.getfloat("GBAN_LOGS")
 NO_LOAD = kigconfig.get("NO_LOAD").split()
 NO_LOAD = list(map(str, NO_LOAD))
-SUDO_USERS = [OWNER_ID] + get_user_list("sudos")
-DEV_USERS = [OWNER_ID] + get_user_list("devs")
-SUPPORT_USERS = get_user_list("supports")
-SARDEGNA_USERS = get_user_list("sardegnas")
-WHITELIST_USERS = get_user_list("whitelists")
-SPAMMERS = get_user_list("spammers")
+SUDO_USERS = get_user_list("elevated_users.json", "sudos")
+DEV_USERS = get_user_list("elevated_users.json", "devs")
+SUPPORT_USERS = get_user_list("elevated_users.json", "supports")
+SARDEGNA_USERS = get_user_list("elevated_users.json", "sardegnas")
+WHITELIST_USERS = get_user_list("elevated_users.json", "whitelists")
+SPAMMERS = get_user_list("elevated_users.json", "spammers")
 spamwatch_api = kigconfig.get("spamwatch_api")
 CASH_API_KEY = kigconfig.get("CASH_API_KEY")
 TIME_API_KEY = kigconfig.get("TIME_API_KEY")
@@ -83,6 +82,10 @@ try:
 except:
     log.info("[NLP] No Coffeehouse API key provided.")
     CF_API_KEY = None
+
+
+SUDO_USERS.append(OWNER_ID)
+DEV_USERS.append(OWNER_ID)
 
 # SpamWatch
 if spamwatch_api is None:
@@ -97,6 +100,7 @@ else:
 
 
 from tg_bot.modules.sql import SESSION
+
 
 updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(SESSION))
 telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
@@ -132,6 +136,14 @@ async def get_entity(client, entity):
                 entity = await kp.get_chat(entity)
                 entity_client = kp
     return entity, entity_client
+
+
+SUDO_USERS = list(SUDO_USERS) + list(DEV_USERS)
+DEV_USERS = list(DEV_USERS)
+WHITELIST_USERS = list(WHITELIST_USERS)
+SUPPORT_USERS = list(SUPPORT_USERS)
+SARDEGNA_USERS = list(SARDEGNA_USERS)
+SPAMMERS = list(SPAMMERS)
 
 # Load at end to ensure all prev variables have been set
 from tg_bot.modules.helper_funcs.handlers import CustomCommandHandler
