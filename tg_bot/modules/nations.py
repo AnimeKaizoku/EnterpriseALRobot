@@ -19,9 +19,7 @@ from tg_bot import (
 from tg_bot.modules.helper_funcs.chat_status import whitelist_plus, dev_plus, sudo_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot.modules.log_channel import gloggable
-
-ELEVATED_USERS_FILE = os.path.join(os.getcwd(), "tg_bot/elevated_users.json")
-
+from tg_bot.modules.sql import nation_sql as sql
 
 def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
     bot = context.bot
@@ -51,28 +49,21 @@ def addsudo(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUDO_USERS:
         message.reply_text("This member is already a Sudo user")
         return ""
 
     if user_id in SUPPORT_USERS:
         rt += "Requested Eagle Union to promote a Support user to Sudo."
-        data["supports"].remove(user_id)
         SUPPORT_USERS.remove(user_id)
 
     if user_id in WHITELIST_USERS:
         rt += "Requested Eagle Union to promote a Whitelist user to Sudo."
-        data["whitelists"].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
-    data["sudos"].append(user_id)
+    # will add or update their role
+    sql.set_royal_role(user_id, "sudos")
     SUDO_USERS.append(user_id)
-
-    with open(ELEVATED_USERS_FILE, "w") as outfile:
-        json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
         rt
@@ -113,12 +104,8 @@ def addsupport(
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUDO_USERS:
         rt += "Requested Eagle Union to demote this Sudo to Support"
-        data["sudos"].remove(user_id)
         SUDO_USERS.remove(user_id)
 
     if user_id in SUPPORT_USERS:
@@ -127,14 +114,10 @@ def addsupport(
 
     if user_id in WHITELIST_USERS:
         rt += "Requested Eagle Union to promote this Whitelist user to Support"
-        data["whitelists"].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
-    data["supports"].append(user_id)
+    sql.set_royal_role(user_id, "supports")
     SUPPORT_USERS.append(user_id)
-
-    with open(ELEVATED_USERS_FILE, "w") as outfile:
-        json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
         rt + f"\n{user_member.first_name} was added as a Support user!"
@@ -169,28 +152,20 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUDO_USERS:
         rt += "This member is a Sudo user, Demoting to Whitelisted user."
-        data["sudos"].remove(user_id)
         SUDO_USERS.remove(user_id)
 
     if user_id in SUPPORT_USERS:
         rt += "This user is already a Support user, Demoting to Whitelisted user."
-        data["supports"].remove(user_id)
         SUPPORT_USERS.remove(user_id)
 
     if user_id in WHITELIST_USERS:
         message.reply_text("This user is already a Whitelist user.")
         return ""
 
-    data["whitelists"].append(user_id)
+    sql.set_royal_role(user_id, "whitelists")
     WHITELIST_USERS.append(user_id)
-
-    with open(ELEVATED_USERS_FILE, "w") as outfile:
-        json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
         rt + f"\nSuccessfully promoted {user_member.first_name} to a Whitelist user!"
@@ -225,33 +200,24 @@ def addsardegna(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUDO_USERS:
         rt += "This member is a Sudo user, Demoting to Sardegna."
-        data["sudos"].remove(user_id)
         SUDO_USERS.remove(user_id)
 
     if user_id in SUPPORT_USERS:
         rt += "This user is already a Support user, Demoting to Sardegna."
-        data["supports"].remove(user_id)
         SUPPORT_USERS.remove(user_id)
 
     if user_id in WHITELIST_USERS:
         rt += "This user is already a Whitelist user, Demoting to Sardegna."
-        data["whitelists"].remove(user_id)
         WHITELIST_USERS.remove(user_id)
 
     if user_id in SARDEGNA_USERS:
         message.reply_text("This user is already a Sardegna.")
         return ""
 
-    data["sardegnas"].append(user_id)
+    sql.set_royal_role(user_id, "sardegnas")
     SARDEGNA_USERS.append(user_id)
-
-    with open(ELEVATED_USERS_FILE, "w") as outfile:
-        json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
         rt + f"\nSuccessfully promoted {user_member.first_name} to a Sardegna Nation!"
@@ -285,16 +251,10 @@ def removesudo(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUDO_USERS:
         message.reply_text("Requested Eagle Union to demote this user to Civilian")
         SUDO_USERS.remove(user_id)
-        data["sudos"].remove(user_id)
-
-        with open(ELEVATED_USERS_FILE, "w") as outfile:
-            json.dump(data, outfile, indent=4)
+        sql.remove_royal(user_id)
 
         log_message = (
             f"#UNSUDO\n"
@@ -328,16 +288,10 @@ def removesupport(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SUPPORT_USERS:
         message.reply_text("Requested Eagle Union to demote this user to Civilian")
         SUPPORT_USERS.remove(user_id)
-        data["supports"].remove(user_id)
-
-        with open(ELEVATED_USERS_FILE, "w") as outfile:
-            json.dump(data, outfile, indent=4)
+        sql.remove_royal(user_id)
 
         log_message = (
             f"#UNSUPPORT\n"
@@ -371,16 +325,10 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in WHITELIST_USERS:
         message.reply_text("Demoting to normal user")
         WHITELIST_USERS.remove(user_id)
-        data["whitelists"].remove(user_id)
-
-        with open(ELEVATED_USERS_FILE, "w") as outfile:
-            json.dump(data, outfile, indent=4)
+        sql.remove_royal(user_id)
 
         log_message = (
             f"#UNWHITELIST\n"
@@ -413,16 +361,10 @@ def removesardegna(update: Update, context: CallbackContext) -> str:
         message.reply_text(reply)
         return ""
 
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
     if user_id in SARDEGNA_USERS:
         message.reply_text("Demoting to normal user")
         SARDEGNA_USERS.remove(user_id)
-        data["sardegnas"].remove(user_id)
-
-        with open(ELEVATED_USERS_FILE, "w") as outfile:
-            json.dump(data, outfile, indent=4)
+        sql.remove_royal(user_id)
 
         log_message = (
             f"#UNSARDEGNA\n"
