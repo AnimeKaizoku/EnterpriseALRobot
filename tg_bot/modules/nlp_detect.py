@@ -1,5 +1,5 @@
 from pyrogram import filters
-from tg_bot import kp, CF_API_KEY, log
+from tg_bot import kp, CF_API_KEY, log, dispatcher
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import ChatPermissions, Message
 from pyrogram.errors import BadRequest
@@ -72,6 +72,9 @@ async def detect_spam(client, message):
     user = message.from_user
     chat = message.chat
     msg = message.text
+    if user.id == dispatcher.bot.id:
+        return
+    
     chat_state = sql.does_chat_nlp(chat.id)
     if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
