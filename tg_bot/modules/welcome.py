@@ -1149,6 +1149,7 @@ WELC_MUTE_HELP_TXT = (
     "The following options are possible:\n"
     "• `/welcomemute soft`*:* restricts new members from sending media for 24 hours.\n"
     "• `/welcomemute strong`*:* mutes new members till they tap on a button thereby verifying they're human.\n"
+    "• `/welcomemute captcha`*:*  mutes new members till they solve a button captcha thereby verifying they're human.\n"
     "• `/welcomemute off`*:* turns off welcomemute.\n"
     "*Note:* Strong mode kicks a user from the chat if they dont verify in 120seconds. They can always rejoin though"
 )
