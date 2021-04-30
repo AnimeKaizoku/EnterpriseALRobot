@@ -69,6 +69,7 @@ ENUM_FUNC_MAP = {
 }
 
 VERIFIED_USER_WAITLIST = {}
+CAPTCHA_ANS_LIST = []
 
 from multicolorcaptcha import CaptchaGenerator
 
@@ -397,36 +398,6 @@ def new_member(update: Update, context: CallbackContext):
                         name="welcomemute",
                     )
                 if welc_mutes == "captcha":
-                    welcome_bool = False
-                    if not media_wel:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                new_mem.id: {
-                                    "should_welc": should_welc,
-                                    "media_wel": False,
-                                    "status": False,
-                                    "update": update,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                    "backup_message": backup_message,
-                                }
-                            }
-                        )
-                    else:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                new_mem.id: {
-                                    "should_welc": should_welc,
-                                    "chat_id": chat.id,
-                                    "status": False,
-                                    "media_wel": True,
-                                    "cust_content": cust_content,
-                                    "welc_type": welc_type,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                }
-                            }
-                        )
                     btn = []
                     # Captcha image size number (2 -> 640x360)
                     CAPCTHA_SIZE_NUM = 2
@@ -443,6 +414,45 @@ def new_member(update: Update, context: CallbackContext):
                     fileobj.name=f'captcha_{new_mem.id}.png'
                     image.save(fp=fileobj)
                     fileobj.seek(0)
+                    CAPTCHA_ANS_LIST.append(
+                                            {
+                                             'chat_id': chat.id,
+                                             'user_id': new_mem.id,
+                                             'ans': characters,
+                                            }
+                    )
+                    welcome_bool = False
+                    if not media_wel:
+                        VERIFIED_USER_WAITLIST.update(
+                            {
+                                new_mem.id: {
+                                    "should_welc": should_welc,
+                                    "media_wel": False,
+                                    "status": False,
+                                    "update": update,
+                                    "res": res,
+                                    "keyboard": keyboard,
+                                    "backup_message": backup_message,
+                                    "captcha_correct": characters,
+                                }
+                            }
+                        )
+                    else:
+                        VERIFIED_USER_WAITLIST.update(
+                            {
+                                new_mem.id: {
+                                    "should_welc": should_welc,
+                                    "chat_id": chat.id,
+                                    "status": False,
+                                    "media_wel": True,
+                                    "cust_content": cust_content,
+                                    "welc_type": welc_type,
+                                    "res": res,
+                                    "keyboard": keyboard,
+                                    "captcha_correct": characters,
+                                }
+                            }
+                        )
 
                     nums = [random.randint(1000, 9999) for _ in range (7)]
                     nums.append(characters)
@@ -450,10 +460,7 @@ def new_member(update: Update, context: CallbackContext):
                     to_append = []
                     print(nums)
                     for a in nums:
-                        if a == characters:
-                            to_append.append(InlineKeyboardButton(text=f"{a}", callback_data=f"user_captchajoin_true_({new_mem.id})"))
-                        else:
-                            to_append.append(InlineKeyboardButton(text=f"{a}", callback_data=f"user_captchajoin_false_({new_mem.id})"))
+                        to_append.append(InlineKeyboardButton(text=f"{a}", callback_data=f"user_captchajoin_({new_mem.id})_({a})"))
                         if len(to_append) > 2:
                             btn.append(to_append)
                             to_append = []
@@ -1059,60 +1066,67 @@ def user_captcha_button(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
     print(query.data)
-    match = re.match(r"user_captchajoin_true_\((.+?)\)", query.data)
+    match = re.match(r"user_captchajoin_\((\d+)\)_\((\d{4})\)", query.data)
     message = update.effective_message
     join_user = int(match.group(1))
+    captcha_ans = int(match.group(2))
 
+    for a in CAPTCHA_ANS_LIST:
+        if a['chat_id'] == chat.id and a['user_id'] == join_user:
+            c_captcha_ans = int(a['ans'])
     if join_user == user.id:
-        sql.set_human_checks(user.id, chat.id)
-        member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
-        member_dict["status"] = True
-        VERIFIED_USER_WAITLIST.update({user.id: member_dict})
-        query.answer(text="Yeet! You're a human, unmuted!")
-        bot.restrict_chat_member(
-            chat.id,
-            user.id,
-            permissions=ChatPermissions(
-                can_send_messages=True,
-                can_invite_users=True,
-                can_pin_messages=True,
-                can_send_polls=True,
-                can_change_info=True,
-                can_send_media_messages=True,
-                can_send_other_messages=True,
-                can_add_web_page_previews=True,
-            ),
-        )
-        try:
-            bot.deleteMessage(chat.id, message.message_id)
-        except:
-            pass
-        if member_dict["should_welc"]:
-            if member_dict["media_wel"]:
-                sent = ENUM_FUNC_MAP[member_dict["welc_type"]](
-                    member_dict["chat_id"],
-                    member_dict["cust_content"],
-                    caption=member_dict["res"],
-                    reply_markup=member_dict["keyboard"],
-                    parse_mode="markdown",
-                )
-            else:
-                sent = send(
-                    member_dict["update"],
-                    member_dict["res"],
-                    member_dict["keyboard"],
-                    member_dict["backup_message"],
-                )
+        if c_captcha_ans == captcha_ans:
+            sql.set_human_checks(user.id, chat.id)
+            member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
+            member_dict["status"] = True
+            VERIFIED_USER_WAITLIST.update({user.id: member_dict})
+            query.answer(text="Yeet! You're a human, unmuted!")
+            bot.restrict_chat_member(
+                chat.id,
+                user.id,
+                permissions=ChatPermissions(
+                    can_send_messages=True,
+                    can_invite_users=True,
+                    can_pin_messages=True,
+                    can_send_polls=True,
+                    can_change_info=True,
+                    can_send_media_messages=True,
+                    can_send_other_messages=True,
+                    can_add_web_page_previews=True,
+                ),
+            )
+            try:
+                bot.deleteMessage(chat.id, message.message_id)
+            except:
+                pass
+            if member_dict["should_welc"]:
+                if member_dict["media_wel"]:
+                    sent = ENUM_FUNC_MAP[member_dict["welc_type"]](
+                        member_dict["chat_id"],
+                        member_dict["cust_content"],
+                        caption=member_dict["res"],
+                        reply_markup=member_dict["keyboard"],
+                        parse_mode="markdown",
+                    )
+                else:
+                    sent = send(
+                        member_dict["update"],
+                        member_dict["res"],
+                        member_dict["keyboard"],
+                        member_dict["backup_message"],
+                    )
 
-            prev_welc = sql.get_clean_pref(chat.id)
-            if prev_welc:
-                try:
-                    bot.delete_message(chat.id, prev_welc)
-                except BadRequest:
-                    pass
+                prev_welc = sql.get_clean_pref(chat.id)
+                if prev_welc:
+                    try:
+                        bot.delete_message(chat.id, prev_welc)
+                    except BadRequest:
+                        pass
 
-                if sent:
-                    sql.set_clean_welcome(chat.id, sent.message_id)
+                    if sent:
+                        sql.set_clean_welcome(chat.id, sent.message_id)
+        else:
+            query.answer(text="Wrong answer")
 
     else:
         query.answer(text="You're not allowed to do this!")
