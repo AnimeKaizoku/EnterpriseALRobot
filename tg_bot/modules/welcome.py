@@ -1070,13 +1070,14 @@ def user_captcha_button(update: Update, context: CallbackContext):
     message = update.effective_message
     join_user = int(match.group(1))
     captcha_ans = int(match.group(2))
+    join_usr_data = bot.getChat(join_user)
 
     for a in CAPTCHA_ANS_LIST:
         if a['chat_id'] == chat.id and a['user_id'] == join_user:
             c_captcha_ans = int(a['ans'])
     if join_user == user.id:
         if c_captcha_ans == captcha_ans:
-            sql.set_human_checks(user.id, chat.id)
+            #sql.set_human_checks(user.id, chat.id)
             member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
             member_dict["status"] = True
             VERIFIED_USER_WAITLIST.update({user.id: member_dict})
@@ -1126,7 +1127,18 @@ def user_captcha_button(update: Update, context: CallbackContext):
                     if sent:
                         sql.set_clean_welcome(chat.id, sent.message_id)
         else:
+            try:
+                bot.deleteMessage(chat.id, message.message_id)
+            except:
+                pass
+            kicked_msg = f'''
+            ❌ [{escape_markdown(join_usr_data.first_name)}](tg://user?id={join_user}) failed the captcha and was kicked.
+            '''
             query.answer(text="Wrong answer")
+            res = chat.unban_member(join_user)
+            if res:
+                bot.sendMessage(chat_id=chat.id, text=kicked_msg, parse_mode=ParseMode.MARKDOWN)
+
 
     else:
         query.answer(text="You're not allowed to do this!")
