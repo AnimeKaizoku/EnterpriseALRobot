@@ -11,11 +11,11 @@ from tg_bot.modules.disable import (
 )
 from tg_bot.modules.sql import afk_sql as sql
 from tg_bot.modules.users import get_user_id
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 AFK_GROUP = 7
 AFK_REPLY_GROUP = 8
 
-
+@kigcmd(command="afk", group=AFK_GROUP)
 def afk(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(None, 1)
     user = update.effective_user
@@ -153,7 +153,7 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "afk_help")
 
-AFK_HANDLER = DisableAbleCommandHandler("afk", afk, run_async=True)
+#AFK_HANDLER = DisableAbleCommandHandler("afk", afk, run_async=True)
 AFK_REGEX_HANDLER = DisableAbleMessageHandler(
     Filters.regex("(?i)brb"), afk, friendly="afk", run_async=True
 )
@@ -172,7 +172,7 @@ AFK_REPLY_HANDLER = DisableAbleMessageHandler(
     run_async=True,
 )
 
-dispatcher.add_handler(AFK_HANDLER, AFK_GROUP)
+#dispatcher.add_handler(AFK_HANDLER, AFK_GROUP)
 dispatcher.add_handler(AFK_REGEX_HANDLER, AFK_GROUP)
 dispatcher.add_handler(NO_AFK_HANDLER, AFK_GROUP)
 dispatcher.add_handler(AFK_REPLY_HANDLER, AFK_REPLY_GROUP)
@@ -180,7 +180,7 @@ dispatcher.add_handler(AFK_REPLY_HANDLER, AFK_REPLY_GROUP)
 __mod_name__ = "AFK"
 __command_list__ = ["afk"]
 __handlers__ = [
-    (AFK_HANDLER, AFK_GROUP),
+    #(AFK_HANDLER, AFK_GROUP),
     (AFK_REGEX_HANDLER, AFK_GROUP),
     (NO_AFK_HANDLER, AFK_GROUP),
     (AFK_REPLY_HANDLER, AFK_REPLY_GROUP),
