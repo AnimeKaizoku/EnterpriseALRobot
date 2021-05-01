@@ -409,7 +409,7 @@ def new_member(update: Update, context: CallbackContext):
                     # Get information
                     image = captcha["image"]
                     characters = captcha["characters"]
-                    print(characters)
+                    #print(characters)
                     fileobj = BytesIO()
                     fileobj.name=f'captcha_{new_mem.id}.png'
                     image.save(fp=fileobj)
@@ -458,7 +458,7 @@ def new_member(update: Update, context: CallbackContext):
                     nums.append(characters)
                     random.shuffle(nums)
                     to_append = []
-                    print(nums)
+                    #print(nums)
                     for a in nums:
                         to_append.append(InlineKeyboardButton(text=f"{a}", callback_data=f"user_captchajoin_({new_mem.id})_({a})"))
                         if len(to_append) > 2:
@@ -1065,19 +1065,24 @@ def user_captcha_button(update: Update, context: CallbackContext):
     user = update.effective_user
     query = update.callback_query
     bot = context.bot
-    print(query.data)
+    #print(query.data)
     match = re.match(r"user_captchajoin_\((\d+)\)_\((\d{4})\)", query.data)
     message = update.effective_message
     join_user = int(match.group(1))
     captcha_ans = int(match.group(2))
     join_usr_data = bot.getChat(join_user)
 
-    for a in CAPTCHA_ANS_LIST:
-        if a['chat_id'] == chat.id and a['user_id'] == join_user:
-            c_captcha_ans = int(a['ans'])
+
     if join_user == user.id:
+        c_captcha_ans = "bruh"
+        for a in CAPTCHA_ANS_LIST:
+            if a['chat_id'] == chat.id and a['user_id'] == join_user:
+                c_captcha_ans = int(a['ans'])
+                a['chat_id'] = None
+                a['user_id'] = None
+                a['ans'] = None
         if c_captcha_ans == captcha_ans:
-            #sql.set_human_checks(user.id, chat.id)
+            sql.set_human_checks(user.id, chat.id)
             member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
             member_dict["status"] = True
             VERIFIED_USER_WAITLIST.update({user.id: member_dict})
