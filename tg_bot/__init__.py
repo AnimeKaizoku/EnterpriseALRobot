@@ -43,7 +43,7 @@ parser = ConfigParser()
 parser.read("config.ini")
 kigconfig = parser["kigconfig"]
 
-
+SYS_ADMIN = kigconfig.getint('SYS_ADMIN', 0)
 OWNER_ID = kigconfig.getint("OWNER_ID")
 OWNER_USERNAME = kigconfig.get("OWNER_USERNAME")
 APP_ID = kigconfig.getint("APP_ID")
