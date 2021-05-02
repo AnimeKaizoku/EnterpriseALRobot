@@ -1069,7 +1069,7 @@ def user_captcha_button(update: Update, context: CallbackContext):
 
 
     if join_user == user.id:
-        c_captcha_ans = CAPTCHA_ANS_DICT.pop(f'{join_chat},{join_user}')['ans']
+        c_captcha_ans = CAPTCHA_ANS_DICT.pop(f'{join_chat},{join_user}')
         if c_captcha_ans == captcha_ans:
             sql.set_human_checks(user.id, chat.id)
             member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
