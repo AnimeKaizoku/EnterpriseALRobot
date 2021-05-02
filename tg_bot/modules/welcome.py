@@ -414,7 +414,7 @@ def new_member(update: Update, context: CallbackContext):
                     fileobj.name=f'captcha_{new_mem.id}.png'
                     image.save(fp=fileobj)
                     fileobj.seek(0)
-                    CAPTCHA_ANS_DICT[f'{chat.id},{new_mem.id}'] = int(characters)
+                    CAPTCHA_ANS_DICT[(chat.id, new_mem.id)] = int(characters)
                     welcome_bool = False
                     if not media_wel:
                         VERIFIED_USER_WAITLIST.update(
@@ -1068,7 +1068,7 @@ def user_captcha_button(update: Update, context: CallbackContext):
 
 
     if join_user == user.id:
-        c_captcha_ans = CAPTCHA_ANS_DICT.pop(f'{join_chat},{join_user}')
+        c_captcha_ans = CAPTCHA_ANS_DICT.pop((join_chat, join_user))
         if c_captcha_ans == captcha_ans:
             sql.set_human_checks(user.id, chat.id)
             member_dict = VERIFIED_USER_WAITLIST[(chat.id, user.id)]
