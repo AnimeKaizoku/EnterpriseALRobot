@@ -336,7 +336,7 @@ def new_member(update: Update, context: CallbackContext):
                     if not media_wel:
                         VERIFIED_USER_WAITLIST.update(
                             {
-                                new_mem.id: {
+                                (chat.id, new_mem.id): {
                                     "should_welc": should_welc,
                                     "media_wel": False,
                                     "status": False,
@@ -350,7 +350,7 @@ def new_member(update: Update, context: CallbackContext):
                     else:
                         VERIFIED_USER_WAITLIST.update(
                             {
-                                new_mem.id: {
+                                (chat.id, new_mem.id): {
                                     "should_welc": should_welc,
                                     "chat_id": chat.id,
                                     "status": False,
@@ -419,7 +419,7 @@ def new_member(update: Update, context: CallbackContext):
                     if not media_wel:
                         VERIFIED_USER_WAITLIST.update(
                             {
-                                new_mem.id: {
+                                (chat.id, new_mem.id): {
                                     "should_welc": should_welc,
                                     "media_wel": False,
                                     "status": False,
@@ -434,7 +434,7 @@ def new_member(update: Update, context: CallbackContext):
                     else:
                         VERIFIED_USER_WAITLIST.update(
                             {
-                                new_mem.id: {
+                                (chat.id, new_mem.id): {
                                     "should_welc": should_welc,
                                     "chat_id": chat.id,
                                     "status": False,
@@ -526,7 +526,7 @@ def new_member(update: Update, context: CallbackContext):
 
 def check_not_bot(member, chat_id, message_id, context):
     bot = context.bot
-    member_dict = VERIFIED_USER_WAITLIST.pop(member.id)
+    member_dict = VERIFIED_USER_WAITLIST.pop((chat_id, member.id))
     member_status = member_dict.get("status")
     if not member_status:
         try:
@@ -1002,9 +1002,8 @@ def user_button(update: Update, context: CallbackContext):
 
     if join_user == user.id:
         sql.set_human_checks(user.id, chat.id)
-        member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
+        member_dict = VERIFIED_USER_WAITLIST[(chat.id, user.id)]
         member_dict["status"] = True
-        VERIFIED_USER_WAITLIST.update({user.id: member_dict})
         query.answer(text="Yeet! You're a human, unmuted!")
         bot.restrict_chat_member(
             chat.id,
@@ -1072,9 +1071,8 @@ def user_captcha_button(update: Update, context: CallbackContext):
         c_captcha_ans = CAPTCHA_ANS_DICT.pop(f'{join_chat},{join_user}')
         if c_captcha_ans == captcha_ans:
             sql.set_human_checks(user.id, chat.id)
-            member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
+            member_dict = VERIFIED_USER_WAITLIST[(chat.id, user.id)]
             member_dict["status"] = True
-            VERIFIED_USER_WAITLIST.update({user.id: member_dict})
             query.answer(text="Yeet! You're a human, unmuted!")
             bot.restrict_chat_member(
                 chat.id,
