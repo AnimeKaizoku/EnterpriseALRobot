@@ -69,7 +69,7 @@ ENUM_FUNC_MAP = {
 }
 
 VERIFIED_USER_WAITLIST = {}
-CAPTCHA_ANS_LIST = []
+CAPTCHA_ANS_DICT = {}
 
 from multicolorcaptcha import CaptchaGenerator
 
@@ -414,13 +414,7 @@ def new_member(update: Update, context: CallbackContext):
                     fileobj.name=f'captcha_{new_mem.id}.png'
                     image.save(fp=fileobj)
                     fileobj.seek(0)
-                    CAPTCHA_ANS_LIST.append(
-                                            {
-                                             'chat_id': chat.id,
-                                             'user_id': new_mem.id,
-                                             'ans': characters,
-                                            }
-                    )
+                    CAPTCHA_ANS_DICT[f'{chat.id},{new_mem.id}'] = int(characters)
                     welcome_bool = False
                     if not media_wel:
                         VERIFIED_USER_WAITLIST.update(
@@ -454,13 +448,13 @@ def new_member(update: Update, context: CallbackContext):
                             }
                         )
 
-                    nums = [random.randint(1000, 9999) for _ in range (7)]
+                    nums = [random.randint(1000, 9999) for _ in range(7)]
                     nums.append(characters)
                     random.shuffle(nums)
                     to_append = []
                     #print(nums)
                     for a in nums:
-                        to_append.append(InlineKeyboardButton(text=f"{a}", callback_data=f"user_captchajoin_({new_mem.id})_({a})"))
+                        to_append.append(InlineKeyboardButton(text=str(a), callback_data=f"user_captchajoin_({chat.id},{new_mem.id})_({a})"))
                         if len(to_append) > 2:
                             btn.append(to_append)
                             to_append = []
@@ -1066,21 +1060,16 @@ def user_captcha_button(update: Update, context: CallbackContext):
     query = update.callback_query
     bot = context.bot
     #print(query.data)
-    match = re.match(r"user_captchajoin_\((\d+)\)_\((\d{4})\)", query.data)
+    match = re.match(r"user_captchajoin_\(([\d\-]+),(\d+)\)_\((\d{4})\)", query.data)
     message = update.effective_message
-    join_user = int(match.group(1))
-    captcha_ans = int(match.group(2))
+    join_chat = int(match.group(1))
+    join_user = int(match.group(2))
+    captcha_ans = int(match.group(3))
     join_usr_data = bot.getChat(join_user)
 
 
     if join_user == user.id:
-        c_captcha_ans = "bruh"
-        for a in CAPTCHA_ANS_LIST:
-            if a['chat_id'] == chat.id and a['user_id'] == join_user:
-                c_captcha_ans = int(a['ans'])
-                a['chat_id'] = None
-                a['user_id'] = None
-                a['ans'] = None
+        c_captcha_ans = CAPTCHA_ANS_DICT.pop(f'{join_chat},{join_user}')['ans']
         if c_captcha_ans == captcha_ans:
             sql.set_human_checks(user.id, chat.id)
             member_dict = VERIFIED_USER_WAITLIST.pop(user.id)
@@ -1267,7 +1256,7 @@ BUTTON_VERIFY_HANDLER = CallbackQueryHandler(
     user_button, pattern=r"user_join_", run_async=True
 )
 CAPTCHA_BUTTON_VERIFY_HANDLER = CallbackQueryHandler(
-    user_captcha_button, pattern=r"user_captchajoin_", run_async=True
+    user_captcha_button, pattern=r"user_captchajoin_\([\d\-]+,\d+\)_\(\d{4}\)", run_async=True
 )
 
 dispatcher.add_handler(NEW_MEM_HANDLER)
