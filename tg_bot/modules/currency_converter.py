@@ -1,9 +1,10 @@
 import requests
-from tg_bot import CASH_API_KEY, dispatcher
+from tg_bot import CASH_API_KEY
 from telegram import Update, ParseMode
-from telegram.ext import CallbackContext, CommandHandler
+from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
-
+@kigcmd(command='cash')
 def convert(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(" ")
 
@@ -47,11 +48,3 @@ def convert(update: Update, context: CallbackContext):
             f"*Invalid Args!!:* Required 3 But Passed {len(args) -1}",
             parse_mode=ParseMode.MARKDOWN,
         )
-
-
-CONVERTER_HANDLER = CommandHandler("cash", convert, run_async=True)
-
-dispatcher.add_handler(CONVERTER_HANDLER)
-
-__command_list__ = ["cash"]
-__handlers__ = [CONVERTER_HANDLER]
