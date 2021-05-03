@@ -12,12 +12,11 @@ from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageConten
     InlineKeyboardButton
 from telegram import __version__
 from telegram.error import BadRequest
-from telegram.ext import InlineQueryHandler, CallbackContext
+from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
 import tg_bot.modules.sql.users_sql as sql
 from tg_bot import (
-    dispatcher,
     OWNER_ID,
     SUDO_USERS,
     SUPPORT_USERS,
@@ -27,6 +26,8 @@ from tg_bot import (
     sw, log
 )
 from tg_bot.modules.helper_funcs.misc import article
+from tg_bot.modules.helper_funcs.decorators import kiginline
+
 
 client = SPBClient()
 
@@ -36,7 +37,7 @@ def remove_prefix(text, prefix):
         text = text.replace(prefix, "", 1)
     return text
 
-
+@kiginline()
 def inlinequery(update: Update, _) -> None:
     """
     Main InlineQueryHandler callback.
@@ -531,6 +532,3 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
         )
 
     update.inline_query.answer(results, cache_time=5)
-
-
-dispatcher.add_handler(InlineQueryHandler(inlinequery))
