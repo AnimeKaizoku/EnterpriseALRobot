@@ -17,6 +17,7 @@ from telegram import ParseMode, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler, run_async
 from telegram.utils.helpers import mention_html
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 BLACKLISTWHITELIST = (
     [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
@@ -26,6 +27,7 @@ BLABLEUSERS = [OWNER_ID] + DEV_USERS
 
 @dev_plus
 @gloggable
+@kigcmd(command='ignore', pass_args=True)
 def bl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -68,6 +70,7 @@ def bl_user(update: Update, context: CallbackContext) -> str:
 
 @dev_plus
 @gloggable
+@kigcmd(command='notice', pass_args=True)
 def unbl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -109,6 +112,7 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
 
 
 @dev_plus
+@kigcmd(command='ignoredlist', pass_args=True)
 def bl_users(update: Update, context: CallbackContext):
     users = []
     bot = context.bot
@@ -156,14 +160,4 @@ def __user_info__(user_id):
 
     return text
 
-
-BL_HANDLER = CommandHandler("ignore", bl_user, pass_args=True, run_async=True)
-UNBL_HANDLER = CommandHandler("notice", unbl_user, pass_args=True, run_async=True)
-BLUSERS_HANDLER = CommandHandler("ignoredlist", bl_users, run_async=True)
-
-dispatcher.add_handler(BL_HANDLER)
-dispatcher.add_handler(UNBL_HANDLER)
-dispatcher.add_handler(BLUSERS_HANDLER)
-
 __mod_name__ = "Blacklisting Users"
-__handlers__ = [BL_HANDLER, UNBL_HANDLER, BLUSERS_HANDLER]
