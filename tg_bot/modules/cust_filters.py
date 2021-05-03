@@ -31,6 +31,8 @@ from tg_bot.modules.sql import cust_filters_sql as sql
 from tg_bot.modules.connection import connected
 
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+
 
 HANDLER_GROUP = 10
 
@@ -48,6 +50,7 @@ ENUM_FUNC_MAP = {
 
 
 @typing_action
+@kigcmd(command='filters', admin_ok=True)
 def list_handlers(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -96,6 +99,7 @@ def list_handlers(update, context):
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
 @user_admin
 @typing_action
+@kigcmd(command='filter', run_async=False)
 def filters(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -223,6 +227,7 @@ def filters(update, context):
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
 @user_admin
 @typing_action
+@kigcmd(command='stop', run_async=False)
 def stop_filter(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -264,7 +269,7 @@ def stop_filter(update, context):
         "That's not a filter - Click: /filters to get currently active filters.",
     )
 
-
+@kigmsg((CustomFilters.has_text & ~Filters.update.edited_message))
 def reply_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
@@ -464,7 +469,7 @@ def reply_filter(update, context):
                         pass
                 break
 
-
+@kigcmd(command="removeallfilters", filters=Filters.chat_type.groups)
 def rmall_filters(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -490,7 +495,7 @@ def rmall_filters(update, context):
             parse_mode=ParseMode.MARKDOWN,
         )
 
-
+@kigcallback(pattern=r"filters_.*")
 def rmall_callback(update, context):
     query = update.callback_query
     chat = update.effective_chat
@@ -580,28 +585,3 @@ def get_help(chat):
     return gs(chat, "cust_filters_help")
 
 __mod_name__ = "Filters"
-
-FILTER_HANDLER = CommandHandler("filter", filters, run_async=False)
-STOP_HANDLER = CommandHandler("stop", stop_filter, run_async=False)
-RMALLFILTER_HANDLER = CommandHandler(
-    "removeallfilters", rmall_filters, filters=Filters.chat_type.groups
-)
-RMALLFILTER_CALLBACK = CallbackQueryHandler(rmall_callback, pattern=r"filters_.*")
-LIST_HANDLER = DisableAbleCommandHandler("filters", list_handlers, admin_ok=True)
-CUST_FILTER_HANDLER = MessageHandler(
-    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter
-)
-
-dispatcher.add_handler(FILTER_HANDLER)
-dispatcher.add_handler(STOP_HANDLER)
-dispatcher.add_handler(LIST_HANDLER)
-dispatcher.add_handler(CUST_FILTER_HANDLER, HANDLER_GROUP)
-dispatcher.add_handler(RMALLFILTER_HANDLER)
-dispatcher.add_handler(RMALLFILTER_CALLBACK)
-
-__handlers__ = [
-    FILTER_HANDLER,
-    STOP_HANDLER,
-    LIST_HANDLER,
-    (CUST_FILTER_HANDLER, HANDLER_GROUP, RMALLFILTER_HANDLER),
-]
