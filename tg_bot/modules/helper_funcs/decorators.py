@@ -1,8 +1,8 @@
 from tg_bot.modules.disable import DisableAbleCommandHandler, DisableAbleMessageHandler
-from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, InlineQueryHandler
 from telegram.ext.filters import BaseFilter
 from tg_bot import dispatcher as d, log
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 
 
@@ -36,7 +36,7 @@ class KigyoTelegramHandler:
                         CommandHandler(command, func, filters=filters, run_async=run_async, pass_args=pass_args)
                     )
                 log.info(f"[KIGCMD] Loaded handler {command} for function {func.__name__}")
-            
+
             return func
 
         return _command
@@ -63,7 +63,7 @@ class KigyoTelegramHandler:
                         MessageHandler(pattern, func, run_async=run_async)
                     )
                 log.info(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__}")
-            
+
             return func
         return _message
 
@@ -74,6 +74,14 @@ class KigyoTelegramHandler:
             return func
         return _callbackquery
 
+    def inlinequery(self, pattern: Optional[str] = None, run_async: bool = True, pass_user_data: bool = True, pass_chat_data: bool = True, chat_types: List[str] = None):
+        def _inlinequery(func):
+            self._dispatcher.add_handler(InlineQueryHandler(pattern=pattern, callback=func, run_async=run_async, pass_user_data=pass_user_data, pass_chat_data=pass_chat_data, chat_types=chat_types))
+            log.info(f'[KIGINLINE] Loaded inlinequery handler with pattern {pattern} for function {func.__name__} | PASSES USER DATA: {pass_user_data} | PASSES CHAT DATA: {pass_chat_data} | CHAT TYPES: {chat_types}')
+            return func
+        return _inlinequery
+
 kigcmd = KigyoTelegramHandler(d).command
 kigmsg = KigyoTelegramHandler(d).message
 kigcallback = KigyoTelegramHandler(d).callbackquery
+kiginline = KigyoTelegramHandler(d).inlinequery
