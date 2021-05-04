@@ -44,7 +44,7 @@ from tg_bot import (
 from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
-from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, kigmsg
 from tg_bot.modules.language import gs
 
 PM_START_TEXT = """
@@ -133,7 +133,7 @@ def send_help(chat_id, text, keyboard=None):
         chat_id=chat_id, text=text, parse_mode=ParseMode.MARKDOWN, reply_markup=keyboard
     )
 
-
+@kigcmd(command='text')
 def test(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -147,6 +147,7 @@ def test(update: Update, context: CallbackContext):
     update.effective_message.reply_text("This person edited a message")
     print(update.effective_message)
 
+@kigcmd(command='start', pass_args=True)
 def start(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -263,6 +264,7 @@ def error_callback(update, context):
         pass
         # handle all other telegram related errors
 
+@kigcallback(pattern=r'help_')
 def help_button(update, context):
     '''#TODO
 
@@ -332,6 +334,7 @@ def help_button(update, context):
     except BadRequest:
         pass
 
+@kigcmd(command='help')
 def get_help(update, context):
     '''#TODO
 
@@ -379,6 +382,7 @@ def get_help(update, context):
 
     else:
         send_help(chat.id, (gs(chat.id, "pm_help_text")))
+
 
 def send_settings(chat_id, user_id, user=False):
     '''#TODO
@@ -428,7 +432,7 @@ def send_settings(chat_id, user_id, user=False):
                 parse_mode=ParseMode.MARKDOWN,
             )
 
-
+@kigcallback(pattern=r"stngs_")
 def settings_button(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -520,6 +524,7 @@ def settings_button(update: Update, context: CallbackContext):
         else:
             log.exception("Exception in settings buttons. %s", str(query.data))
 
+@kigcmd(command='settings')
 def get_settings(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -557,6 +562,7 @@ def get_settings(update: Update, context: CallbackContext):
     else:
         send_settings(chat.id, user.id, True)
 
+@kigcmd(command='donate')
 def donate(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -567,6 +573,7 @@ def donate(update: Update, context: CallbackContext):
 
     update.effective_message.reply_text("I'm free for everyone! >_<")
 
+@kigmsg((Filters.status_update.migrate))
 def migrate_chats(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -594,34 +601,6 @@ def migrate_chats(update: Update, context: CallbackContext):
 
 
 def main():
-    '''#TODO'''
-
-    test_handler = CommandHandler("test", test, run_async=True)
-    start_handler = CommandHandler("start", start, pass_args=True, run_async=True)
-
-    help_handler = CommandHandler("help", get_help, run_async=True)
-    help_callback_handler = CallbackQueryHandler(
-        help_button, pattern=r"help_", run_async=True
-    )
-
-    settings_handler = CommandHandler("settings", get_settings, run_async=True)
-    settings_callback_handler = CallbackQueryHandler(
-        settings_button, pattern=r"stngs_", run_async=True
-    )
-
-    donate_handler = DisableAbleCommandHandler("donate", donate, run_async=True)
-    migrate_handler = MessageHandler(
-        Filters.status_update.migrate, migrate_chats, run_async=True
-    )
-
-    # dispatcher.add_handler(test_handler)
-    dispatcher.add_handler(start_handler)
-    dispatcher.add_handler(help_handler)
-    dispatcher.add_handler(settings_handler)
-    dispatcher.add_handler(help_callback_handler)
-    dispatcher.add_handler(settings_callback_handler)
-    dispatcher.add_handler(migrate_handler)
-    dispatcher.add_handler(donate_handler)
     dispatcher.add_error_handler(error_callback)
     # dispatcher.add_error_handler(error_handler)
 
