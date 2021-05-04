@@ -11,7 +11,7 @@ class KigyoTelegramHandler:
         self._dispatcher = d
 
     def command(
-        self, command: str, filters: Optional[BaseFilter] = None, admin_ok: bool = False, pass_args: bool = False, run_async: bool = True, can_disable: bool = True, group: Optional[Union[int]] = None
+        self, command: str, filters: Optional[BaseFilter] = None, admin_ok: bool = False, pass_args: bool = False, run_async: bool = True, can_disable: bool = True, group: Optional[Union[int]] = 40
     ):
 
 
@@ -41,7 +41,7 @@ class KigyoTelegramHandler:
 
         return _command
 
-    def message(self, pattern: Optional[str] = None, can_disable: bool = True, run_async: bool = True, group: Optional[Union[int]] = None, friendly = None):
+    def message(self, pattern: Optional[str] = None, can_disable: bool = True, run_async: bool = True, group: Optional[Union[int]] = 60, friendly = None):
         def _message(func):
             try:
                 if can_disable:
