@@ -20,6 +20,7 @@ from tg_bot.modules.helper_funcs.chat_status import whitelist_plus, dev_plus, su
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot.modules.log_channel import gloggable
 from tg_bot.modules.sql import nation_sql as sql
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
     bot = context.bot
@@ -35,6 +36,7 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
 
 @dev_plus
 @gloggable
+@kigcmd(command='addsudo')
 def addsudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -87,6 +89,7 @@ def addsudo(update: Update, context: CallbackContext) -> str:
 
 @sudo_plus
 @gloggable
+@kigcmd(command='addsupport')
 def addsupport(
     update: Update,
     context: CallbackContext,
@@ -138,6 +141,7 @@ def addsupport(
 
 @sudo_plus
 @gloggable
+@kigcmd(command='addwhitelist')
 def addwhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -186,6 +190,7 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
 
 @sudo_plus
 @gloggable
+@kigcmd(command='addsardegna')
 def addsardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -238,6 +243,7 @@ def addsardegna(update: Update, context: CallbackContext) -> str:
 
 @dev_plus
 @gloggable
+@kigcmd(command='removesudo')
 def removesudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -275,6 +281,7 @@ def removesudo(update: Update, context: CallbackContext) -> str:
 
 @sudo_plus
 @gloggable
+@kigcmd(command='removesupport')
 def removesupport(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -312,6 +319,7 @@ def removesupport(update: Update, context: CallbackContext) -> str:
 
 @sudo_plus
 @gloggable
+@kigcmd(command='removewhitelist')
 def removewhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -348,6 +356,7 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
 
 @sudo_plus
 @gloggable
+@kigcmd(command='removesardegna')
 def removesardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -401,6 +410,7 @@ def send_nations(update):
 
 
 @whitelist_plus
+@kigcmd(command=["whitelistlist", "neptunians"])
 def whitelistlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Neptunia Nations :</b>\n"
@@ -416,6 +426,7 @@ def whitelistlist(update: Update, context: CallbackContext):
 
 
 @whitelist_plus
+@kigcmd(command='sardegnas')
 def Sardegnalist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sardegna Nations :</b>\n"
@@ -430,6 +441,7 @@ def Sardegnalist(update: Update, context: CallbackContext):
 
 
 @whitelist_plus
+@kigcmd(command=["supportlist", "sakuras"])
 def supportlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sakura Nations :</b>\n"
@@ -444,6 +456,7 @@ def supportlist(update: Update, context: CallbackContext):
 
 
 @whitelist_plus
+@kigcmd(command=["sudolist", "royals"])
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
     true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
@@ -459,6 +472,7 @@ def sudolist(update: Update, context: CallbackContext):
 
 
 @whitelist_plus
+@kigcmd(command=["devlist", "eagle"])
 def devlist(update: Update, context: CallbackContext):
     bot = context.bot
     true_dev = list(set(DEV_USERS) - {OWNER_ID})
@@ -478,54 +492,5 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "nation_help")
 
-SUDO_HANDLER = CommandHandler(("addsudo", "adddragon"), addsudo)
-SUPPORT_HANDLER = CommandHandler(("addsupport", "adddemon"), addsupport)
-SD_HANDLER = CommandHandler(("addsardegna"), addsardegna)
-WHITELIST_HANDLER = CommandHandler(("addwhitelist", "addwolf"), addwhitelist)
-UNSUDO_HANDLER = CommandHandler(("removesudo", "removedragon"), removesudo)
-UNSUPPORT_HANDLER = CommandHandler(("removesupport", "removedemon"), removesupport)
-UNSD_HANDLER = CommandHandler(("removesardegna"), removesardegna)
-UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "removewolf"), removewhitelist)
-
-dispatcher.add_handler(SUDO_HANDLER)
-dispatcher.add_handler(SUPPORT_HANDLER)
-dispatcher.add_handler(SD_HANDLER)
-dispatcher.add_handler(WHITELIST_HANDLER)
-dispatcher.add_handler(UNSUDO_HANDLER)
-dispatcher.add_handler(UNSUPPORT_HANDLER)
-dispatcher.add_handler(UNSD_HANDLER)
-dispatcher.add_handler(UNWHITELIST_HANDLER)
-
-
-WHITELISTLIST_HANDLER = CommandHandler(
-    ["whitelistlist", "neptunians"], whitelistlist, run_async=True
-)
-SARDEGNALIST_HANDLER = CommandHandler(["sardegnas"], Sardegnalist, run_async=True)
-SUPPORTLIST_HANDLER = CommandHandler(
-    ["supportlist", "sakuras"], supportlist, run_async=True
-)
-SUDOLIST_HANDLER = CommandHandler(["sudolist", "royals"], sudolist, run_async=True)
-DEVLIST_HANDLER = CommandHandler(["devlist", "eagle"], devlist, run_async=True)
-
-dispatcher.add_handler(WHITELISTLIST_HANDLER)
-dispatcher.add_handler(SARDEGNALIST_HANDLER)
-dispatcher.add_handler(SUPPORTLIST_HANDLER)
-dispatcher.add_handler(SUDOLIST_HANDLER)
-dispatcher.add_handler(DEVLIST_HANDLER)
 
 __mod_name__ = "Nations"
-__handlers__ = [
-    SUDO_HANDLER,
-    SUPPORT_HANDLER,
-    SD_HANDLER,
-    WHITELIST_HANDLER,
-    UNSUDO_HANDLER,
-    UNSUPPORT_HANDLER,
-    UNSD_HANDLER,
-    UNWHITELIST_HANDLER,
-    WHITELISTLIST_HANDLER,
-    SARDEGNALIST_HANDLER,
-    SUPPORTLIST_HANDLER,
-    SUDOLIST_HANDLER,
-    DEVLIST_HANDLER,
-]
