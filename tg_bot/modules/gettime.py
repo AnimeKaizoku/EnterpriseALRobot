@@ -3,9 +3,9 @@ from typing import List
 
 import requests
 from tg_bot import TIME_API_KEY, dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 
 def generate_time(to_find: str, findtype: List[str]) -> str:
@@ -57,7 +57,7 @@ def generate_time(to_find: str, findtype: List[str]) -> str:
 
     return result
 
-
+@kigcmd(command='time')
 def gettime(update: Update, context: CallbackContext):
     message = update.effective_message
 
@@ -89,11 +89,4 @@ def gettime(update: Update, context: CallbackContext):
         result, parse_mode=ParseMode.HTML, disable_web_page_preview=True
     )
 
-
-TIME_HANDLER = DisableAbleCommandHandler("time", gettime, run_async=True)
-
-dispatcher.add_handler(TIME_HANDLER)
-
 __mod_name__ = "Time"
-__command_list__ = ["time"]
-__handlers__ = [TIME_HANDLER]
