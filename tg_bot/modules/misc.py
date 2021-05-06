@@ -4,6 +4,7 @@ import time
 from typing import List
 import git
 import requests
+from io import BytesIO
 from telegram import Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, CallbackContext
@@ -190,14 +191,19 @@ def info(update: Update, context: CallbackContext):
                 blres = None
             text += "\n\n<b>SpamProtection:</b>"
             text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
-            text += f"<b>Operator:</b> <code>{op}</code>\n"
-            text += f"<b>Agent:</b> <code>{ag}</code>\n"
-            text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
+            if op:
+                text += f"<b>Operator:</b> <code>{op}</code>\n"
+            if ag:
+                text += f"<b>Agent:</b> <code>{ag}</code>\n"
+            if wl:
+                text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
             text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
             text += f"<b>Ham Prediction:</b> <code>{hamp}</code>\n"
-            text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
-            text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
-            text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
+            if ps:
+                text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
+            if blc:
+                text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
+                text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
         except HostDownError:
             text += "\n\n<b>SpamProtection:</b>"
             text += "\nCan't connect to Intellivoid SpamProtection API\n"
@@ -262,15 +268,16 @@ def info(update: Update, context: CallbackContext):
         try:
             profile = bot.get_user_profile_photos(user.id).photos[0][-1]
             _file = bot.get_file(profile["file_id"])
-            _file.download(f"{user.id}.png")
+            
+            _file = _file.download(out=BytesIO())
+            _file.seek(0)
 
             message.reply_document(
-                document=open(f"{user.id}.png", "rb"),
+                document=_file,
                 caption=(text),
                 parse_mode=ParseMode.HTML,
             )
 
-            os.remove(f"{user.id}.png")
         # Incase user don't have profile pic, send normal text
         except IndexError:
             message.reply_text(
