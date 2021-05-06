@@ -1,9 +1,9 @@
 import speedtest
 from tg_bot import DEV_USERS, dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
-from telegram.ext import CallbackContext, CallbackQueryHandler
+from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
 
 def convert(speed):
@@ -11,6 +11,7 @@ def convert(speed):
 
 
 @dev_plus
+@kigcmd(command='speedtest')
 def speedtestxyz(update: Update, context: CallbackContext):
     buttons = [
         [
@@ -23,6 +24,7 @@ def speedtestxyz(update: Update, context: CallbackContext):
     )
 
 
+@kigcallback(pattern="speedtest_.*")
 def speedtestxyz_callback(update: Update, context: CallbackContext):
     query = update.callback_query
 
@@ -49,16 +51,4 @@ def speedtestxyz_callback(update: Update, context: CallbackContext):
         query.answer("You are not a part of Eagle Union.")
 
 
-SPEED_TEST_HANDLER = DisableAbleCommandHandler(
-    "speedtest", speedtestxyz, run_async=True
-)
-SPEED_TEST_CALLBACKHANDLER = CallbackQueryHandler(
-    speedtestxyz_callback, pattern="speedtest_.*", run_async=True
-)
-
-dispatcher.add_handler(SPEED_TEST_HANDLER)
-dispatcher.add_handler(SPEED_TEST_CALLBACKHANDLER)
-
 __mod_name__ = "SpeedTest"
-__command_list__ = ["speedtest"]
-__handlers__ = [SPEED_TEST_HANDLER, SPEED_TEST_CALLBACKHANDLER]
