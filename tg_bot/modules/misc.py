@@ -38,6 +38,7 @@ import platform
 from platform import python_version
 from spamprotection.sync import SPBClient
 from spamprotection.errors import HostDownError
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 client = SPBClient()
 
 MARKDOWN_HELP = f"""
@@ -64,7 +65,7 @@ This will create two buttons on a single line, instead of one button per line.
 Keep in mind that your message <b>MUST</b> contain some text other than just a button!
 """
 
-
+@kigcmd(command='id', pass_args=True)
 def get_id(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -106,7 +107,7 @@ def get_id(update: Update, context: CallbackContext):
                 f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
             )
 
-
+@kigcmd(command='gifid')
 def gifid(update: Update, _):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
@@ -117,7 +118,7 @@ def gifid(update: Update, _):
     else:
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
-
+@kigcmd(command='info', pass_args=True)
 def info(update: Update, context: CallbackContext):
     bot = context.bot
     args = context.args
@@ -268,7 +269,7 @@ def info(update: Update, context: CallbackContext):
         try:
             profile = bot.get_user_profile_photos(user.id).photos[0][-1]
             _file = bot.get_file(profile["file_id"])
-            
+
             _file = _file.download(out=BytesIO())
             _file.seek(0)
 
@@ -291,6 +292,7 @@ def info(update: Update, context: CallbackContext):
 
 
 @user_admin
+@kigcmd(command='echo', pass_args=True, filters=Filters.chat_type.groups)
 def echo(update: Update, _):
     args = update.effective_message.text.split(None, 1)
     message = update.effective_message
@@ -308,30 +310,7 @@ def shell(command):
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
-
-@sudo_plus
-def ram(update: Update, _):
-    cmd = "ps -o pid"
-    output = shell(cmd)[0].decode()
-    processes = output.splitlines()
-    mem = 0
-    for p in processes[1:]:
-        mem += int(
-            float(
-                shell(
-                    "ps u -p {} | awk ".format(p)
-                    + "'{sum=sum+$6}; END {print sum/1024}'"
-                )[0]
-                .decode()
-                .rstrip()
-                .replace("'", "")
-            )
-        )
-    update.message.reply_text(
-        f"RAM usage = <code>{mem} MiB</code>", parse_mode=ParseMode.HTML
-    )
-
-
+@kigcmd(command='markdownhelp', filters=Filters.chat_type.private)
 def markdown_help(update: Update, _):
     chat = update.effective_chat
     update.effective_message.reply_text((gs(chat.id, "markdown_help_text")), parse_mode=ParseMode.HTML)
@@ -374,6 +353,7 @@ def get_readable_time(seconds: int) -> str:
 stats_str = '''
 '''
 @sudo_plus
+@kigcmd(command='stats', can_disable=False)
 def stats(update, context):
     db_size = SESSION.execute("SELECT pg_size_pretty(pg_database_size(current_database()))").scalar_one_or_none()
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
@@ -421,7 +401,7 @@ def stats(update, context):
         "╘══「 by [Dank-del](github.com/Dank-del)」\n",
         parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(kb), disable_web_page_preview=True)
 
-
+@kigcmd(command='ping')
 def ping(update: Update, _):
     msg = update.effective_message
     start_time = time.time()
@@ -438,35 +418,4 @@ def get_help(chat):
 
 
 
-ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True, run_async=True)
-GIFID_HANDLER = DisableAbleCommandHandler("gifid", gifid, run_async=True)
-INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True, run_async=True)
-ECHO_HANDLER = DisableAbleCommandHandler(
-    "echo", echo, filters=Filters.chat_type.groups, run_async=True
-)
-MD_HELP_HANDLER = CommandHandler(
-    "markdownhelp", markdown_help, filters=Filters.chat_type.private, run_async=True
-)
-STATS_HANDLER = CommandHandler("stats", stats, run_async=True)
-PING_HANDLER = DisableAbleCommandHandler("ping", ping, run_async=True)
-RAM_HANDLER = CommandHandler("ram", ram, run_async=True)
-dispatcher.add_handler(ID_HANDLER)
-dispatcher.add_handler(GIFID_HANDLER)
-dispatcher.add_handler(INFO_HANDLER)
-dispatcher.add_handler(ECHO_HANDLER)
-dispatcher.add_handler(MD_HELP_HANDLER)
-dispatcher.add_handler(STATS_HANDLER)
-dispatcher.add_handler(PING_HANDLER)
-dispatcher.add_handler(RAM_HANDLER)
-
 __mod_name__ = "Misc"
-__command_list__ = ["id", "info", "echo", "ping"]
-__handlers__ = [
-    ID_HANDLER,
-    GIFID_HANDLER,
-    INFO_HANDLER,
-    ECHO_HANDLER,
-    MD_HELP_HANDLER,
-    STATS_HANDLER,
-    PING_HANDLER,
-]
