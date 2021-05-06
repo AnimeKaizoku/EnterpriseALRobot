@@ -1,14 +1,14 @@
 from random import randint
 
 import requests as r
-from tg_bot import WALL_API, dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot import WALL_API
 from telegram import Update
 from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 # Wallpapers module by @TheRealPhoenix using wall.alphacoders.com
 
-
+@kigcmd(command='wall')
 def wall(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message
@@ -52,7 +52,3 @@ def wall(update: Update, context: CallbackContext):
                     reply_to_message_id=msg_id,
                     timeout=60,
                 )
-
-
-WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, run_async=True)
-dispatcher.add_handler(WALLPAPER_HANDLER)
