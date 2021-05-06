@@ -13,10 +13,12 @@ from telegram import (
     User,
 )
 from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, Filters, run_async
+from telegram.ext import CallbackContext, Filters
 from telegram.utils.helpers import escape_markdown
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 
+@kigcmd(command='rules', filters=Filters.chat_type.groups)
 def get_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     send_rules(update, chat_id)
@@ -73,6 +75,7 @@ def send_rules(update, chat_id, from_pm=False):
 
 
 @user_admin
+@kigcmd(command='setrules', filters=Filters.chat_type.groups)
 def set_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -90,6 +93,7 @@ def set_rules(update: Update, context: CallbackContext):
 
 
 @user_admin
+@kigcmd(command='clearrules', filters=Filters.chat_type.groups)
 def clear_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")
@@ -120,17 +124,3 @@ def get_help(chat):
 
 
 __mod_name__ = "Rules"
-
-GET_RULES_HANDLER = CommandHandler(
-    "rules", get_rules, filters=Filters.chat_type.groups, run_async=True
-)
-SET_RULES_HANDLER = CommandHandler(
-    "setrules", set_rules, filters=Filters.chat_type.groups, run_async=True
-)
-RESET_RULES_HANDLER = CommandHandler(
-    "clearrules", clear_rules, filters=Filters.chat_type.groups, run_async=True
-)
-
-dispatcher.add_handler(GET_RULES_HANDLER)
-dispatcher.add_handler(SET_RULES_HANDLER)
-dispatcher.add_handler(RESET_RULES_HANDLER)
