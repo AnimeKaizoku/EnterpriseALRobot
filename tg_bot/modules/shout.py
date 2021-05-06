@@ -1,9 +1,9 @@
 from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import Update
 from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
-
+@kigcmd(command='shout')
 def shout(update: Update, context: CallbackContext):
     args = context.args
     text = " ".join(args)
@@ -16,13 +16,3 @@ def shout(update: Update, context: CallbackContext):
     result = "".join(result)
     msg = "```\n" + result + "```"
     return update.effective_message.reply_text(msg, parse_mode="MARKDOWN")
-
-
-SHOUT_HANDLER = DisableAbleCommandHandler(
-    "shout", shout, pass_args=True, run_async=True
-)
-
-dispatcher.add_handler(SHOUT_HANDLER)
-
-__command_list__ = ["shout"]
-__handlers__ = [SHOUT_HANDLER]
