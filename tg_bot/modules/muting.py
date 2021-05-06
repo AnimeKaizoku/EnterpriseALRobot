@@ -17,6 +17,7 @@ from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.language import gs
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 
 def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
@@ -48,6 +49,7 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
 @bot_admin
 @user_admin
 @loggable
+@kigcmd(command='mute')
 def mute(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -95,6 +97,7 @@ def mute(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @user_admin
 @loggable
+@kigcmd(command='unmute')
 def unmute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -158,6 +161,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
 @can_restrict
 @user_admin
 @loggable
+@kigcmd(command=['tmute', 'tempmute'])
 def temp_mute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -236,13 +240,4 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
 def get_help(chat):
     return gs(chat, "muting_help")
 
-MUTE_HANDLER = CommandHandler("mute", mute, run_async=True)
-UNMUTE_HANDLER = CommandHandler("unmute", unmute, run_async=True)
-TEMPMUTE_HANDLER = CommandHandler(["tmute", "tempmute"], temp_mute, run_async=True)
-
-dispatcher.add_handler(MUTE_HANDLER)
-dispatcher.add_handler(UNMUTE_HANDLER)
-dispatcher.add_handler(TEMPMUTE_HANDLER)
-
 __mod_name__ = "Muting"
-__handlers__ = [MUTE_HANDLER, UNMUTE_HANDLER, TEMPMUTE_HANDLER]
