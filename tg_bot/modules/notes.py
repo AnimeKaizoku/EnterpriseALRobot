@@ -4,7 +4,6 @@ from typing import Optional
 
 import tg_bot.modules.sql.notes_sql as sql
 from tg_bot import log, dispatcher, SUDO_USERS
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, connection_status
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from tg_bot.modules.helper_funcs.msg_types import get_note_type
@@ -21,12 +20,11 @@ from telegram.error import BadRequest
 from telegram.utils.helpers import escape_markdown, mention_markdown
 from telegram.ext import (
     CallbackContext,
-    CommandHandler,
     CallbackQueryHandler,
     Filters,
-    MessageHandler,
 )
-from telegram.ext.dispatcher import run_async
+
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
 
 JOIN_LOGGER = None
 FILE_MATCHER = re.compile(r"^###file_id(!photo)?###:(.*?)(?:\s|$)")
@@ -208,6 +206,7 @@ def get(update, context, notename, show_none=True, no_format=False):
 
 
 @connection_status
+@kigcmd(command="get")
 def cmd_get(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     if len(args) >= 2 and args[1].lower() == "noformat":
@@ -219,6 +218,7 @@ def cmd_get(update: Update, context: CallbackContext):
 
 
 @connection_status
+@kigmsg((Filters.regex(r"^#[^\s]+")), group=-14)
 def hash_get(update: Update, context: CallbackContext):
     message = update.effective_message.text
     fst_word = message.split()[0]
@@ -227,6 +227,7 @@ def hash_get(update: Update, context: CallbackContext):
 
 
 @connection_status
+@kigmsg((Filters.regex(r"^/\d+$")), group=-16)
 def slash_get(update: Update, context: CallbackContext):
     message, chat_id = update.effective_message.text, update.effective_chat.id
     no_slash = message[1:]
@@ -242,10 +243,14 @@ def slash_get(update: Update, context: CallbackContext):
 
 @user_admin
 @connection_status
+@kigcmd(command='save')
 def save(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
-
+    m = msg.text.split(' ', 1)
+    if len(m) == 1:
+        msg.reply_text("Provide something to save.")
+        return 
     note_name, text, data_type, content, buttons = get_note_type(msg)
     note_name = note_name.lower()
     if data_type is None:
@@ -281,6 +286,7 @@ def save(update: Update, context: CallbackContext):
 
 @user_admin
 @connection_status
+@kigcmd(command='clear')
 def clear(update: Update, context: CallbackContext):
     args = context.args
     chat_id = update.effective_chat.id
@@ -291,8 +297,11 @@ def clear(update: Update, context: CallbackContext):
             update.effective_message.reply_text("Successfully removed note.")
         else:
             update.effective_message.reply_text("That's not a note in my database!")
+    else:
+        update.effective_message.reply_text("Provide a notename.")
 
 
+@kigcmd(command='removeallnotes')
 def clearall(update: Update, context: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user
@@ -319,6 +328,7 @@ def clearall(update: Update, context: CallbackContext):
         )
 
 
+@kigcallback(pattern=r"notes_.*")
 def clearall_btn(update: Update, context: CallbackContext):
     query = update.callback_query
     chat = update.effective_chat
@@ -351,6 +361,7 @@ def clearall_btn(update: Update, context: CallbackContext):
 
 
 @connection_status
+@kigcmd(command=["notes", "saved"])
 def list_notes(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     note_list = sql.get_all_chat_notes(chat_id)
@@ -499,25 +510,3 @@ def get_help(chat):
 
 
 __mod_name__ = "Notes"
-
-GET_HANDLER = CommandHandler("get", cmd_get, run_async=True)
-HASH_GET_HANDLER = MessageHandler(Filters.regex(r"^#[^\s]+"), hash_get, run_async=True)
-SLASH_GET_HANDLER = MessageHandler(Filters.regex(r"^/\d+$"), slash_get, run_async=True)
-SAVE_HANDLER = CommandHandler("save", save, run_async=True)
-DELETE_HANDLER = CommandHandler("clear", clear, run_async=True)
-
-LIST_HANDLER = DisableAbleCommandHandler(
-    ["notes", "saved"], list_notes, admin_ok=True, run_async=True
-)
-
-CLEARALL = DisableAbleCommandHandler("removeallnotes", clearall)
-CLEARALL_BTN = CallbackQueryHandler(clearall_btn, pattern=r"notes_.*")
-
-dispatcher.add_handler(GET_HANDLER)
-dispatcher.add_handler(SAVE_HANDLER)
-dispatcher.add_handler(LIST_HANDLER)
-dispatcher.add_handler(DELETE_HANDLER)
-dispatcher.add_handler(HASH_GET_HANDLER)
-dispatcher.add_handler(SLASH_GET_HANDLER)
-dispatcher.add_handler(CLEARALL)
-dispatcher.add_handler(CLEARALL_BTN)
