@@ -13,13 +13,12 @@ from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import TelegramError, Update
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
-
+@kigcmd(command='stickerid')
 def stickerid(update: Update, context: CallbackContext):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -39,7 +38,7 @@ def stickerid(update: Update, context: CallbackContext):
             parse_mode=ParseMode.HTML,
         )
 
-
+@kigcmd(command='stickers')
 def cb_sticker(update: Update, context: CallbackContext):
     msg = update.effective_message
     split = msg.text.split(" ", 1)
@@ -59,7 +58,7 @@ def cb_sticker(update: Update, context: CallbackContext):
         reply += f"\n• [{title.get_text()}]({link})"
     msg.reply_text(reply, parse_mode=ParseMode.MARKDOWN)
 
-
+@kigcmd(command='getsticker')
 def getsticker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message
@@ -81,7 +80,7 @@ def getsticker(update: Update, context: CallbackContext):
             filename = "animated_sticker.tgs.rename_me"
         # Send the document
         bot.send_document(chat_id,
-            document=sticker_data, 
+            document=sticker_data,
             filename=filename,
             disable_content_type_detection=True
         )
@@ -91,6 +90,7 @@ def getsticker(update: Update, context: CallbackContext):
         )
 
 
+@kigcmd(command=["steal", "kang"])
 def kang(update: Update, context: CallbackContext):
     msg = update.effective_message
     user = update.effective_user
@@ -150,7 +150,7 @@ def kang(update: Update, context: CallbackContext):
                 max_stickers = 50
                 # tell the loop we're looking at animated stickers now
                 is_animated = True
-        
+
         # if they have no packs, change our message
         if not packs:
             packs = "Looks like you don't have any packs! Please reply to a sticker, or image to kang it and create a new pack!"
@@ -177,7 +177,7 @@ def kang(update: Update, context: CallbackContext):
         else:
             msg.reply_text("Yea, I can't steal that.")
             return
-        
+
         # Check if they have an emoji specified.
         if args:
             sticker_emoji = args[0]
@@ -203,7 +203,7 @@ def kang(update: Update, context: CallbackContext):
             if mime not in ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/x-tgsticker']:
                 msg.reply_text("I can only kang images m8.")
                 return
-            
+
             # check if it's an animated sticker type
             if mime == "application/x-tgsticker":
                 is_animated = True
@@ -219,7 +219,7 @@ def kang(update: Update, context: CallbackContext):
             # if we're not allowed there for some reason
             msg.reply_text(f"Error downloading the file: {e.code} {e.msg}")
             return
-        
+
     packnum = 0
     packname_found = False
     invalid = False
@@ -283,7 +283,7 @@ def kang(update: Update, context: CallbackContext):
             return
 
     # actually add the damn sticker to the pack, animated or not.
-    try:        
+    try:
         # Add the sticker to the pack if it doesn't exist already
         if not invalid:
             context.bot.add_sticker_to_set(
@@ -298,7 +298,7 @@ def kang(update: Update, context: CallbackContext):
                 + f"\nEmoji is: {sticker_emoji}",
                 parse_mode=ParseMode.MARKDOWN,
             )
-        else: 
+        else:
             # Since Stickerset_invalid will also try to create a pack we might as
             # well just reuse that code and avoid typing it all again.
             raise TelegramError("Stickerset_invalid")
@@ -388,16 +388,3 @@ def makepack_internal(
         )
     else:
         msg.reply_text("Failed to create sticker pack. Possibly due to blek mejik.")
-
-
-STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid, run_async=True)
-GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker, run_async=True)
-KANG_HANDLER = DisableAbleCommandHandler(
-    ["steal", "kang"], kang, admin_ok=True, run_async=True
-)
-STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker, run_async=True)
-
-dispatcher.add_handler(STICKERS_HANDLER)
-dispatcher.add_handler(STICKERID_HANDLER)
-dispatcher.add_handler(GETSTICKER_HANDLER)
-dispatcher.add_handler(KANG_HANDLER)
