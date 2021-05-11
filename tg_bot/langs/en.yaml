@@ -89,7 +89,7 @@ backup_help: |
     *Admin only:*
      - /import: reply to a group butler backup file to import as much as possible, making the transfer super simple! Note \
        that files/photos can't be imported due to telegram restrictions.
-     - /export: !!! This isn't a command yet, but should be coming soon!
+     - /export: Export group data, which will be exported are: rules, notes (documents, images, music, video, audio, voice, text, text buttons)
 
 bans_help: |
     - /kickme: kicks the user who issued the command
@@ -198,7 +198,6 @@ fun_help: |
      • /stickerid: reply to a sticker to get its ID.
      • /getsticker: reply to a sticker to get the raw PNG image.
      • /steal: reply to a sticker or image to add it to your pack.
-     • /stickers: search stickers in combot sticker finder.
 
 antispam_help: |
      *Admins only:*
