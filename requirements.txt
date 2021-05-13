@@ -3,7 +3,7 @@ emoji
 beautifulsoup4
 requests
 SQLAlchemy==1.4.11
-python-telegram-bot==13.4.1
+python-telegram-bot==13.5
 psycopg2-binary
 feedparser
 markdown2
@@ -33,3 +33,4 @@ ujson
 psutil
 git+https://github.com/python-telegram-bot/ptbcontrib.git
 gitpython
+multicolorcaptcha

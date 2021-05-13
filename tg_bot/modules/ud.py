@@ -1,10 +1,9 @@
 import requests
-from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, run_async
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
-
+@kigcmd(command=["ud", "urban"])
 def ud(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text[len("/ud ") :]
@@ -16,11 +15,3 @@ def ud(update: Update, context: CallbackContext):
     except:
         reply_text = "No results found."
     message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN)
-
-
-UD_HANDLER = DisableAbleCommandHandler(["ud", "urban"], ud, run_async=True)
-
-dispatcher.add_handler(UD_HANDLER)
-
-__command_list__ = ["ud", "urban"]
-__handlers__ = [UD_HANDLER]

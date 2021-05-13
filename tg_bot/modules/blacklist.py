@@ -2,11 +2,11 @@ import html
 import re
 from telegram import ParseMode, ChatPermissions
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, MessageHandler, Filters
+from telegram.ext import Filters
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.sql.approve_sql import is_approved
 import tg_bot.modules.sql.blacklist_sql as sql
-from tg_bot import dispatcher, log
+from tg_bot import log
 from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, user_not_admin
 from tg_bot.modules.helper_funcs.extraction import extract_text
@@ -15,14 +15,15 @@ from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.warns import warn
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.connection import connected
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 
-BLACKLIST_GROUP = 11
+BLACKLIST_GROUP = -3
 
 
 @user_admin
 @typing_action
+@kigcmd(command="blacklist", pass_args=True, admin_ok=True)
 def blacklist(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -68,6 +69,7 @@ def blacklist(update, context):
 
 @user_admin
 @typing_action
+@kigcmd(command="addblacklist", pass_args=True)
 def add_blacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -121,6 +123,7 @@ def add_blacklist(update, context):
 
 @user_admin
 @typing_action
+@kigcmd(command="unblacklist", pass_args=True)
 def unblacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -201,6 +204,7 @@ def unblacklist(update, context):
 @loggable
 @user_admin
 @typing_action
+@kigcmd(command="blacklistmode", pass_args=True)
 def blacklist_mode(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -335,6 +339,7 @@ def findall(p, s):
 
 
 @user_not_admin
+@kigmsg(((Filters.text | Filters.command | Filters.sticker | Filters.photo) & Filters.chat_type.groups), group=BLACKLIST_GROUP)
 def del_blacklist(update, context):
     chat = update.effective_chat
     message = update.effective_message
@@ -454,33 +459,3 @@ from tg_bot.modules.language import gs
 
 def get_help(chat):
     return gs(chat, "blacklist_help")
-
-
-BLACKLIST_HANDLER = DisableAbleCommandHandler(
-    "blacklist", blacklist, pass_args=True, admin_ok=True, run_async=True
-)
-ADD_BLACKLIST_HANDLER = CommandHandler("addblacklist", add_blacklist, run_async=True)
-UNBLACKLIST_HANDLER = CommandHandler("unblacklist", unblacklist, run_async=True)
-BLACKLISTMODE_HANDLER = CommandHandler(
-    "blacklistmode", blacklist_mode, pass_args=True, run_async=True
-)
-BLACKLIST_DEL_HANDLER = MessageHandler(
-    (Filters.text | Filters.command | Filters.sticker | Filters.photo)
-    & Filters.chat_type.groups,
-    del_blacklist,
-    run_async=True,
-)
-
-dispatcher.add_handler(BLACKLIST_HANDLER)
-dispatcher.add_handler(ADD_BLACKLIST_HANDLER)
-dispatcher.add_handler(UNBLACKLIST_HANDLER)
-dispatcher.add_handler(BLACKLISTMODE_HANDLER)
-dispatcher.add_handler(BLACKLIST_DEL_HANDLER, group=BLACKLIST_GROUP)
-
-__handlers__ = [
-    BLACKLIST_HANDLER,
-    ADD_BLACKLIST_HANDLER,
-    UNBLACKLIST_HANDLER,
-    BLACKLISTMODE_HANDLER,
-    (BLACKLIST_DEL_HANDLER, BLACKLIST_GROUP),
-]

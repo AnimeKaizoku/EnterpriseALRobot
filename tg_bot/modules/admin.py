@@ -2,11 +2,10 @@ import html
 
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, Filters
+from telegram.ext import CallbackContext, Filters
 from telegram.utils.helpers import mention_html, mention_markdown
 
 from tg_bot import SUDO_USERS, dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import (
     bot_admin,
     can_pin,
@@ -23,6 +22,7 @@ from tg_bot import kp, get_entity
 from pyrogram import Client, filters
 from pyrogram.types import Chat, User
 from tg_bot.modules.language import gs
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 
 @connection_status
@@ -30,6 +30,7 @@ from tg_bot.modules.language import gs
 @can_promote
 @user_admin
 @loggable
+@kigcmd(command="promote", can_disable=False)
 def promote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -113,6 +114,7 @@ def promote(update: Update, context: CallbackContext) -> str:
 @can_promote
 @user_admin
 @loggable
+@kigcmd(command="demote", can_disable=False)
 def demote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -183,6 +185,7 @@ def demote(update: Update, context: CallbackContext) -> str:
 
 
 @user_admin
+@kigcmd(command="admincache", can_disable=False)
 def refresh_admin(update, _):
     ADMIN_CACHE.pop(update.effective_chat.id)
     update.effective_message.reply_text("Admins cache refreshed!")
@@ -192,6 +195,7 @@ def refresh_admin(update, _):
 @bot_admin
 @can_promote
 @user_admin
+@kigcmd(command="title", can_disable=False)
 def set_title(update: Update, context: CallbackContext):
     bot = context.bot
     args = context.args
@@ -256,6 +260,7 @@ def set_title(update: Update, context: CallbackContext):
 @can_pin
 @user_admin
 @loggable
+@kigcmd(command="pin", can_disable=False)
 def pin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -297,6 +302,7 @@ def pin(update: Update, context: CallbackContext) -> str:
 @can_pin
 @user_admin
 @loggable
+@kigcmd(command="unpin", can_disable=False)
 def unpin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     chat = update.effective_chat
@@ -322,6 +328,7 @@ def unpin(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @user_admin
 @connection_status
+@kigcmd(command="invitelink", can_disable=False)
 def invite(update: Update, context: CallbackContext):
     bot = context.bot
     chat = update.effective_chat
@@ -398,39 +405,4 @@ async def admins(client, message):
 def get_help(chat):
     return gs(chat, "admin_help")
 
-PIN_HANDLER = CommandHandler(
-    "pin", pin, filters=Filters.chat_type.groups, run_async=True
-)
-UNPIN_HANDLER = CommandHandler(
-    "unpin", unpin, filters=Filters.chat_type.groups, run_async=True
-)
-
-INVITE_HANDLER = DisableAbleCommandHandler("invitelink", invite, run_async=True)
-
-PROMOTE_HANDLER = DisableAbleCommandHandler("promote", promote, run_async=True)
-DEMOTE_HANDLER = DisableAbleCommandHandler("demote", demote, run_async=True)
-
-SET_TITLE_HANDLER = CommandHandler("title", set_title, run_async=True)
-ADMIN_REFRESH_HANDLER = CommandHandler("admincache", refresh_admin, run_async=True)
-
-
-dispatcher.add_handler(PIN_HANDLER)
-dispatcher.add_handler(UNPIN_HANDLER)
-dispatcher.add_handler(INVITE_HANDLER)
-dispatcher.add_handler(PROMOTE_HANDLER)
-dispatcher.add_handler(DEMOTE_HANDLER)
-dispatcher.add_handler(SET_TITLE_HANDLER)
-dispatcher.add_handler(ADMIN_REFRESH_HANDLER)
-
-
 __mod_name__ = "Admin"
-__command_list__ = ["invitelink", "promote", "demote", "admincache"]
-__handlers__ = [
-    PIN_HANDLER,
-    UNPIN_HANDLER,
-    INVITE_HANDLER,
-    PROMOTE_HANDLER,
-    DEMOTE_HANDLER,
-    SET_TITLE_HANDLER,
-    ADMIN_REFRESH_HANDLER,
-]

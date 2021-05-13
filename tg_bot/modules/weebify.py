@@ -1,7 +1,6 @@
-from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 normiefont = [
     "a",
@@ -60,7 +59,7 @@ weebyfont = [
     "乙",
 ]
 
-
+@kigcmd(command='weebify')
 def weebify(update: Update, context: CallbackContext):
     args = context.args
     message = update.effective_message
@@ -85,11 +84,3 @@ def weebify(update: Update, context: CallbackContext):
         message.reply_to_message.reply_text(string)
     else:
         message.reply_text(string)
-
-
-WEEBIFY_HANDLER = DisableAbleCommandHandler("weebify", weebify, run_async=True)
-
-dispatcher.add_handler(WEEBIFY_HANDLER)
-
-__command_list__ = ["weebify"]
-__handlers__ = [WEEBIFY_HANDLER]

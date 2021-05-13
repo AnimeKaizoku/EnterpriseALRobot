@@ -9,10 +9,11 @@ from tg_bot.modules.log_channel import loggable
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, Update
 from telegram.utils.helpers import mention_html
 from telegram.error import BadRequest
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
 @loggable
 @user_admin
+@kigcmd(command='approve', filters=Filters.chat_type.groups)
 def approve(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -56,6 +57,7 @@ def approve(update, context):
 
 @loggable
 @user_admin
+@kigcmd(command='unapprove', filters=Filters.chat_type.groups)
 def disapprove(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -91,6 +93,7 @@ def disapprove(update, context):
 
 
 @user_admin
+@kigcmd(command='approved', filters=Filters.chat_type.groups)
 def approved(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -108,6 +111,7 @@ def approved(update, context):
 
 
 @user_admin
+@kigcmd(command='approval', filters=Filters.chat_type.groups)
 def approval(update, context):
     message = update.effective_message
     chat = update.effective_chat
@@ -129,7 +133,7 @@ def approval(update, context):
         )
 
 
-
+@kigcmd(command='unapproveall', filters=Filters.chat_type.groups)
 def unapproveall(update: Update, context: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user
@@ -155,7 +159,7 @@ def unapproveall(update: Update, context: CallbackContext):
             parse_mode=ParseMode.MARKDOWN,
         )
 
-
+@kigcallback(pattern=r"unapproveall_.*")
 def unapproveall_btn(update: Update, context: CallbackContext):
     query = update.callback_query
     chat = update.effective_chat
@@ -190,21 +194,4 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "approve_help")
 
-APPROVE = DisableAbleCommandHandler("approve", approve, run_async=True, filters=Filters.chat_type.groups)
-DISAPPROVE = DisableAbleCommandHandler("unapprove", disapprove, run_async=True, filters=Filters.chat_type.groups)
-APPROVED = DisableAbleCommandHandler("approved", approved, run_async=True, filters=Filters.chat_type.groups)
-APPROVAL = DisableAbleCommandHandler("approval", approval, run_async=True, filters=Filters.chat_type.groups)
-UNAPPROVEALL = DisableAbleCommandHandler("unapproveall", unapproveall, run_async=True, filters=Filters.chat_type.groups)
-UNAPPROVEALL_BTN = CallbackQueryHandler(
-    unapproveall_btn, pattern=r"unapproveall_.*")
-
-dispatcher.add_handler(APPROVE)
-dispatcher.add_handler(DISAPPROVE)
-dispatcher.add_handler(APPROVED)
-dispatcher.add_handler(APPROVAL)
-dispatcher.add_handler(UNAPPROVEALL)
-dispatcher.add_handler(UNAPPROVEALL_BTN)
-
 __mod_name__ = "Approvals"
-__command_list__ = ["approve", "unapprove", "approved", "approval"]
-__handlers__ = [APPROVE, DISAPPROVE, APPROVED, APPROVAL]

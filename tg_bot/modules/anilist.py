@@ -9,12 +9,10 @@ from telegram import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 import requests
 import math
 import time
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 def shorten(description, info="anilist.co"):
     msg = ""
@@ -162,7 +160,7 @@ query ($id: Int,$search: String) {
 
 url = "https://graphql.anilist.co"
 
-
+@kigcmd(command="airing")
 def airing(update: Update, context: CallbackContext):
     message = update.effective_message
     search_str = message.text.split(" ", 1)
@@ -184,7 +182,7 @@ def airing(update: Update, context: CallbackContext):
         msg += f"\n*Episode*:{response['episodes']}\n*Status*: `N/A`"
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
-
+@kigcmd(command="anime")
 def anime(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -257,7 +255,7 @@ def anime(update: Update, context: CallbackContext):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
 
-
+@kigcmd(command="character")
 def character(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -291,7 +289,7 @@ def character(update: Update, context: CallbackContext):
                 msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN
             )
 
-
+@kigcmd(command="manga")
 def manga(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -364,14 +362,3 @@ def get_help(chat):
     return gs(chat, "anilist_help")
 
 __mod_name__ = "AniList"
-
-
-AIRING_HANDLER = DisableAbleCommandHandler("airing", airing, run_async=True)
-ANIME_HANDLER = DisableAbleCommandHandler("anime", anime, run_async=True)
-CHARACTER_HANDLER = DisableAbleCommandHandler("character", character, run_async=True)
-MANGA_HANDLER = DisableAbleCommandHandler("manga", manga, run_async=True)
-
-dispatcher.add_handler(AIRING_HANDLER)
-dispatcher.add_handler(ANIME_HANDLER)
-dispatcher.add_handler(MANGA_HANDLER)
-dispatcher.add_handler(CHARACTER_HANDLER)

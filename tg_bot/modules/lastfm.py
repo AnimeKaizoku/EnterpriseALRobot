@@ -3,14 +3,13 @@
 import requests
 
 from telegram import Update, ParseMode
-from telegram.ext import CommandHandler, CallbackContext
+from telegram.ext import CallbackContext
 
 from tg_bot import dispatcher, LASTFM_API_KEY
-from tg_bot.modules.disable import DisableAbleCommandHandler
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 import tg_bot.modules.sql.last_fm_sql as sql
 
-
+@kigcmd(command='setuser')
 def set_user(update: Update, context: CallbackContext):
     args = context.args
     msg = update.effective_message
@@ -24,7 +23,7 @@ def set_user(update: Update, context: CallbackContext):
             "That's not how this works...\nRun /setuser followed by your username!"
         )
 
-
+@kigcmd(command='clearuser')
 def clear_user(update: Update, _):
     user = update.effective_user.id
     sql.set_user(user, "")
@@ -32,7 +31,7 @@ def clear_user(update: Update, _):
         "Last.fm username successfully cleared from my database!"
     )
 
-
+@kigcmd(command='lastfm')
 def last_fm(update: Update, _):
     msg = update.effective_message
     user = update.effective_user.first_name
@@ -92,11 +91,3 @@ def last_fm(update: Update, _):
 
 
 __mod_name__ = "Last.FM"
-
-SET_USER_HANDLER = CommandHandler("setuser", set_user, pass_args=True, run_async=True)
-CLEAR_USER_HANDLER = CommandHandler("clearuser", clear_user, run_async=True)
-LASTFM_HANDLER = DisableAbleCommandHandler("lastfm", last_fm, run_async=True)
-
-dispatcher.add_handler(SET_USER_HANDLER)
-dispatcher.add_handler(CLEAR_USER_HANDLER)
-dispatcher.add_handler(LASTFM_HANDLER)

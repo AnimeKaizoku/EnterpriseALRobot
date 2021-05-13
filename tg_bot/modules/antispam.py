@@ -9,7 +9,6 @@ from tg_bot import (
     DEV_USERS,
     GBAN_LOGS,
     OWNER_ID,
-    STRICT_GBAN,
     SUDO_USERS,
     SUPPORT_USERS,
     SARDEGNA_USERS,
@@ -28,14 +27,15 @@ from tg_bot.modules.helper_funcs.misc import send_to_list
 from tg_bot.modules.sql.users_sql import get_all_chats
 from telegram import ParseMode, Update
 from telegram.error import BadRequest, TelegramError
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+from telegram.ext import CallbackContext, Filters
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from spamprotection.sync import SPBClient
 from spamprotection.errors import HostDownError
 from spamwatch.errors import SpamWatchError, Error, UnauthorizedError, NotFoundError, Forbidden, TooManyRequests
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 
-GBAN_ENFORCE_GROUP = 6
+GBAN_ENFORCE_GROUP = -1
 
 GBAN_ERRORS = {
     "User is an administrator of the chat",
@@ -72,6 +72,7 @@ SPB_MODE = True
 client = SPBClient()
 
 @dev_plus
+@kigcmd(command="spb")
 def spbtoggle(update: Update, context: CallbackContext):
     global SPB_MODE
     args = update.effective_message.text.split(None, 1)
@@ -93,6 +94,7 @@ def spbtoggle(update: Update, context: CallbackContext):
 
 
 @support_plus
+@kigcmd(command="gban")
 def gban(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -296,6 +298,7 @@ def gban(update: Update, context: CallbackContext):
 
 
 @support_plus
+@kigcmd(command="ungban")
 def ungban(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -408,6 +411,7 @@ def ungban(update: Update, context: CallbackContext):
 
 
 @support_plus
+@kigcmd(command="gbanlist")
 def gbanlist(update: Update, context: CallbackContext):
     banned_users = sql.get_gban_list()
 
@@ -488,7 +492,7 @@ def check_and_ban(update, user_id, should_message=True):
                 text += f"\n<b>Ban Reason:</b> <code>{html.escape(user.reason)}</code>"
             update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
-
+@kigmsg((Filters.all & Filters.chat_type.groups), can_disable=False, group=GBAN_ENFORCE_GROUP)
 def enforce_gban(update: Update, context: CallbackContext):
     # Not using @restrict handler to avoid spamming - just ignore if cant gban.
     bot = context.bot
@@ -516,6 +520,7 @@ def enforce_gban(update: Update, context: CallbackContext):
 
 
 @user_admin
+@kigcmd(command="antispam")
 def gbanstat(update: Update, context: CallbackContext):
     args = context.args
     if len(args) > 0:
@@ -582,30 +587,5 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "antispam_help")
 
+__mod_name__ = 'AntiSpam'
 
-
-GBAN_HANDLER = CommandHandler("gban", gban, run_async=True)
-UNGBAN_HANDLER = CommandHandler("ungban", ungban, run_async=True)
-GBAN_LIST = CommandHandler("gbanlist", gbanlist, run_async=True)
-
-GBAN_STATUS = CommandHandler(
-    "antispam", gbanstat, filters=Filters.chat_type.groups, run_async=True
-)
-
-GBAN_ENFORCER = MessageHandler(
-    Filters.all & Filters.chat_type.groups, enforce_gban, run_async=True
-)
-
-SPBTOGGLE_HANDLER = CommandHandler("spb", spbtoggle)
-dispatcher.add_handler(SPBTOGGLE_HANDLER)
-dispatcher.add_handler(GBAN_HANDLER)
-dispatcher.add_handler(UNGBAN_HANDLER)
-dispatcher.add_handler(GBAN_LIST)
-dispatcher.add_handler(GBAN_STATUS)
-
-__mod_name__ = "AntiSpam"
-__handlers__ = [GBAN_HANDLER, UNGBAN_HANDLER, GBAN_LIST, GBAN_STATUS]
-
-if STRICT_GBAN:  # enforce GBANS if this is set
-    dispatcher.add_handler(GBAN_ENFORCER, GBAN_ENFORCE_GROUP)
-    __handlers__.append((GBAN_ENFORCER, GBAN_ENFORCE_GROUP))

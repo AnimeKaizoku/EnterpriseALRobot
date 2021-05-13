@@ -30,13 +30,14 @@ from tg_bot.modules.helper_funcs.chat_status import (
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable, gloggable
-
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 @connection_status
 @bot_admin
 @can_restrict
 @user_admin
 @loggable
+@kigcmd(command='ban', pass_args=True)
 def ban(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -130,6 +131,7 @@ def ban(update, context):
 @can_restrict
 @user_admin
 @loggable
+@kigcmd(command='tban', pass_args=True)
 def temp_ban(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -223,6 +225,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
 @can_restrict
 @user_admin
 @loggable
+@kigcmd(command='kick', pass_args=True)
 def kick(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -279,6 +282,7 @@ def kick(update: Update, context: CallbackContext) -> str:
 
 @bot_admin
 @can_restrict
+@kigcmd(command='kickme', pass_args=True, filters=Filters.chat_type.groups)
 def kickme(update: Update, context: CallbackContext):
     user_id = update.effective_message.from_user.id
     if is_user_admin(update.effective_chat, user_id):
@@ -297,6 +301,7 @@ def kickme(update: Update, context: CallbackContext):
 @can_restrict
 @user_admin
 @loggable
+@kigcmd(command='unban', pass_args=True)
 def unban(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -345,6 +350,7 @@ def unban(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @can_restrict
 @gloggable
+@kigcmd(command='selfunban', pass_args=True)
 def selfunban(context: CallbackContext, update: Update) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -390,34 +396,6 @@ def get_help(chat):
     return gs(chat, "bans_help")
 
 
-BAN_HANDLER = CommandHandler("ban", ban, pass_args=True, run_async=True)
-TEMPBAN_HANDLER = CommandHandler(
-    ["tban", "tempban"], temp_ban, pass_args=True, run_async=True
-)
-PUNCH_HANDLER = CommandHandler(
-    ["punch", "kick", "gtfo"], kick, pass_args=True, run_async=True
-)
-UNBAN_HANDLER = CommandHandler("unban", unban, pass_args=True, run_async=True)
-ROAR_HANDLER = CommandHandler(
-    ["roar", "selfunban"], selfunban, pass_args=True, run_async=True
-)
-PUNCHME_HANDLER = DisableAbleCommandHandler(
-    ["punchme", "kickme"], kickme, filters=Filters.chat_type.groups, run_async=True
-)
-
-dispatcher.add_handler(BAN_HANDLER)
-dispatcher.add_handler(TEMPBAN_HANDLER)
-dispatcher.add_handler(PUNCH_HANDLER)
-dispatcher.add_handler(UNBAN_HANDLER)
-dispatcher.add_handler(ROAR_HANDLER)
-dispatcher.add_handler(PUNCHME_HANDLER)
 
 __mod_name__ = "Bans"
-__handlers__ = [
-    BAN_HANDLER,
-    TEMPBAN_HANDLER,
-    PUNCH_HANDLER,
-    UNBAN_HANDLER,
-    ROAR_HANDLER,
-    PUNCHME_HANDLER,
-]
+

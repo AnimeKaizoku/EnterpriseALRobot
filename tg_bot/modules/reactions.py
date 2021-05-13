@@ -1,9 +1,8 @@
 import random
 
-from tg_bot import dispatcher
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from telegram import Update
 from telegram.ext import CallbackContext
+from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 reactions = [
     "( ͡° ͜ʖ ͡°)",
@@ -210,7 +209,7 @@ reactions = [
     "(∩ᄑ_ᄑ)⊃━☆ﾟ*･｡*･:≡( ε:)",
 ]
 
-
+@kigcmd(command='react')
 def react(update: Update, context: CallbackContext):
     message = update.effective_message
     react = random.choice(reactions)
@@ -218,11 +217,3 @@ def react(update: Update, context: CallbackContext):
         message.reply_to_message.reply_text(react)
     else:
         message.reply_text(react)
-
-
-REACT_HANDLER = DisableAbleCommandHandler("react", react, run_async=True)
-
-dispatcher.add_handler(REACT_HANDLER)
-
-__command_list__ = ["react"]
-__handlers__ = [REACT_HANDLER]
