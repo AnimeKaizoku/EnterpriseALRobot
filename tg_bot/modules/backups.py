@@ -25,9 +25,9 @@ def get_help(chat):
 
 __mod_name__ = "Backup"
 
+@kigcmd(command='import')
 @user_admin
 @typing_action
-@kigcmd(command='import')
 def import_data(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -356,6 +356,3 @@ def get_chat(chat_id, chat_data):
         return chat_data[chat_id]["backups"]
     except KeyError:
         return {"status": False, "value": False}
-
-
-

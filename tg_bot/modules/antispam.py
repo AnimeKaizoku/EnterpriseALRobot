@@ -71,8 +71,9 @@ UNGBAN_ERRORS = {
 SPB_MODE = True
 client = SPBClient()
 
-@dev_plus
+
 @kigcmd(command="spb")
+@dev_plus
 def spbtoggle(update: Update, context: CallbackContext):
     global SPB_MODE
     args = update.effective_message.text.split(None, 1)
@@ -92,9 +93,8 @@ def spbtoggle(update: Update, context: CallbackContext):
             message.reply_text("SpamProtection API bans are currenty disabled.")
 
 
-
-@support_plus
 @kigcmd(command="gban")
+@support_plus
 def gban(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -296,9 +296,8 @@ def gban(update: Update, context: CallbackContext):
     except:
         pass  # bot probably blocked by user
 
-
-@support_plus
 @kigcmd(command="ungban")
+@support_plus
 def ungban(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -409,9 +408,8 @@ def ungban(update: Update, context: CallbackContext):
     else:
         message.reply_text(f"Person has been un-gbanned. Took {ungban_time} sec")
 
-
-@support_plus
 @kigcmd(command="gbanlist")
+@support_plus
 def gbanlist(update: Update, context: CallbackContext):
     banned_users = sql.get_gban_list()
 
@@ -518,9 +516,8 @@ def enforce_gban(update: Update, context: CallbackContext):
             if user and not is_user_admin(chat, user.id):
                 check_and_ban(update, user.id, should_message=False)
 
-
-@user_admin
 @kigcmd(command="antispam")
+@user_admin
 def gbanstat(update: Update, context: CallbackContext):
     args = context.args
     if len(args) > 0:
@@ -588,4 +585,3 @@ def get_help(chat):
     return gs(chat, "antispam_help")
 
 __mod_name__ = 'AntiSpam'
-

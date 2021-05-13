@@ -11,9 +11,9 @@ from telegram.utils.helpers import mention_html
 from telegram.error import BadRequest
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
+@kigcmd(command='approve', filters=Filters.chat_type.groups)
 @loggable
 @user_admin
-@kigcmd(command='approve', filters=Filters.chat_type.groups)
 def approve(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -54,10 +54,9 @@ def approve(update, context):
 
     return log_message
 
-
+@kigcmd(command='unapprove', filters=Filters.chat_type.groups)
 @loggable
 @user_admin
-@kigcmd(command='unapprove', filters=Filters.chat_type.groups)
 def disapprove(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -91,9 +90,8 @@ def disapprove(update, context):
 
     return log_message
 
-
-@user_admin
 @kigcmd(command='approved', filters=Filters.chat_type.groups)
+@user_admin
 def approved(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -110,8 +108,8 @@ def approved(update, context):
         message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
-@user_admin
 @kigcmd(command='approval', filters=Filters.chat_type.groups)
+@user_admin
 def approval(update, context):
     message = update.effective_message
     chat = update.effective_chat

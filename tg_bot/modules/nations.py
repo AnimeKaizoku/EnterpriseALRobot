@@ -34,9 +34,9 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
         reply = None
     return reply
 
+@kigcmd(command='addsudo')
 @dev_plus
 @gloggable
-@kigcmd(command='addsudo')
 def addsudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -86,10 +86,9 @@ def addsudo(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-
+@kigcmd(command='addsupport')
 @sudo_plus
 @gloggable
-@kigcmd(command='addsupport')
 def addsupport(
     update: Update,
     context: CallbackContext,
@@ -138,10 +137,9 @@ def addsupport(
     return log_message
 
 
-
+@kigcmd(command='addwhitelist')
 @sudo_plus
 @gloggable
-@kigcmd(command='addwhitelist')
 def addwhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -187,10 +185,9 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-
+@kigcmd(command='addsardegna')
 @sudo_plus
 @gloggable
-@kigcmd(command='addsardegna')
 def addsardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -240,10 +237,9 @@ def addsardegna(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-
+@kigcmd(command='removesudo')
 @dev_plus
 @gloggable
-@kigcmd(command='removesudo')
 def removesudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -278,10 +274,9 @@ def removesudo(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-
+@kigcmd(command='removesupport')
 @sudo_plus
 @gloggable
-@kigcmd(command='removesupport')
 def removesupport(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -316,10 +311,9 @@ def removesupport(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-
+@kigcmd(command='removewhitelist')
 @sudo_plus
 @gloggable
-@kigcmd(command='removewhitelist')
 def removewhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -353,10 +347,9 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-
+@kigcmd(command='removesardegna')
 @sudo_plus
 @gloggable
-@kigcmd(command='removesardegna')
 def removesardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -408,9 +401,8 @@ def send_nations(update):
         nations, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
     )
 
-
+@kigcmd(command='removesardegna')
 @whitelist_plus
-@kigcmd(command=["whitelistlist", "neptunians"])
 def whitelistlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Neptunia Nations :</b>\n"
@@ -424,9 +416,8 @@ def whitelistlist(update: Update, context: CallbackContext):
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
-
-@whitelist_plus
 @kigcmd(command='sardegnas')
+@whitelist_plus
 def Sardegnalist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sardegna Nations :</b>\n"
@@ -439,9 +430,8 @@ def Sardegnalist(update: Update, context: CallbackContext):
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
-
-@whitelist_plus
 @kigcmd(command=["supportlist", "sakuras"])
+@whitelist_plus
 def supportlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sakura Nations :</b>\n"
@@ -454,9 +444,8 @@ def supportlist(update: Update, context: CallbackContext):
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
-
-@whitelist_plus
 @kigcmd(command=["sudolist", "royals"])
+@whitelist_plus
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
     true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
@@ -470,9 +459,8 @@ def sudolist(update: Update, context: CallbackContext):
             pass
     update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
-
-@whitelist_plus
 @kigcmd(command=["devlist", "eagle"])
+@whitelist_plus
 def devlist(update: Update, context: CallbackContext):
     bot = context.bot
     true_dev = list(set(DEV_USERS) - {OWNER_ID})

@@ -34,10 +34,10 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 @connection_status
 @bot_admin
+@kigcmd(command='ban', pass_args=True)
 @can_restrict
 @user_admin
 @loggable
-@kigcmd(command='ban', pass_args=True)
 def ban(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -127,11 +127,11 @@ def ban(update, context):
 
 
 @connection_status
+@kigcmd(command='tban', pass_args=True)
 @bot_admin
 @can_restrict
 @user_admin
 @loggable
-@kigcmd(command='tban', pass_args=True)
 def temp_ban(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -221,11 +221,11 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
 
 
 @connection_status
+@kigcmd(command='kick', pass_args=True)
 @bot_admin
 @can_restrict
 @user_admin
 @loggable
-@kigcmd(command='kick', pass_args=True)
 def kick(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -297,11 +297,11 @@ def kickme(update: Update, context: CallbackContext):
 
 
 @connection_status
+@kigcmd(command='unban', pass_args=True)
 @bot_admin
 @can_restrict
 @user_admin
 @loggable
-@kigcmd(command='unban', pass_args=True)
 def unban(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -347,10 +347,10 @@ def unban(update: Update, context: CallbackContext) -> str:
 
 
 @connection_status
+@kigcmd(command='selfunban', pass_args=True)
 @bot_admin
 @can_restrict
 @gloggable
-@kigcmd(command='selfunban', pass_args=True)
 def selfunban(context: CallbackContext, update: Update) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -398,4 +398,3 @@ def get_help(chat):
 
 
 __mod_name__ = "Bans"
-

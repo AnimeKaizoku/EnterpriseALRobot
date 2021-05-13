@@ -97,9 +97,9 @@ def list_handlers(update, context):
 
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
+@kigcmd(command='filter', run_async=False)
 @user_admin
 @typing_action
-@kigcmd(command='filter', run_async=False)
 def filters(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -225,9 +225,9 @@ def filters(update, context):
 
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
+@kigcmd(command='stop', run_async=False)
 @user_admin
 @typing_action
-@kigcmd(command='stop', run_async=False)
 def stop_filter(update, context):
     chat = update.effective_chat
     user = update.effective_user
