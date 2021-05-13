@@ -17,9 +17,8 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
 REPORT_GROUP = 12
 REPORT_IMMUNE_USERS = SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS
 
-
-@user_admin
 @kigcmd(command='reports')
+@user_admin
 def report_setting(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     chat = update.effective_chat

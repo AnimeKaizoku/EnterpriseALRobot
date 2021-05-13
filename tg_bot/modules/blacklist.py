@@ -20,10 +20,9 @@ from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 
 BLACKLIST_GROUP = -3
 
-
+@kigcmd(command="blacklist", pass_args=True, admin_ok=True)
 @user_admin
 @typing_action
-@kigcmd(command="blacklist", pass_args=True, admin_ok=True)
 def blacklist(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -66,10 +65,9 @@ def blacklist(update, context):
             return
         send_message(update.effective_message, text, parse_mode=ParseMode.HTML)
 
-
+@kigcmd(command="addblacklist", pass_args=True)
 @user_admin
 @typing_action
-@kigcmd(command="addblacklist", pass_args=True)
 def add_blacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -120,10 +118,9 @@ def add_blacklist(update, context):
             "Tell me which words you would like to add in blacklist.",
         )
 
-
+@kigcmd(command="unblacklist", pass_args=True)
 @user_admin
 @typing_action
-@kigcmd(command="unblacklist", pass_args=True)
 def unblacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -200,11 +197,10 @@ def unblacklist(update, context):
             "Tell me which words you would like to remove from blacklist!",
         )
 
-
+@kigcmd(command="blacklistmode", pass_args=True)
 @loggable
 @user_admin
 @typing_action
-@kigcmd(command="blacklistmode", pass_args=True)
 def blacklist_mode(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -338,8 +334,9 @@ def findall(p, s):
         i = s.find(p, i + 1)
 
 
-@user_not_admin
+
 @kigmsg(((Filters.text | Filters.command | Filters.sticker | Filters.photo) & Filters.chat_type.groups), group=BLACKLIST_GROUP)
+@user_not_admin
 def del_blacklist(update, context):
     chat = update.effective_chat
     message = update.effective_message

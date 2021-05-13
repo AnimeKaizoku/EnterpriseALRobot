@@ -240,17 +240,16 @@ def slash_get(update: Update, context: CallbackContext):
     except IndexError:
         update.effective_message.reply_text("Wrong Note ID 😾")
 
-
+@kigcmd(command='save')
 @user_admin
 @connection_status
-@kigcmd(command='save')
 def save(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
     m = msg.text.split(' ', 1)
     if len(m) == 1:
         msg.reply_text("Provide something to save.")
-        return 
+        return
     note_name, text, data_type, content, buttons = get_note_type(msg)
     note_name = note_name.lower()
     if data_type is None:
@@ -283,10 +282,9 @@ def save(update: Update, context: CallbackContext):
             )
         return
 
-
+@kigcmd(command='clear')
 @user_admin
 @connection_status
-@kigcmd(command='clear')
 def clear(update: Update, context: CallbackContext):
     args = context.args
     chat_id = update.effective_chat.id

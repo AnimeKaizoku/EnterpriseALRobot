@@ -44,12 +44,11 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
 
     return None
 
-
+@kigcmd(command='mute')
 @connection_status
 @bot_admin
 @user_admin
 @loggable
-@kigcmd(command='mute')
 def mute(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -92,12 +91,11 @@ def mute(update: Update, context: CallbackContext) -> str:
 
     return ""
 
-
+@kigcmd(command='unmute')
 @connection_status
 @bot_admin
 @user_admin
 @loggable
-@kigcmd(command='unmute')
 def unmute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -155,13 +153,12 @@ def unmute(update: Update, context: CallbackContext) -> str:
 
     return ""
 
-
+@kigcmd(command=['tmute', 'tempmute'])
 @connection_status
 @bot_admin
 @can_restrict
 @user_admin
 @loggable
-@kigcmd(command=['tmute', 'tempmute'])
 def temp_mute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat

@@ -73,9 +73,8 @@ def send_rules(update, chat_id, from_pm=False):
             "This probably doesn't mean it's lawless though...!"
         )
 
-
-@user_admin
 @kigcmd(command='setrules', filters=Filters.chat_type.groups)
+@user_admin
 def set_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -91,9 +90,8 @@ def set_rules(update: Update, context: CallbackContext):
         sql.set_rules(chat_id, markdown_rules)
         update.effective_message.reply_text("Successfully set rules for this group.")
 
-
-@user_admin
 @kigcmd(command='clearrules', filters=Filters.chat_type.groups)
+@user_admin
 def clear_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")

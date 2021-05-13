@@ -24,13 +24,12 @@ from pyrogram.types import Chat, User
 from tg_bot.modules.language import gs
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
-
+@kigcmd(command="promote", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
 @user_admin
 @loggable
-@kigcmd(command="promote", can_disable=False)
 def promote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -108,13 +107,12 @@ def promote(update: Update, context: CallbackContext) -> str:
 
     return log_message
 
-
+@kigcmd(command="demote", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
 @user_admin
 @loggable
-@kigcmd(command="demote", can_disable=False)
 def demote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -183,19 +181,17 @@ def demote(update: Update, context: CallbackContext) -> str:
         )
         return
 
-
-@user_admin
 @kigcmd(command="admincache", can_disable=False)
+@user_admin
 def refresh_admin(update, _):
     ADMIN_CACHE.pop(update.effective_chat.id)
     update.effective_message.reply_text("Admins cache refreshed!")
 
-
+@kigcmd(command="title", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
 @user_admin
-@kigcmd(command="title", can_disable=False)
 def set_title(update: Update, context: CallbackContext):
     bot = context.bot
     args = context.args
@@ -255,12 +251,11 @@ def set_title(update: Update, context: CallbackContext):
         parse_mode=ParseMode.HTML,
     )
 
-
+@kigcmd(command="pin", can_disable=False)
 @bot_admin
 @can_pin
 @user_admin
 @loggable
-@kigcmd(command="pin", can_disable=False)
 def pin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -297,12 +292,11 @@ def pin(update: Update, context: CallbackContext) -> str:
 
         return log_message
 
-
+@kigcmd(command="unpin", can_disable=False)
 @bot_admin
 @can_pin
 @user_admin
 @loggable
-@kigcmd(command="unpin", can_disable=False)
 def unpin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     chat = update.effective_chat
@@ -324,11 +318,10 @@ def unpin(update: Update, context: CallbackContext) -> str:
 
     return log_message
 
-
+@kigcmd(command="invitelink", can_disable=False)
 @bot_admin
 @user_admin
 @connection_status
-@kigcmd(command="invitelink", can_disable=False)
 def invite(update: Update, context: CallbackContext):
     bot = context.bot
     chat = update.effective_chat
