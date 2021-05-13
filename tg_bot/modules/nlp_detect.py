@@ -1,5 +1,5 @@
 from pyrogram import filters
-from tg_bot import kp, CF_API_KEY, log, dispatcher
+from tg_bot import kp, CF_API_KEY, log, KigyoINIT
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import ChatPermissions, Message
 from pyrogram.errors import BadRequest
@@ -72,9 +72,9 @@ async def detect_spam(client, message):
     user = message.from_user
     chat = message.chat
     msg = message.text
-    if user.id == dispatcher.bot.id:
+    if user.id == KigyoINIT.bot_id:
         return
-    
+
     chat_state = sql.does_chat_nlp(chat.id)
     if SPB_MODE and CF_API_KEY and chat_state == True:
         try:
@@ -111,6 +111,6 @@ async def detect_spam(client, message):
                             f"**⚠ SPAM DETECTED!**\nSpam Prediction: `{pred}`\nUser: `{user.id}` was muted.", parse_mode="markdown")
                     except BadRequest:
                         await message.reply_text(f"**⚠ SPAM DETECTED!**\nSpam Prediction: `{pred}`\nUser: `{user.id}`\nUser could not be restricted due to insufficient admin perms.", parse_mode="markdown")
-        except (aiohttp.ClientConnectionError, asyncio.TimeoutError):
-            log.warning("Can't reach SpamProtection API")
+        except (aiohttp.ClientConnectionError, asyncio.TimeoutError, aiohttp.ContentTypeError) as e:
+            log.warning(f"Can't reach SpamProtection API due to {e}")
             await asyncio.sleep(0.5)

@@ -75,6 +75,9 @@ class KigyoINIT:
         self.WALL_API = self.parser.get('WALL_API', None)
         self.LASTFM_API_KEY = self.parser.get('LASTFM_API_KEY', None)
         self.CF_API_KEY =  self.parser.get("CF_API_KEY", None)
+        self.bot_id = 0 #placeholder
+        self.bot_name = "Kigyo" #placeholder
+        self.bot_username = "KigyoRobot" #placeholder
 
     def init_sw(self):
         if self.spamwatch_api is None:

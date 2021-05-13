@@ -37,6 +37,7 @@ from tg_bot import (
     ALLOW_EXCL,
     telethn,
     kp,
+    KigyoINIT
 )
 
 # needed to dynamically load modules
@@ -615,6 +616,9 @@ def main():
 
     else:
         log.info(f"Kigyo started, Using long polling. | BOT: [@{dispatcher.bot.username}]")
+        KigyoINIT.bot_id = dispatcher.bot.id
+        KigyoINIT.bot_username = dispatcher.bot.username
+        KigyoINIT.bot_name = dispatcher.bot.first_name
         updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True)
     if len(argv) not in (1, 3, 4):
         telethn.disconnect()
