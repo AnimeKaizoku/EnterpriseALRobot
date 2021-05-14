@@ -17,9 +17,6 @@ from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
 from telegram.ext import (
     CallbackContext,
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
     Filters
 )
 from telegram.ext.dispatcher import DispatcherHandlerStop
@@ -47,28 +44,6 @@ from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, kigmsg
 from tg_bot.modules.language import gs
-
-PM_START_TEXT = """
-Hi {}, my name is {}!
-I am an Anime themed group management bot with some fun extras [;)](https://telegra.ph/file/095d7e696096e21b06447.jpg)
-
-You can find the list of available commands with /help.
-"""
-
-HELP_STRINGS = f"""
-Hello there! My name is *{dispatcher.bot.first_name}*. A part of *Eagle Union*.
-I'm a modular group management bot with a few fun extras! Have a look at the following for an idea of some of \
-the things I can help you with.
-*Main* commands available:
- • /start: Starts me, can be used to check I'm alive or not.
- • /help: PM's you this message.
- • /settings:
-   - in PM: will send you your settings for all supported modules.
-   - in a group: will redirect you to pm, with all that chat's settings.
- \nClick on the buttons below to get documentation about specific modules!"""
-
-
-KIGYO_IMG = "https://telegra.ph/file/e5100e06c03767af80023.jpg"
 
 
 IMPORTED = {}
@@ -180,9 +155,8 @@ def start(update: Update, context: CallbackContext):
 
         else:
             first_name = update.effective_user.first_name
-            update.effective_message.reply_photo(
-                photo=KIGYO_IMG,
-                caption=gs(chat.id, "pm_start_text").format(
+            update.effective_message.reply_text(
+                text=gs(chat.id, "pm_start_text").format(
                     escape_markdown(first_name),
                     escape_markdown(context.bot.first_name),
                     OWNER_ID,
@@ -192,23 +166,6 @@ def start(update: Update, context: CallbackContext):
                     [
                         [
                             InlineKeyboardButton(
-                                text=gs(chat.id, "add_bot_to_group_btn"),
-                                url="t.me/{}?startgroup=true".format(
-                                    context.bot.username
-                                ),
-                            ),
-
-                            InlineKeyboardButton(
-                                text="Help",
-                                url="t.me/{}?start=help".format(
-                                    context.bot.username
-                                ),
-
-                            ),
-
-                        ],
-                        [
-                            InlineKeyboardButton(
                                 text=gs(chat.id, "support_chat_link_btn"),
                                 url=f"https://t.me/YorktownEagleUnion",
                             ),
@@ -216,18 +173,31 @@ def start(update: Update, context: CallbackContext):
                                 text=gs(chat.id, "updates_channel_link_btn"),
                                 url="https://t.me/KigyoUpdates",
                             ),
-                        ],
-                        [
                             InlineKeyboardButton(
                                 text=gs(chat.id, "src_btn"),
                                 url="https://github.com/Dank-del/EnterpriseALRobot",
                             ),
+                            
+                        ],
+
+                        [
 
                              InlineKeyboardButton(
                                  text="Try inline mode",
                                  switch_inline_query_current_chat="",
-                             )
-                        ],
+                             ),
+                             InlineKeyboardButton(
+                                text="Help",
+                                callback_data="help_back",
+                                ),
+                            InlineKeyboardButton(
+                                text=gs(chat.id, "add_bot_to_group_btn"),
+                                url="t.me/{}?startgroup=true".format(
+                                    context.bot.username
+                                ),
+                            ),
+                        ]
+                        
                     ]
                 ),
             )
@@ -285,18 +255,27 @@ def help_button(update, context):
     try:
         if mod_match:
             module = mod_match.group(1)
+            help_list = HELPABLE[module].get_help(update.effective_chat.id)
+            if isinstance(help_list, list):
+                help_text = help_list[0]
+                help_buttons = help_list[1:]
+            elif isinstance(help_list, str):
+                help_text = help_list
+                help_buttons = []
             text = (
                 "Here is the help for the *{}* module:\n".format(
                     HELPABLE[module].__mod_name__
                 )
-                + HELPABLE[module].get_help(update.effective_chat.id)
+                + help_text
+            )
+            help_buttons.append(
+                [InlineKeyboardButton(text="Back", callback_data="help_back"),
+                InlineKeyboardButton(text='Report Error', url='https://t.me/YorkTownEagleUnion')]
             )
             query.message.edit_text(
                 text=text,
                 parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Back", callback_data="help_back")]]
-                ),
+                reply_markup=InlineKeyboardMarkup(help_buttons),
             )
 
         elif prev_match:

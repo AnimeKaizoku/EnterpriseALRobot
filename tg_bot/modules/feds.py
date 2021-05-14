@@ -6,10 +6,11 @@ import json
 import time
 import csv
 import os
-
+from telegram.ext import CallbackContext
 from telegram.error import BadRequest, TelegramError, Unauthorized
 from telegram import (
     ParseMode,
+    Update,
     Chat,
     User,
     MessageEntity,
@@ -17,7 +18,6 @@ from telegram import (
     InlineKeyboardButton,
     ChatAction,
 )
-from telegram.ext import CommandHandler, CallbackQueryHandler
 from telegram.utils.helpers import mention_html, mention_markdown
 
 from tg_bot import (
@@ -35,7 +35,6 @@ from tg_bot.modules.helper_funcs.extraction import (
     extract_user_fban,
 )
 from tg_bot.modules.helper_funcs.string_handling import markdown_parser
-from tg_bot.modules.disable import DisableAbleCommandHandler
 
 import tg_bot.modules.sql.feds_sql as sql
 
@@ -44,7 +43,7 @@ from tg_bot.modules.helper_funcs.alternate import (
     typing_action,
     send_action,
 )
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, kigmsg
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
 # Hello bot owner, I spent many hours of my life for feds, Please don't remove this if you still respect MrYacha and peaktogoo and AyraHikari too
 # Federation by MrYacha 2018-2019
@@ -2344,5 +2343,57 @@ __mod_name__ = "Federations"
 
 from tg_bot.modules.language import gs
 
+def fed_owner_help(update: Update, context: CallbackContext):
+    update.effective_message.reply_text(
+        gs(update.effective_chat.id, "FED_OWNER_HELP"),
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+
+def fed_admin_help(update: Update, context: CallbackContext):
+    update.effective_message.reply_text(
+        gs(update.effective_chat.id, "FED_ADMIN_HELP"),
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+
+
+def fed_user_help(update: Update, context: CallbackContext):
+    update.effective_message.reply_text(
+        gs(update.effective_chat.id, "FED_USER_HELP"),
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+
+@kigcallback(pattern=r"fed_help_")
+def fed_help(update: Update, context: CallbackContext):
+    query = update.callback_query
+    bot = context.bot
+    help_info = query.data.split("fed_help_")[1]
+    if help_info == "owner":
+        help_text = gs(update.effective_chat.id, "FED_OWNER_HELP")
+    elif help_info == "admin":
+        help_text = gs(update.effective_chat.id, "FED_ADMIN_HELP")
+    elif help_info == "user":
+        help_text = gs(update.effective_chat.id, "FED_USER_HELP") 
+    query.message.edit_text(
+        text=help_text,
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Back", callback_data=f"help_module({__mod_name__.lower()})"),
+            InlineKeyboardButton(text='Report Error', url='https://t.me/YorkTownEagleUnion')]]
+        ),
+    )
+    bot.answer_callback_query(query.id)
+
+
 def get_help(chat):
-    return gs(chat, "feds_help")
+    return [gs(chat, "feds_help"),
+    [
+        InlineKeyboardButton(text="Fedadmins", callback_data="fed_help_admin"),
+        InlineKeyboardButton(text="Fedowners", callback_data="fed_help_owner")
+    ],
+    [
+        InlineKeyboardButton(text="Users", callback_data="fed_help_user")
+    ],
+]

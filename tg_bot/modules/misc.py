@@ -290,9 +290,8 @@ def info(update: Update, context: CallbackContext):
             text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
         )
 
-
-@user_admin
 @kigcmd(command='echo', pass_args=True, filters=Filters.chat_type.groups)
+@user_admin
 def echo(update: Update, _):
     args = update.effective_message.text.split(None, 1)
     message = update.effective_message
@@ -352,8 +351,8 @@ def get_readable_time(seconds: int) -> str:
 
 stats_str = '''
 '''
-@sudo_plus
 @kigcmd(command='stats', can_disable=False)
+@sudo_plus
 def stats(update, context):
     db_size = SESSION.execute("SELECT pg_size_pretty(pg_database_size(current_database()))").scalar_one_or_none()
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
