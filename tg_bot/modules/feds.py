@@ -2384,6 +2384,7 @@ def fed_help(update: Update, context: CallbackContext):
             InlineKeyboardButton(text='Report Error', url='https://t.me/YorkTownEagleUnion')]]
         ),
     )
+    bot.answer_callback_query(query.id)
 
 
 def get_help(chat):
