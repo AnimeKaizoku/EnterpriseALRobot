@@ -188,17 +188,15 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
         try:
             status = client.raw_output(int(user.id))
             # ptid = status["results"]["private_telegram_id"]
-            op = status["results"]["attributes"]["is_operator"]
-            ag = status["results"]["attributes"]["is_agent"]
-            wl = status["results"]["attributes"]["is_whitelisted"]
-            ps = status["results"]["attributes"]["is_potential_spammer"]
-            sp = status["results"]["spam_prediction"]["spam_prediction"]
-            hamp = status["results"]["spam_prediction"]["ham_prediction"]
-            blc = status["results"]["attributes"]["is_blacklisted"]
-            if blc:
-                blres = status["results"]["attributes"]["blacklist_reason"]
-            else:
-                blres = None
+            op = status.get("results").get("attributes").get("is_operator")
+            ag = status.get("results").get("attributes").get("is_agent")
+            wl = status.get("results").get("attributes").get("is_whitelisted")
+            ps = status.get("results").get("attributes").get("is_potential_spammer")
+            sp = status.get("results").get("spam_prediction").get("spam_prediction")
+            hamp = status.get("results").get("spam_prediction").get("ham_prediction")
+            blc = status.get("results").get("attributes").get("is_blacklisted")
+            blres = status.get("results").get("attributes").get("blacklist_reason")
+            
             text += "\n\n<b>SpamProtection:</b>"
             # text += f"<b>\n• Private Telegram ID:</b> <code>{ptid}</code>\n"
             text += f"<b>\n• Operator:</b> <code>{op}</code>\n"
