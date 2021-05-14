@@ -6,12 +6,9 @@ Dank-del
 
 import importlib
 import re
-import json
-import traceback
-from typing import Optional, List
+from typing import Optional
 from sys import argv
-import requests
-from pyrogram import idle, Client
+from pyrogram import idle
 from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
@@ -31,7 +28,6 @@ from tg_bot import (
     PORT,
     URL,
     log,
-    ALLOW_EXCL,
     telethn,
     kp,
     KigyoINIT
@@ -183,7 +179,7 @@ def start(update: Update, context: CallbackContext):
                         [
 
                              InlineKeyboardButton(
-                                 text="Try inline mode",
+                                 text="Try inline",
                                  switch_inline_query_current_chat="",
                              ),
                              InlineKeyboardButton(
