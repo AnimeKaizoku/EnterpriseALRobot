@@ -79,6 +79,7 @@ class KigyoINIT:
         self.bot_name = "Kigyo" #placeholder
         self.bot_username = "KigyoRobot" #placeholder
 
+
     def init_sw(self):
         if self.spamwatch_api is None:
             log.warning("SpamWatch API key is missing! Check your config.ini")
@@ -127,6 +128,8 @@ TIME_API_KEY = KInit.TIME_API_KEY
 WALL_API = KInit.WALL_API
 LASTFM_API_KEY = KInit.LASTFM_API_KEY
 CF_API_KEY = KInit.CF_API_KEY
+
+SPB_MODE = kigconfig.getboolean('SPB_MODE', False)
 
 # SpamWatch
 sw = KInit.init_sw()
