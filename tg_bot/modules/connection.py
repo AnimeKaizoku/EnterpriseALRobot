@@ -6,8 +6,6 @@ from telegram.error import BadRequest, Unauthorized
 from telegram.ext import (
     CommandHandler,
     CallbackQueryHandler,
-    run_async,
-    CallbackContext,
 )
 
 import tg_bot.modules.sql.connection_sql as sql
