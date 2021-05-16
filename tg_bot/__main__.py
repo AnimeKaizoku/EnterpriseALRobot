@@ -100,7 +100,10 @@ def send_help(chat_id, text, keyboard=None):
     '''
 
     if not keyboard:
-        keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
+        kb = paginate_modules(0, HELPABLE, "help")
+        kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+        InlineKeyboardButton(text='Back', callback_data='start_back'), InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
+        keyboard = InlineKeyboardMarkup(kb)
     dispatcher.bot.send_message(
         chat_id=chat_id, text=text, parse_mode=ParseMode.MARKDOWN, reply_markup=keyboard
     )
@@ -136,9 +139,55 @@ def start(update: Update, context: CallbackContext):
     if hasattr(update, 'callback_query'):
         query = update.callback_query 
         if hasattr(query, 'id'):
-           update.effective_message.edit_text(text=(gs(chat.id, "pm_help_text")), reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
-           context.bot.answer_callback_query(query.id)
-           return
+            first_name = update.effective_user.first_name
+            update.effective_message.edit_text(
+                text=gs(chat.id, "pm_start_text").format(
+                    escape_markdown(first_name),
+                    escape_markdown(context.bot.first_name),
+                    OWNER_ID,
+                ),
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text=gs(chat.id, "support_chat_link_btn"),
+                                url=f"https://t.me/YorktownEagleUnion",
+                            ),
+                            InlineKeyboardButton(
+                                text=gs(chat.id, "updates_channel_link_btn"),
+                                url="https://t.me/KigyoUpdates",
+                            ),
+                            InlineKeyboardButton(
+                                text=gs(chat.id, "src_btn"),
+                                url="https://github.com/Dank-del/EnterpriseALRobot",
+                            ),
+                            
+                        ],
+
+                        [
+
+                             InlineKeyboardButton(
+                                 text="Try inline",
+                                 switch_inline_query_current_chat="",
+                             ),
+                             InlineKeyboardButton(
+                                text="Help",
+                                callback_data="help_back",
+                                ),
+                            InlineKeyboardButton(
+                                text=gs(chat.id, "add_bot_to_group_btn"),
+                                url="t.me/{}?startgroup=true".format(
+                                    context.bot.username
+                                ),
+                            ),
+                        ]
+                        
+                    ]
+                ),
+            )
+            context.bot.answer_callback_query(query.id)
+            return
 
     if update.effective_chat.type == "private":
         if args and len(args) >= 1:
