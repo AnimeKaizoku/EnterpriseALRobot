@@ -105,6 +105,8 @@ def send_help(chat_id, text, keyboard=None):
         chat_id=chat_id, text=text, parse_mode=ParseMode.MARKDOWN, reply_markup=keyboard
     )
 
+
+
 @kigcmd(command='text')
 def test(update: Update, context: CallbackContext):
     '''#TODO
@@ -130,6 +132,14 @@ def start(update: Update, context: CallbackContext):
     '''
     chat = update.effective_chat
     args = context.args
+
+    if hasattr(update, 'callback_query'):
+        query = update.callback_query 
+        if hasattr(query, 'id'):
+           update.effective_message.edit_text(text=(gs(chat.id, "pm_help_text")), reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
+           context.bot.answer_callback_query(query.id)
+           return
+
     if update.effective_chat.type == "private":
         if args and len(args) >= 1:
             if args[0].lower() == "help":
