@@ -88,8 +88,8 @@ UNLOCK_CHAT_RESTRICTION = {
     "pin": {"can_pin_messages": True},
 }
 
-PERM_GROUP = 1
-REST_GROUP = 2
+PERM_GROUP = -8
+REST_GROUP = -12
 
 
 # NOT ASYNC
