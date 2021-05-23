@@ -957,6 +957,7 @@ def fed_ban(update, context):
 
 
 @typing_action
+@kigcmd(command=['unfban', 'rmfedban'], pass_args=True)
 def unfban(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
