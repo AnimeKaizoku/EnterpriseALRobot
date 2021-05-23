@@ -44,6 +44,7 @@ def ban(update, context):
     message = update.effective_message  # type: Optional[Message]
     args = context.args
     log_message = ""
+    reason = ""
     user_id, reason = extract_user_and_text(message, args)
 
     if not user_id:
@@ -100,8 +101,8 @@ def ban(update, context):
         # context.bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         context.bot.sendMessage(
             chat.id,
-            "let {} walk the plank.".format(
-                mention_html(member.user.id, member.user.first_name)
+            "{} was banned by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
+                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
             ),
             parse_mode=ParseMode.HTML,
         )
@@ -137,6 +138,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
     user = update.effective_user
     message = update.effective_message
     log_message = ""
+    reason = ""
     bot, args = context.bot, context.args
     user_id, reason = extract_user_and_text(message, args)
 
@@ -195,6 +197,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
             chat.id,
             f"Banned! User {mention_html(member.user.id, member.user.first_name)} "
             f"will be banned for {time_val}.",
+            f"\nReason: {reason}",
             parse_mode=ParseMode.HTML,
         )
         return log
@@ -260,7 +263,7 @@ def kick(update: Update, context: CallbackContext) -> str:
         # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         bot.sendMessage(
             chat.id,
-            f"Kicked out {mention_html(member.user.id, member.user.first_name)} from the chat.",
+            f"{mention_html(member.user.id, member.user.first_name)} was kicked by {mention_html(user.id, user.first_name)} in {message.chat.title}\n<b>Reason</b>: <code>{reason}</code>",
             parse_mode=ParseMode.HTML,
         )
         log = (
@@ -332,7 +335,13 @@ def unban(update: Update, context: CallbackContext) -> str:
         return log_message
 
     chat.unban_member(user_id)
-    message.reply_text("Yep, this user can join!")
+    bot.sendMessage(
+            chat.id,
+            "{} was unbanned by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
+                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
+            ),
+            parse_mode=ParseMode.HTML,
+        )
 
     log = (
         f"<b>{html.escape(chat.title)}:</b>\n"
