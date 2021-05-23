@@ -3,15 +3,7 @@ from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, I
 from telegram.ext.filters import BaseFilter
 from tg_bot import dispatcher as d, log
 from typing import Optional, Union, List
-import random 
 
-set_groups = set()
-def random_group():
-    while True:
-        i = int(random.random() * 10000)
-        if i not in set_groups:
-            set_groups.add(i)
-            return i
 
 
 class KigyoTelegramHandler:
@@ -19,13 +11,9 @@ class KigyoTelegramHandler:
         self._dispatcher = d
 
     def command(
-        self, command: str, filters: Optional[BaseFilter] = None, admin_ok: bool = False, pass_args: bool = False, pass_chat_data: bool = False, run_async: bool = True, can_disable: bool = True, group: Optional[Union[int]] = 1
+        self, command: str, filters: Optional[BaseFilter] = None, admin_ok: bool = False, pass_args: bool = False, pass_chat_data: bool = False, run_async: bool = True, can_disable: bool = True, group: Optional[Union[int]] = 40
     ):
-        try:
-            if group == 1:
-                group = random_group()
-        except UnboundLocalError:
-            pass
+
 
         def _command(func):
             try:
@@ -53,13 +41,7 @@ class KigyoTelegramHandler:
 
         return _command
 
-    def message(self, pattern: Optional[str] = None, can_disable: bool = True, run_async: bool = True, group: Optional[Union[int]] = 1, friendly = None):
-        try:
-            if group == 1:
-                group = random_group()
-        except UnboundLocalError:
-            pass
-        
+    def message(self, pattern: Optional[str] = None, can_disable: bool = True, run_async: bool = True, group: Optional[Union[int]] = 60, friendly = None):
         def _message(func):
             try:
                 if can_disable:
