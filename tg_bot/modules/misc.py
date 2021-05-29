@@ -31,7 +31,6 @@ from tg_bot.modules.helper_funcs.extraction import extract_user
 import tg_bot.modules.sql.users_sql as sql
 from tg_bot.modules.language import gs
 from telegram import __version__ as ptbver, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram import __version__ as pyrover
 from psutil import cpu_percent, virtual_memory, disk_usage, boot_time
 import datetime
 import platform
@@ -373,7 +372,6 @@ def stats(update, context):
     status += "*• Storage:* " + str(disk[3]) + " %\n\n"
     status += "*• Python version:* " + python_version() + "\n"
     status += "*• python-telegram-bot:* " + str(ptbver) + "\n"
-    status += "*• Pyrogram:* " + str(pyrover) + "\n"
     status += "*• Uptime:* " + str(botuptime) + "\n"
     status += "*• Database size:* " + str(db_size) + "\n"
     kb = [
