@@ -7,8 +7,8 @@ import telegram.ext as tg
 from telethon import TelegramClient
 from telethon.sessions import MemorySession
 from configparser import ConfigParser
-from rich.logging import RichHandler
 from ptbcontrib.postgres_persistence import PostgresPersistence
+from logging.config import fileConfig
 
 StartTime = time.time()
 
@@ -19,13 +19,12 @@ def get_user_list(key):
     return [a.user_id for a in royals]
 
 # enable logging
-FORMAT = "[Enterprise] %(message)s"
-logging.basicConfig(handlers=[RichHandler()], level=logging.INFO, format=FORMAT, datefmt="[%X]")
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
-log = logging.getLogger("rich")
 
+fileConfig('logging.ini')
+
+log = logging.getLogger('[Enterprise]')
+logging.getLogger('ptbcontrib.postgres_persistence.postgrespersistence').setLevel(logging.WARNING)
 log.info("[KIGYO] Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
-
 log.info("[KIGYO] Not affiliated to Azur Lane or Yostar in any way whatsoever.")
 log.info("[KIGYO] Project maintained by: github.com/Dank-del (t.me/dank_as_fuck)")
 
@@ -133,9 +132,12 @@ sw = KInit.init_sw()
 
 from tg_bot.modules.sql import SESSION
 
+
 updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(SESSION))
 telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
 dispatcher = updater.dispatcher
+
+
 
 # Load at end to ensure all prev variables have been set
 from tg_bot.modules.helper_funcs.handlers import CustomCommandHandler

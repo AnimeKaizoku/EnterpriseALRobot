@@ -25,7 +25,7 @@ class KigyoTelegramHandler:
                     self._dispatcher.add_handler(
                         CommandHandler(command, func, filters=filters, run_async=run_async, pass_args=pass_args), group
                     )
-                log.info(f"[KIGCMD] Loaded handler {command} for function {func.__name__} in group {group}")
+                log.debug(f"[KIGCMD] Loaded handler {command} for function {func.__name__} in group {group}")
             except TypeError:
                 if can_disable:
                     self._dispatcher.add_handler(
@@ -35,7 +35,7 @@ class KigyoTelegramHandler:
                     self._dispatcher.add_handler(
                         CommandHandler(command, func, filters=filters, run_async=run_async, pass_args=pass_args, pass_chat_data=pass_chat_data)
                     )
-                log.info(f"[KIGCMD] Loaded handler {command} for function {func.__name__}")
+                log.debug(f"[KIGCMD] Loaded handler {command} for function {func.__name__}")
 
             return func
 
@@ -52,7 +52,7 @@ class KigyoTelegramHandler:
                     self._dispatcher.add_handler(
                         MessageHandler(pattern, func, run_async=run_async), group
                     )
-                log.info(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__} in group {group}")
+                log.debug(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__} in group {group}")
             except TypeError:
                 if can_disable:
                     self._dispatcher.add_handler(
@@ -62,7 +62,7 @@ class KigyoTelegramHandler:
                     self._dispatcher.add_handler(
                         MessageHandler(pattern, func, run_async=run_async)
                     )
-                log.info(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__}")
+                log.debug(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__}")
 
             return func
         return _message
@@ -70,14 +70,14 @@ class KigyoTelegramHandler:
     def callbackquery(self, pattern: str = None, run_async: bool = True):
         def _callbackquery(func):
             self._dispatcher.add_handler(CallbackQueryHandler(pattern=pattern, callback=func, run_async=run_async))
-            log.info(f'[KIGCALLBACK] Loaded callbackquery handler with pattern {pattern} for function {func.__name__}')
+            log.debug(f'[KIGCALLBACK] Loaded callbackquery handler with pattern {pattern} for function {func.__name__}')
             return func
         return _callbackquery
 
     def inlinequery(self, pattern: Optional[str] = None, run_async: bool = True, pass_user_data: bool = True, pass_chat_data: bool = True, chat_types: List[str] = None):
         def _inlinequery(func):
             self._dispatcher.add_handler(InlineQueryHandler(pattern=pattern, callback=func, run_async=run_async, pass_user_data=pass_user_data, pass_chat_data=pass_chat_data, chat_types=chat_types))
-            log.info(f'[KIGINLINE] Loaded inlinequery handler with pattern {pattern} for function {func.__name__} | PASSES USER DATA: {pass_user_data} | PASSES CHAT DATA: {pass_chat_data} | CHAT TYPES: {chat_types}')
+            log.debug(f'[KIGINLINE] Loaded inlinequery handler with pattern {pattern} for function {func.__name__} | PASSES USER DATA: {pass_user_data} | PASSES CHAT DATA: {pass_chat_data} | CHAT TYPES: {chat_types}')
             return func
         return _inlinequery
 

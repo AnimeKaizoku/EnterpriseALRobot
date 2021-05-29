@@ -23,7 +23,6 @@ pyYAML>=5.1.2
 pyrate-limiter
 python-telegram-bot==13.5
 requests
-rich
 spamwatch
 speedtest-cli
 spongemock

@@ -21,7 +21,7 @@ env/
 *.session-journal
 config.ini
 *.session-journal
-log.txt
+*.log
 shell_output.txt
 .vs
 tg_bot/elevated_users.json
