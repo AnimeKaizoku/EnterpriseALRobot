@@ -1,14 +1,11 @@
 import logging
 import os
-import sys, json
+import sys
 import time
 import spamwatch
 import telegram.ext as tg
 from telethon import TelegramClient
 from telethon.sessions import MemorySession
-from pyrogram import Client, errors
-from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
-from pyrogram.types import Chat, User
 from configparser import ConfigParser
 from rich.logging import RichHandler
 from ptbcontrib.postgres_persistence import PostgresPersistence
@@ -139,37 +136,6 @@ from tg_bot.modules.sql import SESSION
 updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(SESSION))
 telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
 dispatcher = updater.dispatcher
-
-kp = Client(":memory:", api_id=APP_ID, api_hash=API_HASH, bot_token=TOKEN, workers=min(32, os.cpu_count() + 4))
-apps = []
-apps.append(kp)
-
-
-async def get_entity(client, entity):
-    entity_client = client
-    if not isinstance(entity, Chat):
-        try:
-            entity = int(entity)
-        except ValueError:
-            pass
-        except TypeError:
-            entity = entity.id
-        try:
-            entity = await client.get_chat(entity)
-        except (PeerIdInvalid, ChannelInvalid):
-            for kp in apps:
-                if kp != client:
-                    try:
-                        entity = await kp.get_chat(entity)
-                    except (PeerIdInvalid, ChannelInvalid):
-                        pass
-                    else:
-                        entity_client = kp
-                        break
-            else:
-                entity = await kp.get_chat(entity)
-                entity_client = kp
-    return entity, entity_client
 
 # Load at end to ensure all prev variables have been set
 from tg_bot.modules.helper_funcs.handlers import CustomCommandHandler
