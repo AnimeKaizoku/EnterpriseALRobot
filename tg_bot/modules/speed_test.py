@@ -10,8 +10,8 @@ def convert(speed):
     return round(int(speed) / 1048576, 2)
 
 
-@dev_plus
 @kigcmd(command='speedtest')
+@dev_plus
 def speedtestxyz(update: Update, context: CallbackContext):
     buttons = [
         [
