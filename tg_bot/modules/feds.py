@@ -498,6 +498,7 @@ def fed_info(update, context):
 
 
 @typing_action
+@kigcmd(command='fedadmins', pass_args=True)
 def fed_admin(update, context):
 
     chat = update.effective_chat  # type: Optional[Chat]
