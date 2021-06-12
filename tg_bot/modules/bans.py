@@ -195,9 +195,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
         # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         bot.sendMessage(
             chat.id,
-            f"Banned! User {mention_html(member.user.id, member.user.first_name)} "
-            f"will be banned for {time_val}.",
-            f"\nReason: {reason}",
+            f"Banned! User {mention_html(member.user.id, member.user.first_name)} will be banned for {time_val}.\nReason: {reason}",
             parse_mode=ParseMode.HTML,
         )
         return log
