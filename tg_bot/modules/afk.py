@@ -8,7 +8,7 @@ from tg_bot.modules.sql import afk_sql as sql
 from tg_bot.modules.users import get_user_id
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 
-@kigmsg(Filters.regex("(?i)brb"), friendly="afk", group=3)
+@kigmsg(Filters.regex("(?i)^brb"), friendly="afk", group=3)
 @kigcmd(command="afk", group=3)
 def afk(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(None, 1)
