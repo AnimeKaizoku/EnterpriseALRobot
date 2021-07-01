@@ -12,7 +12,6 @@ geopy
 git+https://github.com/python-telegram-bot/ptbcontrib.git
 gitpython
 gpytranslate
-intellivoid-SPB
 markdown2
 multicolorcaptcha
 nltk
