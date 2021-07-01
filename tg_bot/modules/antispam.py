@@ -16,8 +16,6 @@ from tg_bot import (
     sw,
     dispatcher,
     log,
-    KInit,
-    KigyoINIT,
 )
 from tg_bot.modules.helper_funcs.chat_status import (
     is_user_admin,
@@ -26,14 +24,11 @@ from tg_bot.modules.helper_funcs.chat_status import (
 )
 from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.helper_funcs.misc import send_to_list
-from tg_bot.modules.sql.users_sql import get_all_chats
 from telegram import ParseMode, Update
 from telegram.error import BadRequest, TelegramError
 from telegram.ext import CallbackContext, Filters
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
-from spamprotection.sync import SPBClient
-from spamprotection.errors import HostDownError
 from spamwatch.errors import SpamWatchError, Error, UnauthorizedError, NotFoundError, Forbidden, TooManyRequests
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 
@@ -71,7 +66,6 @@ UNGBAN_ERRORS = {
 
 
 SPB_MODE = True
-client = SPBClient()
 
 
 @kigcmd(command="spb")
@@ -88,16 +82,15 @@ def spbtoggle(update: Update, context: CallbackContext):
         elif args[1] in ("no", "off"):
             SPB_MODE = False
             message.reply_text("SpamProtection API bans are now disabled.")
+    elif SPB_MODE:
+        message.reply_text("SpamProtection API bans are currently enabled.")
     else:
-        if SPB_MODE:
-            message.reply_text("SpamProtection API bans are currently enabled.")
-        else:
-            message.reply_text("SpamProtection API bans are currenty disabled.")
+        message.reply_text("SpamProtection API bans are currenty disabled.")
 
 
 @kigcmd(command="gban")
 @support_plus
-def gban(update: Update, context: CallbackContext):
+def gban(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot, args = context.bot, context.args
     message = update.effective_message
     user = update.effective_user
@@ -149,12 +142,11 @@ def gban(update: Update, context: CallbackContext):
     try:
         user_chat = bot.get_chat(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user.")
-            return ""
-        else:
+        if excp.message != "User not found":
             return
 
+        message.reply_text("I can't seem to find this user.")
+        return ""
     if user_chat.type != "private":
         message.reply_text("That's not a user!")
         return
@@ -243,9 +235,7 @@ def gban(update: Update, context: CallbackContext):
             gbanned_chats += 1
 
         except BadRequest as excp:
-            if excp.message in GBAN_ERRORS:
-                pass
-            else:
+            if excp.message not in GBAN_ERRORS:
                 message.reply_text(f"Could not gban due to: {excp.message}")
                 if GBAN_LOGS:
                     bot.send_message(
@@ -282,10 +272,7 @@ def gban(update: Update, context: CallbackContext):
 
     if gban_time > 60:
         gban_time = round((gban_time / 60), 2)
-        message.reply_text("Done! Gbanned.", parse_mode=ParseMode.HTML)
-    else:
-        message.reply_text("Done! Gbanned.", parse_mode=ParseMode.HTML)
-
+    message.reply_text("Done! Gbanned.", parse_mode=ParseMode.HTML)
     try:
         bot.send_message(
             user_id,
@@ -300,7 +287,7 @@ def gban(update: Update, context: CallbackContext):
 
 @kigcmd(command="ungban")
 @support_plus
-def ungban(update: Update, context: CallbackContext):
+def ungban(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot, args = context.bot, context.args
     message = update.effective_message
     user = update.effective_user
@@ -373,9 +360,7 @@ def ungban(update: Update, context: CallbackContext):
                 ungbanned_chats += 1
 
         except BadRequest as excp:
-            if excp.message in UNGBAN_ERRORS:
-                pass
-            else:
+            if excp.message not in UNGBAN_ERRORS:
                 message.reply_text(f"Could not un-gban due to: {excp.message}")
                 if GBAN_LOGS:
                     bot.send_message(
@@ -441,30 +426,28 @@ def check_and_ban(update, user_id, should_message=True):
     chat = update.effective_chat  # type: Optional[Chat]
     if SPB_MODE:
         try:
-            apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={update.effective_user.id}')
+            apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={user_id}')
             api_status = apst.status_code
             if api_status == 200:
                 try:
-                    status = client.raw_output(int(user_id))
+                    status = apst.json()
                     try:
-                        bl_check = (status["results"]["attributes"]["is_blacklisted"])
+                        bl_check = (status.get("results").get("attributes").get("is_blacklisted"))
                     except:
                         bl_check = False
 
-                    if bl_check is True:
-                        bl_res = (status["results"]["attributes"]["blacklist_reason"])
+                    if bl_check:
+                        bl_res = (status.get("results").get("attributes").get("blacklist_reason"))
                         update.effective_chat.kick_member(user_id)
                         if should_message:
                             update.effective_message.reply_text(
                             f"This person was blacklisted on @SpamProtectionBot and has been removed!\nReason: <code>{bl_res}</code>",
                             parse_mode=ParseMode.HTML,
                         )
-                except HostDownError:
+                except BaseException:
                     log.warning("Spam Protection API is unreachable.")
         except BaseException as e:
             log.info(f'SpamProtection was disabled due to {e}')
-            pass
-
     try:
         sw_ban = sw.get_ban(int(user_id))
     except AttributeError:
