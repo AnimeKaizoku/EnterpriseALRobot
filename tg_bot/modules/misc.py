@@ -7,7 +7,7 @@ import requests
 from io import BytesIO
 from telegram import Update, MessageEntity, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, Filters, CallbackContext
+from telegram.ext import Filters, CallbackContext
 from telegram.utils.helpers import mention_html, escape_markdown
 from subprocess import Popen, PIPE
 
@@ -25,7 +25,6 @@ from tg_bot import (
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.sql import SESSION
-from tg_bot.modules.disable import DisableAbleCommandHandler
 from tg_bot.modules.helper_funcs.chat_status import user_admin, sudo_plus
 from tg_bot.modules.helper_funcs.extraction import extract_user
 import tg_bot.modules.sql.users_sql as sql
@@ -35,10 +34,7 @@ from psutil import cpu_percent, virtual_memory, disk_usage, boot_time
 import datetime
 import platform
 from platform import python_version
-from spamprotection.sync import SPBClient
-from spamprotection.errors import HostDownError
-from tg_bot.modules.helper_funcs.decorators import kigcmd
-client = SPBClient()
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
 MARKDOWN_HELP = f"""
 Markdown is a very powerful formatting tool supported by telegram. {dispatcher.bot.first_name} has some enhancements, to make sure that \
@@ -118,7 +114,7 @@ def gifid(update: Update, _):
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
 @kigcmd(command='info', pass_args=True)
-def info(update: Update, context: CallbackContext):
+def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot = context.bot
     args = context.args
     message = update.effective_message
@@ -172,49 +168,10 @@ def info(update: Update, context: CallbackContext):
     except:
         pass  # don't crash if api is down somehow...
 
-    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={context.bot.username}')
-    api_status = apst.status_code
-    if (api_status == 200):
-        try:
-            status = client.raw_output(int(user.id))
-            ptid = status["results"]["private_telegram_id"]
-            op = status["results"]["attributes"]["is_operator"]
-            ag = status["results"]["attributes"]["is_agent"]
-            wl = status["results"]["attributes"]["is_whitelisted"]
-            ps = status["results"]["attributes"]["is_potential_spammer"]
-            sp = status["results"]["spam_prediction"]["spam_prediction"]
-            hamp = status["results"]["spam_prediction"]["ham_prediction"]
-            blc = status["results"]["attributes"]["is_blacklisted"]
-            if blc:
-                blres = status["results"]["attributes"]["blacklist_reason"]
-            else:
-                blres = None
-            text += "\n\n<b>SpamProtection:</b>"
-            text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
-            if op:
-                text += f"<b>Operator:</b> <code>{op}</code>\n"
-            if ag:
-                text += f"<b>Agent:</b> <code>{ag}</code>\n"
-            if wl:
-                text += f"<b>Whitelisted:</b> <code>{wl}</code>\n"
-            text += f"<b>Spam Prediction:</b> <code>{sp}</code>\n"
-            text += f"<b>Ham Prediction:</b> <code>{hamp}</code>\n"
-            if ps:
-                text += f"<b>Potential Spammer:</b> <code>{ps}</code>\n"
-            if blc:
-                text += f"<b>Blacklisted:</b> <code>{blc}</code>\n"
-                text += f"<b>Blacklist Reason:</b> <code>{blres}</code>\n"
-        except HostDownError:
-            text += "\n\n<b>SpamProtection:</b>"
-            text += "\nCan't connect to Intellivoid SpamProtection API\n"
-    else:
-        text += "\n\n<b>SpamProtection:</b>"
-        text += f"\n<code>API RETURNED: {api_status}</code>\n"
-
     Nation_level_present = False
 
     num_chats = sql.get_user_num_chats(user.id)
-    text += f"\nChat count: <code>{num_chats}</code>"
+    text += f"\n<b>Chat count</b>: <code>{num_chats}</code>"
 
     try:
         user_member = chat.get_member(user.id)
@@ -329,10 +286,7 @@ def get_readable_time(seconds: int) -> str:
 
     while count < 4:
         count += 1
-        if count < 3:
-            remainder, result = divmod(seconds, 60)
-        else:
-            remainder, result = divmod(seconds, 24)
+        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
         if seconds == 0 and remainder == 0:
             break
         time_list.append(int(result))
@@ -376,8 +330,7 @@ def stats(update, context):
     status += "*• Database size:* " + str(db_size) + "\n"
     kb = [
           [
-           InlineKeyboardButton('Channel', url='t.me/KigyoUpdates'),
-           InlineKeyboardButton('Support', url='t.me/YorktownEagleUnion')
+           InlineKeyboardButton('Ping', callback_data='pingCB')
           ]
     ]
     repo = git.Repo(search_parent_directories=True)
@@ -388,15 +341,24 @@ def stats(update, context):
             "\n*Bot statistics*:\n"
             + "\n".join([mod.__stats__() for mod in STATS]) +
             "\n\n[⍙ GitHub](https://github.com/Dank-del/EnterpriseALRobot) | [⍚ GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)\n\n" +
-            "╘══「 by [Dank-del](github.com/Dank-del)」\n",
+            "╘══「 by [Dank-del](github.com/Dank-del) 」\n",
         parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(kb), disable_web_page_preview=True)
     except BaseException:
         update.effective_message.reply_text(
-        "\n*Bot statistics*:\n"
-        + "\n".join([mod.__stats__() for mod in STATS]) +
-        "\n\n⍙ [GitHub](https://github.com/Dank-del/EnterpriseALRobot) | ⍚ [GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)\n\n" +
-        "╘══「 by [Dank-del](github.com/Dank-del)」\n",
-        parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(kb), disable_web_page_preview=True)
+            (
+                (
+                    (
+                        "\n*Bot statistics*:\n"
+                        + "\n".join(mod.__stats__() for mod in STATS)
+                    )
+                    + "\n\n⍙ [GitHub](https://github.com/Dank-del/EnterpriseALRobot) | ⍚ [GitLab](https://gitlab.com/Dank-del/EnterpriseALRobot)\n\n"
+                )
+                + "╘══「 by [Dank-del](github.com/Dank-del) 」\n"
+            ),
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(kb),
+            disable_web_page_preview=True,
+        )
 
 @kigcmd(command='ping')
 def ping(update: Update, _):
@@ -408,6 +370,16 @@ def ping(update: Update, _):
     message.edit_text(
         "*Pong!!!*\n`{}ms`".format(ping_time), parse_mode=ParseMode.MARKDOWN
     )
+
+
+@kigcallback(pattern=r'^pingCB')
+def pingCallback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    start_time = time.time()
+    requests.get('https://api.telegram.org')
+    end_time = time.time()
+    ping_time = round((end_time - start_time) * 1000, 3)
+    query.answer('Pong! {}ms'.format(ping_time))
 
 
 def get_help(chat):
