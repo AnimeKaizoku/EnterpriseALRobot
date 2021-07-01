@@ -6,8 +6,6 @@ from typing import List
 from uuid import uuid4
 
 import requests
-from spamprotection.errors import HostDownError
-from spamprotection.sync import SPBClient
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update, InlineKeyboardMarkup, \
     InlineKeyboardButton
 from telegram import __version__
@@ -27,9 +25,6 @@ from tg_bot import (
 )
 from tg_bot.modules.helper_funcs.misc import article
 from tg_bot.modules.helper_funcs.decorators import kiginline
-
-
-client = SPBClient()
 
 
 def remove_prefix(text, prefix):
@@ -182,39 +177,8 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     except:
         pass  # don't crash if api is down somehow...
 
-    apst = requests.get(f'https://api.intellivoid.net/spamprotection/v1/lookup?query={context.bot.username}')
-    api_status = apst.status_code
-    if (api_status == 200):
-        try:
-            status = client.raw_output(int(user.id))
-            # ptid = status["results"]["private_telegram_id"]
-            op = status.get("results").get("attributes").get("is_operator")
-            ag = status.get("results").get("attributes").get("is_agent")
-            wl = status.get("results").get("attributes").get("is_whitelisted")
-            ps = status.get("results").get("attributes").get("is_potential_spammer")
-            sp = status.get("results").get("spam_prediction").get("spam_prediction")
-            hamp = status.get("results").get("spam_prediction").get("ham_prediction")
-            blc = status.get("results").get("attributes").get("is_blacklisted")
-            blres = status.get("results").get("attributes").get("blacklist_reason")
-            
-            text += "\n\n<b>SpamProtection:</b>"
-            # text += f"<b>\n• Private Telegram ID:</b> <code>{ptid}</code>\n"
-            text += f"<b>\n• Operator:</b> <code>{op}</code>\n"
-            text += f"<b>• Agent:</b> <code>{ag}</code>\n"
-            text += f"<b>• Whitelisted:</b> <code>{wl}</code>\n"
-            text += f"<b>• Spam/Ham Prediction:</b> <code>{round((sp/hamp*100), 3)}%</code>\n"
-            text += f"<b>• Potential Spammer:</b> <code>{ps}</code>\n"
-            text += f"<b>• Blacklisted:</b> <code>{blc}</code>\n"
-            text += f"<b>• Blacklist Reason:</b> <code>{blres}</code>\n"
-        except HostDownError:
-            text += "\n\n<b>SpamProtection:</b>"
-            text += "\nCan't connect to Intellivoid SpamProtection API\n"
-    else:
-        text += "\n\n<b>SpamProtection:</b>"
-        text += f"\n<code>API RETURNED: {api_status}</code>\n"
-
     num_chats = sql.get_user_num_chats(user.id)
-    text += f"\n• Chat count: <code>{num_chats}</code>"
+    text += f"\n• <b>Chat count</b>: <code>{num_chats}</code>"
 
 
 
@@ -272,6 +236,10 @@ def about(query: str, update: Update, context: CallbackContext) -> None:
                     text="Channel",
                     url=f"https://t.me/KigyoUpdates",
                 ),
+                InlineKeyboardButton(
+                    text='Ping',
+                    callback_data='pingCB'
+                ),
 
             ],
             [
@@ -315,11 +283,7 @@ def spb(query: str, update: Update, context: CallbackContext) -> None:
         except IndexError:
             search = user_id
 
-        if search:
-            srdata = search
-        else:
-            srdata = user_id
-
+        srdata = search or user_id
         url = f"https://api.intellivoid.net/spamprotection/v1/lookup?query={srdata}"
         r = requests.get(url)
         a = r.json()
