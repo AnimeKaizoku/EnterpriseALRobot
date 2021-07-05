@@ -65,11 +65,18 @@ def inlinequery(update: Update, _) -> None:
             "keyboard": ".about ",
         },
         {
-            "title": "Anilist",
+            "title": "Anime",
             "description": "Search anime and manga on AniList.co",
             "message_text": "Click the button below to search anime and manga on AniList.co",
             "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
-            "keyboard": ".anilist ",
+            "keyboard": ".anime ",
+        },
+        {
+            "title": "Character",
+            "description": "Search Characters on AniList.co",
+            "message_text": "Search character on AniList.co",
+            "thumb_urL": "https://telegra.ph/file/a546976e6f3ebf21a131a.jpg",
+            "keyboard": ".char ",
         },
     ]
 
@@ -77,7 +84,8 @@ def inlinequery(update: Update, _) -> None:
         ".spb": spb,
         ".info": inlineinfo,
         ".about": about,
-        ".anilist": media_query,
+        ".anime": media_query,
+        ".char": character_query,
     }
 
     if (f := query.split(" ", 1)[0]) in inline_funcs:
@@ -436,7 +444,7 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                         ),
                         InlineKeyboardButton(
                             text="Search again",
-                            switch_inline_query_current_chat=".anilist ",
+                            switch_inline_query_current_chat=".anime ",
                         ),
 
                     ],
@@ -474,7 +482,7 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                     ),
                     InlineKeyboardButton(
                         text="Search again",
-                        switch_inline_query_current_chat=".anilist ",
+                        switch_inline_query_current_chat=".anime ",
                     ),
 
                 ],
@@ -489,6 +497,148 @@ def media_query(query: str, update: Update, context: CallbackContext) -> None:
                 input_message_content=InputTextMessageContent(f"Media {query} not found due to {e}", parse_mode=ParseMode.MARKDOWN,
                                                               disable_web_page_preview=True),
                 reply_markup=kb
+            )
+
+        )
+
+    update.inline_query.answer(results, cache_time=5)
+
+
+
+CHAR_QUERY = '''query ($query: String) {
+  Page (perPage: 15) {
+        characters (search: $query) {
+               id
+               name {
+                     first
+                     middle
+                     last
+                     full
+                     native
+                     alternative
+                     alternativeSpoiler
+               }
+               image {
+                        large
+                        medium
+               }
+               description
+               gender
+               dateOfBirth {
+                              year
+                              month
+                              day
+               }
+               age
+               siteUrl
+               favourites
+               modNotes
+        }
+    }
+}'''
+
+def character_query(query: str, update: Update, context: CallbackContext) -> None:
+    """
+    Handle character inline query.
+    """
+    results: List = []
+
+    try:
+        res = requests.post(
+                    'https://graphql.anilist.co',
+                    data=json.dumps({'query': CHAR_QUERY, 'variables': {'query': query}}),
+                    headers={'Content-Type': 'application/json', 'Accept': 'application/json'}
+              ).json()
+
+        data = res.get('data').get('Page').get('characters')
+        res = data
+        for data in res:
+            name = data.get('name').get('full') or query
+            nati_name = data.get('name').get('native') or 'N/A'
+            alt_name = data.get('name').get('alternative') or 'N/A'
+            favourite = data.get('favourites') or 'N/A'
+            char_age = data.get('age', 'N/A')
+            char_gender = data.get('gender') or 'N/A'
+            thumb_url_large = data.get('image').get('large') or "https://telegra.ph/file/cc83a0b7102ad1d7b1cb3.jpg"
+            site_url = data.get('siteUrl') or "https://anilist.co/characters"
+
+            try:
+                alt_name = data.get('name').get('alternative')
+                neme = ""
+                for altname in alt_name:
+                     neme += f"`{altname}` ,"
+                alt_name = f"{neme}"
+            except:
+                alt_name = data.get('name').get('alternative') or "N/A"
+
+            try:
+                des = data.get("description").replace("<br>", "").replace("</br>", "")
+                description = des.replace("<i>", "").replace("</i>", "") or "N/A"
+            except AttributeError:
+                description = data.get("description")
+
+            if len((str(description))) > 700:
+                description = description [0:700] + "....."
+
+            txt = f"*{name}* - (*{nati_name or 'N/A'}*)\n"
+            txt += f"\n*Alternative*: {alt_name or 'N/A'}"
+            txt += f"\n*Favourite*: {favourite or 'N/A'}"
+            txt += f"\n*Gender*: {char_gender or 'N/A'}"
+            txt += f"\n*Age*: {char_age or 'N/A'}"
+            txt += f"\n\n*Description*: \n{description or 'N/A'}"
+
+            kb = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Read More",
+                            url=site_url,
+                        ),
+
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="Search Again",
+                            switch_inline_query_current_chat=".char ",
+                        ),
+
+                    ],
+                ])
+
+            results.append(InlineQueryResultArticle(
+                    id=str(uuid4()),
+                    title=name or query,
+                    description=site_url or query,
+                    thumb_url=thumb_url_large or "https://telegra.ph/file/cc83a0b7102ad1d7b1cb3.jpg",
+                    input_message_content=InputTextMessageContent(txt, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=False),
+                    reply_markup=kb,
+                )
+            )
+    except Exception as e:
+        log.exception(e)
+        kb = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Report error",
+                        url="t.me/YorktownEagleUnion",
+                    ),
+                    InlineKeyboardButton(
+                        text="Search again",
+                        switch_inline_query_current_chat=".char ",
+                    ),
+
+                ],
+            ])
+
+        results.append(
+
+            InlineQueryResultArticle(
+                id=str(uuid4()),
+                title=f"Character {query} not found",
+                thumb_url="https://telegra.ph/file/cc83a0b7102ad1d7b1cb3.jpg",
+                input_message_content=InputTextMessageContent(f"Character {query} not found due to {e}"),
+                reply_markup=kb,
             )
 
         )
