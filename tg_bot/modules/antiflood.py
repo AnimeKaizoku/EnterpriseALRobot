@@ -1,6 +1,6 @@
 import html
 import re
-from typing import Optional, List
+from typing import Optional
 
 from telegram import (
     Message,
@@ -8,9 +8,6 @@ from telegram import (
     Update,
     Bot,
     User,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ParseMode,
     ChatPermissions,
 )
 
@@ -167,7 +164,7 @@ def flood_button(update: Update, context: CallbackContext):
 @user_admin
 @can_restrict
 @loggable
-def set_flood(update, context) -> str:
+def set_flood(update, context) -> str:  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     message = update.effective_message  # type: Optional[Message]
@@ -189,7 +186,7 @@ def set_flood(update, context) -> str:
 
     if len(args) >= 1:
         val = args[0].lower()
-        if val == "off" or val == "no" or val == "0":
+        if val in ["off", "no", "0"]:
             sql.set_flood(chat_id, 0)
             if conn:
                 text = message.reply_text(
@@ -288,23 +285,22 @@ def flood(update, context):
             )
         else:
             text = msg.reply_text("I'm not enforcing any flood control here!")
+    elif conn:
+        text = msg.reply_text(
+            "I'm currently restricting members after {} consecutive messages in {}.".format(
+                limit, chat_name
+            )
+        )
     else:
-        if conn:
-            text = msg.reply_text(
-                "I'm currently restricting members after {} consecutive messages in {}.".format(
-                    limit, chat_name
-                )
+        text = msg.reply_text(
+            "I'm currently restricting members after {} consecutive messages.".format(
+                limit
             )
-        else:
-            text = msg.reply_text(
-                "I'm currently restricting members after {} consecutive messages.".format(
-                    limit
-                )
-            )
+        )
 
 @kigcmd(command="setfloodmode", pass_args=True, filters=Filters.chat_type.groups)
 @user_admin
-def set_flood_mode(update, context):
+def set_flood_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     msg = update.effective_message  # type: Optional[Message]
