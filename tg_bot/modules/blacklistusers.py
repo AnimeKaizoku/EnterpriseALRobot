@@ -15,7 +15,7 @@ from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_an
 from tg_bot.modules.log_channel import gloggable
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, run_async
+from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
@@ -48,12 +48,10 @@ def bl_user(update: Update, context: CallbackContext) -> str:
     try:
         target_user = bot.get_chat(user_id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user.")
-            return ""
-        else:
+        if excp.message != 'User not found':
             raise
-
+        message.reply_text("I can't seem to find this user.")
+        return ''
     sql.blacklist_user(user_id, reason)
     message.reply_text("I shall ignore the existence of this user!")
     log_message = (
@@ -123,11 +121,7 @@ def bl_users(update: Update, context: CallbackContext):
             users.append(f"• {mention_html(user.id, user.first_name)}")
 
     message = "<b>Blacklisted Users</b>\n"
-    if not users:
-        message += "Noone is being ignored as of yet."
-    else:
-        message += "\n".join(users)
-
+    message += "\n".join(users) if users else "Noone is being ignored as of yet."
     update.effective_message.reply_text(message, parse_mode=ParseMode.HTML)
 
 
