@@ -89,7 +89,7 @@ def connection_chat(update, context):
 
 
 @typing_action
-def connect_chat(update, context):
+def connect_chat(update, context):  # sourcery no-metrics
 
     chat = update.effective_chat
     user = update.effective_user
@@ -281,20 +281,19 @@ def connected(bot: Bot, update: Update, chat, user_id, need_admin=True):
             or (user.id in SUDO_USERS)
             or (user.id in DEV_USERS)
         ):
-            if need_admin is True:
-                if (
-                    getstatusadmin.status in ("administrator", "creator")
-                    or user_id in SUDO_USERS
-                    or user.id in DEV_USERS
-                ):
-                    return conn_id
-                else:
-                    send_message(
-                        update.effective_message,
-                        "You must be an admin in the connected group!",
-                    )
-            else:
+            if need_admin is not True:
                 return conn_id
+            if (
+                getstatusadmin.status in ("administrator", "creator")
+                or user_id in SUDO_USERS
+                or user.id in DEV_USERS
+            ):
+                return conn_id
+            else:
+                send_message(
+                    update.effective_message,
+                    "You must be an admin in the connected group!",
+                )
         else:
             send_message(
                 update.effective_message,
