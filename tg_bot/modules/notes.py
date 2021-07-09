@@ -51,6 +51,7 @@ ENUM_FUNC_MAP = {
 
 # Do not async
 def get(update, context, notename, show_none=True, no_format=False):
+    # sourcery no-metrics
     bot = context.bot
     chat_id = update.effective_message.chat.id
     note_chat_id = update.effective_chat.id
@@ -72,30 +73,28 @@ def get(update, context, notename, show_none=True, no_format=False):
                         chat_id=chat_id, from_chat_id=JOIN_LOGGER, message_id=note.value,
                     )
                 except BadRequest as excp:
-                    if excp.message == "Message to forward not found":
-                        message.reply_text(
-                            "This message seems to have been lost - I'll remove it "
-                            "from your notes list.",
-                        )
-                        sql.rm_note(note_chat_id, notename)
-                    else:
+                    if excp.message != "Message to forward not found":
                         raise
+                    message.reply_text(
+                        "This message seems to have been lost - I'll remove it "
+                        "from your notes list.",
+                    )
+                    sql.rm_note(note_chat_id, notename)
             else:
                 try:
                     bot.forward_message(
                         chat_id=chat_id, from_chat_id=chat_id, message_id=note.value,
                     )
                 except BadRequest as excp:
-                    if excp.message == "Message to forward not found":
-                        message.reply_text(
-                            "Looks like the original sender of this note has deleted "
-                            "their message - sorry! Get your bot admin to start using a "
-                            "message dump to avoid this. I'll remove this note from "
-                            "your saved notes.",
-                        )
-                        sql.rm_note(note_chat_id, notename)
-                    else:
+                    if excp.message != "Message to forward not found":
                         raise
+                    message.reply_text(
+                        "Looks like the original sender of this note has deleted "
+                        "their message - sorry! Get your bot admin to start using a "
+                        "message dump to avoid this. I'll remove this note from "
+                        "your saved notes.",
+                    )
+                    sql.rm_note(note_chat_id, notename)
         else:
             VALID_NOTE_FORMATTERS = [
                 "first",
@@ -110,15 +109,9 @@ def get(update, context, notename, show_none=True, no_format=False):
                 note.value, VALID_NOTE_FORMATTERS,
             )
             if valid_format:
-                if not no_format:
-                    if "%%%" in valid_format:
-                        split = valid_format.split("%%%")
-                        if all(split):
-                            text = random.choice(split)
-                        else:
-                            text = valid_format
-                    else:
-                        text = valid_format
+                if not no_format and "%%%" in valid_format:
+                    split = valid_format.split("%%%")
+                    text = random.choice(split) if all(split) else valid_format
                 else:
                     text = valid_format
                 text = text.format(
@@ -171,23 +164,22 @@ def get(update, context, notename, show_none=True, no_format=False):
                         parse_mode=parseMode,
                         reply_markup=keyboard,
                     )
+                elif ENUM_FUNC_MAP[note.msgtype] == dispatcher.bot.send_sticker:
+                    ENUM_FUNC_MAP[note.msgtype](
+                        chat_id,
+                        note.file,
+                        reply_to_message_id=reply_id,
+                        reply_markup=keyboard,
+                    )
                 else:
-                    if ENUM_FUNC_MAP[note.msgtype] == dispatcher.bot.send_sticker:
-                        ENUM_FUNC_MAP[note.msgtype](
-                            chat_id,
-                            note.file,
-                            reply_to_message_id=reply_id,
-                            reply_markup=keyboard,
-                        )
-                    else:
-                        ENUM_FUNC_MAP[note.msgtype](
-                            chat_id,
-                            note.file,
-                            caption=text,
-                            reply_to_message_id=reply_id,
-                            parse_mode=parseMode,
-                            reply_markup=keyboard,
-                        )
+                    ENUM_FUNC_MAP[note.msgtype](
+                        chat_id,
+                        note.file,
+                        caption=text,
+                        reply_to_message_id=reply_id,
+                        parse_mode=parseMode,
+                        reply_markup=keyboard,
+                    )
 
             except BadRequest as excp:
                 if excp.message == "Entity_mention_user_invalid":
