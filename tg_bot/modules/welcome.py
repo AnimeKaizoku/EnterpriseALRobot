@@ -42,7 +42,6 @@ from telegram.ext import (
     CommandHandler,
     Filters,
     MessageHandler,
-    run_async,
 )
 from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
 
@@ -93,61 +92,73 @@ def send(update, message, keyboard, backup_message):
             reply_to_message_id=reply,
         )
     except BadRequest as excp:
-        if excp.message == "Reply message not found":
+        if excp.message == 'Button_url_invalid':
+            msg = update.effective_message.reply_text(
+                markdown_parser(
+                    (
+                        backup_message
+                        + '\nNote: the current message has an invalid url in one of its buttons. Please update.'
+                    )
+                ),
+                parse_mode=ParseMode.MARKDOWN,
+                reply_to_message_id=reply,
+            )
+
+        elif excp.message == 'Have no rights to send a message':
+            return
+        elif excp.message == 'Reply message not found':
             msg = update.effective_message.reply_text(
                 message,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=keyboard,
                 quote=False,
             )
-        elif excp.message == "Button_url_invalid":
+
+        elif excp.message == 'Unsupported url protocol':
             msg = update.effective_message.reply_text(
                 markdown_parser(
-                    backup_message + "\nNote: the current message has an invalid url "
-                    "in one of its buttons. Please update."
+                    (
+                        backup_message
+                        + '\nNote: the current message has buttons which use url protocols that are unsupported by telegram. Please update.'
+                    )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
             )
-        elif excp.message == "Unsupported url protocol":
+
+        elif excp.message == 'Wrong url host':
             msg = update.effective_message.reply_text(
                 markdown_parser(
-                    backup_message + "\nNote: the current message has buttons which "
-                    "use url protocols that are unsupported by "
-                    "telegram. Please update."
+                    (
+                        backup_message
+                        + '\nNote: the current message has some bad urls. Please update.'
+                    )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
             )
-        elif excp.message == "Wrong url host":
-            msg = update.effective_message.reply_text(
-                markdown_parser(
-                    backup_message + "\nNote: the current message has some bad urls. "
-                    "Please update."
-                ),
-                parse_mode=ParseMode.MARKDOWN,
-                reply_to_message_id=reply,
-            )
+
             log.warning(message)
             log.warning(keyboard)
-            log.exception("Could not parse! got invalid url host errors")
-        elif excp.message == "Have no rights to send a message":
-            return
+            log.exception('Could not parse! got invalid url host errors')
         else:
             msg = update.effective_message.reply_text(
                 markdown_parser(
-                    backup_message + "\nNote: An error occured when sending the "
-                    "custom message. Please update."
+                    (
+                        backup_message
+                        + '\nNote: An error occured when sending the custom message. Please update.'
+                    )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_to_message_id=reply,
             )
+
             log.exception()
     return msg
 
 
 @loggable
-def new_member(update: Update, context: CallbackContext):
+def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot, job_queue = context.bot, context.job_queue
     chat = update.effective_chat
     user = update.effective_user
@@ -313,173 +324,172 @@ def new_member(update: Update, context: CallbackContext):
         if new_mem.is_bot:
             should_mute = False
 
-        if user.id == new_mem.id:
-            if should_mute:
-                if welc_mutes == "soft":
-                    bot.restrict_chat_member(
-                        chat.id,
-                        new_mem.id,
-                        permissions=ChatPermissions(
-                            can_send_messages=True,
-                            can_send_media_messages=False,
-                            can_send_other_messages=False,
-                            can_invite_users=False,
-                            can_pin_messages=False,
-                            can_send_polls=False,
-                            can_change_info=False,
-                            can_add_web_page_previews=False,
-                        ),
-                        until_date=(int(time.time() + 24 * 60 * 60)),
-                    )
-                if welc_mutes == "strong":
-                    welcome_bool = False
-                    if not media_wel:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                (chat.id, new_mem.id): {
-                                    "should_welc": should_welc,
-                                    "media_wel": False,
-                                    "status": False,
-                                    "update": update,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                    "backup_message": backup_message,
-                                }
+        if user.id == new_mem.id and should_mute:
+            if welc_mutes == "soft":
+                bot.restrict_chat_member(
+                    chat.id,
+                    new_mem.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=True,
+                        can_send_media_messages=False,
+                        can_send_other_messages=False,
+                        can_invite_users=False,
+                        can_pin_messages=False,
+                        can_send_polls=False,
+                        can_change_info=False,
+                        can_add_web_page_previews=False,
+                    ),
+                    until_date=(int(time.time() + 24 * 60 * 60)),
+                )
+            if welc_mutes == "strong":
+                welcome_bool = False
+                if not media_wel:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            (chat.id, new_mem.id): {
+                                "should_welc": should_welc,
+                                "media_wel": False,
+                                "status": False,
+                                "update": update,
+                                "res": res,
+                                "keyboard": keyboard,
+                                "backup_message": backup_message,
                             }
-                        )
-                    else:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                (chat.id, new_mem.id): {
-                                    "should_welc": should_welc,
-                                    "chat_id": chat.id,
-                                    "status": False,
-                                    "media_wel": True,
-                                    "cust_content": cust_content,
-                                    "welc_type": welc_type,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                }
-                            }
-                        )
-                    new_join_mem = f"[{escape_markdown(new_mem.first_name)}](tg://user?id={user.id})"
-                    message = msg.reply_text(
-                        f"{new_join_mem}, click the button below to prove you're human.\nYou have 120 seconds.",
-                        reply_markup=InlineKeyboardMarkup(
-                            [
-                                {
-                                    InlineKeyboardButton(
-                                        text="Yes, I'm human.",
-                                        callback_data=f"user_join_({new_mem.id})",
-                                    )
-                                }
-                            ]
-                        ),
-                        parse_mode=ParseMode.MARKDOWN,
-                        reply_to_message_id=reply,
+                        }
                     )
-                    bot.restrict_chat_member(
-                        chat.id,
-                        new_mem.id,
-                        permissions=ChatPermissions(
-                            can_send_messages=False,
-                            can_invite_users=False,
-                            can_pin_messages=False,
-                            can_send_polls=False,
-                            can_change_info=False,
-                            can_send_media_messages=False,
-                            can_send_other_messages=False,
-                            can_add_web_page_previews=False,
-                        ),
-                    )
-                    job_queue.run_once(
-                        partial(check_not_bot, new_mem, chat.id, message.message_id),
-                        120,
-                        name="welcomemute",
-                    )
-                if welc_mutes == "captcha":
-                    btn = []
-                    # Captcha image size number (2 -> 640x360)
-                    CAPCTHA_SIZE_NUM = 2
-                    # Create Captcha Generator object of specified size
-                    generator = CaptchaGenerator(CAPCTHA_SIZE_NUM)
-
-                    # Generate a captcha image
-                    captcha = generator.gen_captcha_image(difficult_level=3)
-                    # Get information
-                    image = captcha["image"]
-                    characters = captcha["characters"]
-                    #print(characters)
-                    fileobj = BytesIO()
-                    fileobj.name=f'captcha_{new_mem.id}.png'
-                    image.save(fp=fileobj)
-                    fileobj.seek(0)
-                    CAPTCHA_ANS_DICT[(chat.id, new_mem.id)] = int(characters)
-                    welcome_bool = False
-                    if not media_wel:
-                        VERIFIED_USER_WAITLIST.update(
-                            {
-                                (chat.id, new_mem.id): {
-                                    "should_welc": should_welc,
-                                    "media_wel": False,
-                                    "status": False,
-                                    "update": update,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                    "backup_message": backup_message,
-                                    "captcha_correct": characters,
-                                }
+                else:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            (chat.id, new_mem.id): {
+                                "should_welc": should_welc,
+                                "chat_id": chat.id,
+                                "status": False,
+                                "media_wel": True,
+                                "cust_content": cust_content,
+                                "welc_type": welc_type,
+                                "res": res,
+                                "keyboard": keyboard,
                             }
-                        )
-                    else:
-                        VERIFIED_USER_WAITLIST.update(
+                        }
+                    )
+                new_join_mem = f"[{escape_markdown(new_mem.first_name)}](tg://user?id={user.id})"
+                message = msg.reply_text(
+                    f"{new_join_mem}, click the button below to prove you're human.\nYou have 120 seconds.",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
                             {
-                                (chat.id, new_mem.id): {
-                                    "should_welc": should_welc,
-                                    "chat_id": chat.id,
-                                    "status": False,
-                                    "media_wel": True,
-                                    "cust_content": cust_content,
-                                    "welc_type": welc_type,
-                                    "res": res,
-                                    "keyboard": keyboard,
-                                    "captcha_correct": characters,
-                                }
-                            }
-                        )
-
-                    nums = [random.randint(1000, 9999) for _ in range(7)]
-                    nums.append(characters)
-                    random.shuffle(nums)
-                    to_append = []
-                    #print(nums)
-                    for a in nums:
-                        to_append.append(InlineKeyboardButton(text=str(a), callback_data=f"user_captchajoin_({chat.id},{new_mem.id})_({a})"))
-                        if len(to_append) > 2:
-                            btn.append(to_append)
-                            to_append = []
-                    if to_append:
-                        btn.append(to_append)
-
-                    message = msg.reply_photo(fileobj, caption=f'Welcome [{escape_markdown(new_mem.first_name)}](tg://user?id={user.id}). Click the correct button to get unmuted!',
-                                    reply_markup=InlineKeyboardMarkup(btn),
-                                    parse_mode=ParseMode.MARKDOWN,
-                                    reply_to_message_id=reply,
+                                InlineKeyboardButton(
+                                    text="Yes, I'm human.",
+                                    callback_data=f"user_join_({new_mem.id})",
                                 )
-                    bot.restrict_chat_member(
-                        chat.id,
-                        new_mem.id,
-                        permissions=ChatPermissions(
-                            can_send_messages=False,
-                            can_invite_users=False,
-                            can_pin_messages=False,
-                            can_send_polls=False,
-                            can_change_info=False,
-                            can_send_media_messages=False,
-                            can_send_other_messages=False,
-                            can_add_web_page_previews=False,
-                        ),
+                            }
+                        ]
+                    ),
+                    parse_mode=ParseMode.MARKDOWN,
+                    reply_to_message_id=reply,
+                )
+                bot.restrict_chat_member(
+                    chat.id,
+                    new_mem.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=False,
+                        can_invite_users=False,
+                        can_pin_messages=False,
+                        can_send_polls=False,
+                        can_change_info=False,
+                        can_send_media_messages=False,
+                        can_send_other_messages=False,
+                        can_add_web_page_previews=False,
+                    ),
+                )
+                job_queue.run_once(
+                    partial(check_not_bot, new_mem, chat.id, message.message_id),
+                    120,
+                    name="welcomemute",
+                )
+            if welc_mutes == "captcha":
+                btn = []
+                # Captcha image size number (2 -> 640x360)
+                CAPCTHA_SIZE_NUM = 2
+                # Create Captcha Generator object of specified size
+                generator = CaptchaGenerator(CAPCTHA_SIZE_NUM)
+
+                # Generate a captcha image
+                captcha = generator.gen_captcha_image(difficult_level=3)
+                # Get information
+                image = captcha["image"]
+                characters = captcha["characters"]
+                #print(characters)
+                fileobj = BytesIO()
+                fileobj.name=f'captcha_{new_mem.id}.png'
+                image.save(fp=fileobj)
+                fileobj.seek(0)
+                CAPTCHA_ANS_DICT[(chat.id, new_mem.id)] = int(characters)
+                welcome_bool = False
+                if not media_wel:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            (chat.id, new_mem.id): {
+                                "should_welc": should_welc,
+                                "media_wel": False,
+                                "status": False,
+                                "update": update,
+                                "res": res,
+                                "keyboard": keyboard,
+                                "backup_message": backup_message,
+                                "captcha_correct": characters,
+                            }
+                        }
                     )
+                else:
+                    VERIFIED_USER_WAITLIST.update(
+                        {
+                            (chat.id, new_mem.id): {
+                                "should_welc": should_welc,
+                                "chat_id": chat.id,
+                                "status": False,
+                                "media_wel": True,
+                                "cust_content": cust_content,
+                                "welc_type": welc_type,
+                                "res": res,
+                                "keyboard": keyboard,
+                                "captcha_correct": characters,
+                            }
+                        }
+                    )
+
+                nums = [random.randint(1000, 9999) for _ in range(7)]
+                nums.append(characters)
+                random.shuffle(nums)
+                to_append = []
+                #print(nums)
+                for a in nums:
+                    to_append.append(InlineKeyboardButton(text=str(a), callback_data=f"user_captchajoin_({chat.id},{new_mem.id})_({a})"))
+                    if len(to_append) > 2:
+                        btn.append(to_append)
+                        to_append = []
+                if to_append:
+                    btn.append(to_append)
+
+                message = msg.reply_photo(fileobj, caption=f'Welcome [{escape_markdown(new_mem.first_name)}](tg://user?id={user.id}). Click the correct button to get unmuted!',
+                                reply_markup=InlineKeyboardMarkup(btn),
+                                parse_mode=ParseMode.MARKDOWN,
+                                reply_to_message_id=reply,
+                            )
+                bot.restrict_chat_member(
+                    chat.id,
+                    new_mem.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=False,
+                        can_invite_users=False,
+                        can_pin_messages=False,
+                        can_send_polls=False,
+                        can_change_info=False,
+                        can_send_media_messages=False,
+                        can_send_other_messages=False,
+                        can_add_web_page_previews=False,
+                    ),
+                )
 
         if welcome_bool:
             if media_wel:
@@ -544,7 +554,7 @@ def check_not_bot(member, chat_id, message_id, context):
             pass
 
 
-def left_member(update: Update, context: CallbackContext):
+def left_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot = context.bot
     chat = update.effective_chat
     user = update.effective_user
@@ -597,7 +607,7 @@ def left_member(update: Update, context: CallbackContext):
                 return
 
             # if media goodbye, use appropriate function for it
-            if goodbye_type != sql.Types.TEXT and goodbye_type != sql.Types.BUTTON_TEXT:
+            if goodbye_type not in [sql.Types.TEXT, sql.Types.BUTTON_TEXT]:
                 ENUM_FUNC_MAP[goodbye_type](chat.id, cust_goodbye)
                 return
 
@@ -666,7 +676,7 @@ def welcome(update: Update, context: CallbackContext):
             parse_mode=ParseMode.MARKDOWN,
         )
 
-        if welcome_type == sql.Types.BUTTON_TEXT or welcome_type == sql.Types.TEXT:
+        if welcome_type in [sql.Types.BUTTON_TEXT, sql.Types.TEXT]:
             buttons = sql.get_welc_buttons(chat.id)
             if noformat:
                 welcome_m += revert_buttons(buttons)
@@ -740,14 +750,13 @@ def goodbye(update: Update, context: CallbackContext):
 
                 send(update, goodbye_m, keyboard, sql.DEFAULT_GOODBYE)
 
-        else:
-            if noformat:
-                ENUM_FUNC_MAP[goodbye_type](chat.id, goodbye_m)
+        elif noformat:
+            ENUM_FUNC_MAP[goodbye_type](chat.id, goodbye_m)
 
-            else:
-                ENUM_FUNC_MAP[goodbye_type](
-                    chat.id, goodbye_m, parse_mode=ParseMode.MARKDOWN
-                )
+        else:
+            ENUM_FUNC_MAP[goodbye_type](
+                chat.id, goodbye_m, parse_mode=ParseMode.MARKDOWN
+            )
 
     elif len(args) >= 1:
         if args[0].lower() in ("on", "yes"):
@@ -962,24 +971,7 @@ def clean_welcome(update: Update, context: CallbackContext) -> str:
 def cleanservice(update: Update, context: CallbackContext) -> str:
     args = context.args
     chat = update.effective_chat  # type: Optional[Chat]
-    if chat.type != chat.PRIVATE:
-        if len(args) >= 1:
-            var = args[0]
-            if var in ("no", "off"):
-                sql.set_clean_service(chat.id, False)
-                update.effective_message.reply_text("Welcome clean service is : off")
-            elif var in ("yes", "on"):
-                sql.set_clean_service(chat.id, True)
-                update.effective_message.reply_text("Welcome clean service is : on")
-            else:
-                update.effective_message.reply_text(
-                    "Invalid option", parse_mode=ParseMode.MARKDOWN
-                )
-        else:
-            update.effective_message.reply_text(
-                "Usage is on/yes or off/no", parse_mode=ParseMode.MARKDOWN
-            )
-    else:
+    if chat.type == chat.PRIVATE:
         curr = sql.clean_service(chat.id)
         if curr:
             update.effective_message.reply_text(
@@ -989,6 +981,23 @@ def cleanservice(update: Update, context: CallbackContext) -> str:
             update.effective_message.reply_text(
                 "Welcome clean service is : off", parse_mode=ParseMode.MARKDOWN
             )
+
+    elif len(args) >= 1:
+        var = args[0]
+        if var in ("no", "off"):
+            sql.set_clean_service(chat.id, False)
+            update.effective_message.reply_text("Welcome clean service is : off")
+        elif var in ("yes", "on"):
+            sql.set_clean_service(chat.id, True)
+            update.effective_message.reply_text("Welcome clean service is : on")
+        else:
+            update.effective_message.reply_text(
+                "Invalid option", parse_mode=ParseMode.MARKDOWN
+            )
+    else:
+        update.effective_message.reply_text(
+            "Usage is on/yes or off/no", parse_mode=ParseMode.MARKDOWN
+        )
 
 
 def user_button(update: Update, context: CallbackContext):
@@ -1054,6 +1063,7 @@ def user_button(update: Update, context: CallbackContext):
         query.answer(text="You're not allowed to do this!")
 
 def user_captcha_button(update: Update, context: CallbackContext):
+    # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user
     query = update.callback_query
