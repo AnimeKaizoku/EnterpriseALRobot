@@ -23,11 +23,10 @@ def debug(update: Update, context: CallbackContext):
         elif args[1] in ("no", "off"):
             DEBUG_MODE = False
             message.reply_text("Debug mode is now off.")
+    elif DEBUG_MODE:
+        message.reply_text("Debug mode is currently on.")
     else:
-        if DEBUG_MODE:
-            message.reply_text("Debug mode is currently on.")
-        else:
-            message.reply_text("Debug mode is currently off.")
+        message.reply_text("Debug mode is currently off.")
 
 
 @telethn.on(events.NewMessage(pattern="[/!].*"))
