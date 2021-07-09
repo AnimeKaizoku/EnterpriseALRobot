@@ -5,7 +5,7 @@ import requests
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
-from tg_bot import dispatcher, LASTFM_API_KEY
+from tg_bot import LASTFM_API_KEY
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 import tg_bot.modules.sql.last_fm_sql as sql
 
