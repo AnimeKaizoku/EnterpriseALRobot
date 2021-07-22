@@ -120,7 +120,7 @@ def import_data(update, context):
 
 @kigcmd(command='export')
 @user_admin
-def export_data(update, context):
+def export_data(update, context):  # sourcery no-metrics
     chat_data = context.chat_data
     msg = update.effective_message  # type: Optional[Message]
     user = update.effective_user  # type: Optional[User]
@@ -158,9 +158,8 @@ def export_data(update, context):
         else:
             if user.id != OWNER_ID:
                 put_chat(chat_id, new_jam, chat_data)
-    else:
-        if user.id != OWNER_ID:
-            put_chat(chat_id, new_jam, chat_data)
+    elif user.id != OWNER_ID:
+        put_chat(chat_id, new_jam, chat_data)
 
     note_list = sql.get_all_chat_notes(chat_id)
     backup = {}

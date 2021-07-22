@@ -14,7 +14,6 @@ FILENAME = __name__.rsplit(".", 1)[-1]
 if is_module_loaded(FILENAME):
     from telegram import ParseMode, Update
     from telegram.error import BadRequest, Unauthorized
-    from telegram.ext import CommandHandler, JobQueue
     from telegram.utils.helpers import escape_markdown
 
     from tg_bot import GBAN_LOGS, log, dispatcher
@@ -128,11 +127,9 @@ if is_module_loaded(FILENAME):
             try:
                 message.delete()
             except BadRequest as excp:
-                if excp.message == "Message to delete not found":
-                    pass
-                else:
+                if excp.message != 'Message to delete not found':
                     log.exception(
-                        "Error deleting message in log channel. Should work anyway though."
+                        'Error deleting message in log channel. Should work anyway though.'
                     )
 
             try:

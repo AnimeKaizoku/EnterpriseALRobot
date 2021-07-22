@@ -4,12 +4,13 @@ import sys
 from time import sleep
 from tg_bot import dispatcher, telethn, OWNER_ID
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
-from telegram import TelegramError, Update
+from telegram import TelegramError, Update, ParseMode
 from telegram.ext import CallbackContext, CommandHandler
 import asyncio
 from statistics import mean
 from time import monotonic as time
 from telethon import events
+
 
 @dev_plus
 def leave(update: Update, context: CallbackContext):
@@ -44,6 +45,7 @@ def gitpull(update: Update, context: CallbackContext):
     os.system("restart.bat")
     os.execv("start.bat", sys.argv)
 
+
 @dev_plus
 def restart(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
@@ -52,6 +54,7 @@ def restart(update: Update, context: CallbackContext):
 
     os.system("restart.bat")
     os.execv("start.bat", sys.argv)
+
 
 class Store:
     def __init__(self, func):
@@ -77,6 +80,7 @@ class Store:
                 self.calls[-1] += 1
         await self.func(event)
 
+
 async def nothing(event):
     pass
 
@@ -93,10 +97,36 @@ telethn.add_event_handler(callback_queries, events.CallbackQuery())
 @telethn.on(events.NewMessage(pattern=r"/getstats", from_users=OWNER_ID))
 async def getstats(event):
     await event.reply(
-        f"**__KIGYO EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s", parse_mode='md'
+        f"**__KIGYO EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
+        parse_mode='md'
+    )
+
+
+@dev_plus
+def pip_install(update: Update, context: CallbackContext):
+    message = update.effective_message
+    args = context.args
+    if not args:
+        message.reply_text("Enter a package name.")
+        return
+    if len(args) >= 1:
+        cmd = "py -m pip install {}".format(' '.join(args))
+        process = subprocess.Popen(
+            cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,
         )
+        stdout, stderr = process.communicate()
+        reply = ""
+        stderr = stderr.decode()
+        stdout = stdout.decode()
+        if stdout:
+            reply += f"*Stdout*\n`{stdout}`\n"
+        if stderr:
+            reply += f"*Stderr*\n`{stderr}`\n"
+
+        message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
 
+PIP_INSTALL_HANDLER = CommandHandler("install", pip_install, run_async=True)
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
 GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
 RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
@@ -104,6 +134,7 @@ RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)
 dispatcher.add_handler(RESTART_HANDLER)
+dispatcher.add_handler(PIP_INSTALL_HANDLER)
 
 __mod_name__ = "Dev"
-__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER]
+__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, PIP_INSTALL_HANDLER]

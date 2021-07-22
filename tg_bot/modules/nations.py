@@ -4,7 +4,7 @@ import os
 from typing import List, Optional
 
 from telegram import Update, ParseMode, TelegramError
-from telegram.ext import CommandHandler, run_async, CallbackContext
+from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
 from tg_bot import (
@@ -25,14 +25,13 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
     bot = context.bot
     if not user_id:
-        reply = "That...is a chat! baka ka omae?"
+        return "That...is a chat! baka ka omae?"
 
     elif user_id == bot.id:
-        reply = "This does not work that way."
+        return "This does not work that way."
 
     else:
-        reply = None
-    return reply
+        return None
 
 @kigcmd(command='addsudo')
 @dev_plus

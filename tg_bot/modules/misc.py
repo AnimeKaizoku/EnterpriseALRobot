@@ -1,7 +1,5 @@
 import html
-import re, os
 import time
-from typing import List
 import git
 import requests
 from io import BytesIO

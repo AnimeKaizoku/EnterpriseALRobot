@@ -1,3 +1,4 @@
+"""""""""""""""""""""""""""""""""""""""""
 from time import sleep
 
 import tg_bot.modules.sql.antispam_sql as gban_sql
@@ -47,13 +48,12 @@ def get_invalid_chats(update: Update, context: CallbackContext, remove: bool = F
     except:
         pass
 
-    if not remove:
-        return kicked_chats
-    else:
+    if remove:
         for muted_chat in chat_list:
             sleep(0.1)
             user_sql.rem_chat(muted_chat)
-        return kicked_chats
+
+    return kicked_chats
 
 
 def get_invalid_gban(update: Update, context: CallbackContext, remove: bool = False):
@@ -73,13 +73,12 @@ def get_invalid_gban(update: Update, context: CallbackContext, remove: bool = Fa
         except:
             pass
 
-    if not remove:
-        return ungbanned_users
-    else:
+    if remove:
         for user_id in ungban_list:
             sleep(0.1)
             gban_sql.ungban_user(user_id)
-        return ungbanned_users
+
+    return ungbanned_users
 
 
 @dev_plus
@@ -113,24 +112,24 @@ def callback_button(update: Update, context: CallbackContext):
 
     bot.answer_callback_query(query.id)
 
-    if query_type == "db_leave_chat":
-        if query.from_user.id in admin_list:
-            bot.editMessageText("Leaving chats ...", chat_id, message.message_id)
-            chat_count = get_muted_chats(update, context, True)
-            bot.sendMessage(chat_id, f"Left {chat_count} chats.")
-        else:
-            query.answer("You are not allowed to use this.")
+    if query_type == "db_leave_chat" and query.from_user.id in admin_list:
+        bot.editMessageText("Leaving chats ...", chat_id, message.message_id)
+        chat_count = get_muted_chats(update, context, True)
+        bot.sendMessage(chat_id, f"Left {chat_count} chats.")
+    elif (
+        query_type == "db_leave_chat"
+        or query_type == "db_cleanup"
+        and query.from_user.id not in admin_list
+    ):
+        query.answer("You are not allowed to use this.")
     elif query_type == "db_cleanup":
-        if query.from_user.id in admin_list:
-            bot.editMessageText("Cleaning up DB ...", chat_id, message.message_id)
-            invalid_chat_count = get_invalid_chats(update, context, True)
-            invalid_gban_count = get_invalid_gban(update, context, True)
-            reply = "Cleaned up {} chats and {} gbanned users from db.".format(
-                invalid_chat_count, invalid_gban_count
-            )
-            bot.sendMessage(chat_id, reply)
-        else:
-            query.answer("You are not allowed to use this.")
+        bot.editMessageText("Cleaning up DB ...", chat_id, message.message_id)
+        invalid_chat_count = get_invalid_chats(update, context, True)
+        invalid_gban_count = get_invalid_gban(update, context, True)
+        reply = "Cleaned up {} chats and {} gbanned users from db.".format(
+            invalid_chat_count, invalid_gban_count
+        )
+        bot.sendMessage(chat_id, reply)
 
 
 DB_CLEANUP_HANDLER = CommandHandler("dbcleanup", dbcleanup, run_async=True)
@@ -141,3 +140,4 @@ dispatcher.add_handler(BUTTON_HANDLER)
 
 __mod_name__ = "DB Cleanup"
 __handlers__ = [DB_CLEANUP_HANDLER, BUTTON_HANDLER]
+"""""""""""""""""""""""""""""""""""""""""

@@ -1,6 +1,6 @@
 import subprocess
 
-from tg_bot import log as LOGGER, dispatcher, SYS_ADMIN
+from tg_bot import log as LOGGER, SYS_ADMIN
 from telegram import ParseMode, Update
 from telegram.ext import Filters, CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd

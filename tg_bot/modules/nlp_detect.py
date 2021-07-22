@@ -46,8 +46,7 @@ def nlp_mode(update, context):
 
 
 @kigmsg(group=3)
-def detect_spam(update, context):
-    url = "https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom"
+def detect_spam(update, context):  # sourcery no-metrics
     user = update.effective_user
     chat = update.effective_chat
     msg = update.effective_message
@@ -58,6 +57,7 @@ def detect_spam(update, context):
     from tg_bot import SPB_MODE, CF_API_KEY
     chat_state = sql.does_chat_nlp(chat.id)
     if SPB_MODE and CF_API_KEY and chat_state == True:
+        url = "https://api.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom"
         try:
             payload = {'access_key': CF_API_KEY, 'input': msg}
             data = requests.post(url, data=payload)

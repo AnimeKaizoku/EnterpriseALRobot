@@ -66,7 +66,7 @@ def getsticker(update: Update, context: CallbackContext):
 
 
 @kigcmd(command=["steal", "kang"])
-def kang(update: Update, context: CallbackContext):
+def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
     msg = update.effective_message
     user = update.effective_user
     args = context.args
@@ -116,7 +116,7 @@ def kang(update: Update, context: CallbackContext):
             # exit the loop and send our pack message.
             if last_set and is_animated:
                 break
-            elif last_set and not is_animated:
+            elif last_set:
                 # move to checking animated packs. Start with the first pack
                 packname = f"animated_{user.id}_by_{context.bot.username}"
                 # reset our counter
@@ -260,23 +260,22 @@ def kang(update: Update, context: CallbackContext):
     # actually add the damn sticker to the pack, animated or not.
     try:
         # Add the sticker to the pack if it doesn't exist already
-        if not invalid:
-            context.bot.add_sticker_to_set(
-                user_id=user.id,
-                name=packname,
-                png_sticker=sticker_data if not is_animated else None,
-                tgs_sticker=sticker_data if is_animated else None,
-                emojis=sticker_emoji,
-            )
-            msg.reply_text(
-                f"Sticker successfully added to [pack](t.me/addstickers/{packname})"
-                + f"\nEmoji is: {sticker_emoji}",
-                parse_mode=ParseMode.MARKDOWN,
-            )
-        else:
+        if invalid:
             # Since Stickerset_invalid will also try to create a pack we might as
             # well just reuse that code and avoid typing it all again.
             raise TelegramError("Stickerset_invalid")
+        context.bot.add_sticker_to_set(
+            user_id=user.id,
+            name=packname,
+            png_sticker=sticker_data if not is_animated else None,
+            tgs_sticker=sticker_data if is_animated else None,
+            emojis=sticker_emoji,
+        )
+        msg.reply_text(
+            f"Sticker successfully added to [pack](t.me/addstickers/{packname})"
+            + f"\nEmoji is: {sticker_emoji}",
+            parse_mode=ParseMode.MARKDOWN,
+        )
     except TelegramError as e:
         if e.message == "Stickerset_invalid":
             # if we need to make a sticker pack, make one and make this the
@@ -325,37 +324,44 @@ def makepack_internal(
             user.id,
             packname,
             f"{name}s {'animated ' if tgs_sticker else ''}kang pack{extra_version}",
-            tgs_sticker=tgs_sticker if tgs_sticker else None,
-            png_sticker=png_sticker if png_sticker else None,
+            tgs_sticker=tgs_sticker or None,
+            png_sticker=png_sticker or None,
             emojis=emoji,
         )
+
     except TelegramError as e:
         print(e)
-        if e.message == "Sticker set name is already occupied":
+        if e.message == 'Sticker set name is already occupied':
             msg.reply_text(
-                "Your pack can be found [here](t.me/addstickers/%s)" % packname,
+                'Your pack can be found [here](t.me/addstickers/%s)'
+                % packname,
                 parse_mode=ParseMode.MARKDOWN,
             )
+
             return
-        elif e.message in ("Peer_id_invalid", "bot was blocked by the user"):
+        elif e.message in ('Peer_id_invalid', 'bot was blocked by the user'):
             msg.reply_text(
-                "Contact me in PM first.",
+                'Contact me in PM first.',
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                text="Start", url=f"t.me/{context.bot.username}"
+                                text='Start',
+                                url=f't.me/{context.bot.username}',
                             )
                         ]
                     ]
                 ),
             )
+
             return
-        elif e.message == "Internal Server Error: created sticker set not found (500)":
+        elif (
+            e.message
+            == 'Internal Server Error: created sticker set not found (500)'
+        ):
             success = True
         else:
             success = False
-
     if success:
         msg.reply_text(
             f"Sticker pack successfully created. Get it [here](t.me/addstickers/{packname})",

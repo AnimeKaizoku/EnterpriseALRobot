@@ -1,9 +1,6 @@
 # module to get anime info by t.me/DragSama // find him on github :  https://github.com/DragSama // he's my doraemon btw.
-from telegram.ext import CommandHandler, CallbackContext
+from telegram.ext import CallbackContext
 from telegram import (
-    Message,
-    Chat,
-    User,
     ParseMode,
     Update,
     InlineKeyboardMarkup,
@@ -183,7 +180,7 @@ def airing(update: Update, context: CallbackContext):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 @kigcmd(command="anime")
-def anime(update: Update, context: CallbackContext):
+def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
     message = update.effective_message
     search = message.text.split(" ", 1)
     if len(search) == 1:

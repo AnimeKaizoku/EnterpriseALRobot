@@ -81,8 +81,9 @@ def list_errors(update: Update, context: CallbackContext):
         return
     e = dict(sorted(errors.items(), key=lambda item: item[1], reverse=True))
     msg = "<b>Errors List:</b>\n"
-    for x in e:
-        msg += f"• <code>{x}:</code> <b>{e[x]}</b> #{x.identifier}\n"
+    for x, value in e.items():
+        msg += f'• <code>f"• <code>{x}:</code> <b>{e[x]}</b> #{x.identifier}\n":</code> <b>{value}</b> #f"• <code>{x}:</code> <b>{e[x]}</b> #{x.identifier}\n"\n'
+
     update.effective_message.reply_text(msg, parse_mode="html")
 
 

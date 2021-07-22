@@ -48,42 +48,43 @@ if is_module_loaded(FILENAME):
                     ADMIN_CMDS.extend(command)
 
         def check_update(self, update):
-            if isinstance(update, Update) and update.effective_message:
-                message = update.effective_message
+            if not isinstance(update, Update) or not update.effective_message:
+                return
+            message = update.effective_message
 
-                if message.text and len(message.text) > 1:
-                    fst_word = message.text.split(None, 1)[0]
-                    if len(fst_word) > 1 and any(
-                        fst_word.startswith(start) for start in CMD_STARTERS
+            if message.text and len(message.text) > 1:
+                fst_word = message.text.split(None, 1)[0]
+                if len(fst_word) > 1 and any(
+                    fst_word.startswith(start) for start in CMD_STARTERS
+                ):
+                    args = message.text.split()[1:]
+                    command = fst_word[1:].split("@")
+                    command.append(message.bot.username)
+
+                    if not (
+                        command[0].lower() in self.command
+                        and command[1].lower() == message.bot.username.lower()
                     ):
-                        args = message.text.split()[1:]
-                        command = fst_word[1:].split("@")
-                        command.append(message.bot.username)
+                        return None
 
-                        if not (
-                            command[0].lower() in self.command
-                            and command[1].lower() == message.bot.username.lower()
-                        ):
-                            return None
+                    filter_result = self.filters(update)
+                    if filter_result:
+                        chat = update.effective_chat
+                        user = update.effective_user
+                        # disabled, admincmd, user admin
+                        if sql.is_command_disabled(chat.id, command[0].lower()):
+                            # check if command was disabled
+                            is_disabled = command[
+                                0
+                            ] in ADMIN_CMDS and is_user_admin(chat, user.id)
+                            if not is_disabled:
+                                return None
+                            else:
+                                return args, filter_result
 
-                        filter_result = self.filters(update)
-                        if filter_result:
-                            chat = update.effective_chat
-                            user = update.effective_user
-                            # disabled, admincmd, user admin
-                            if sql.is_command_disabled(chat.id, command[0].lower()):
-                                # check if command was disabled
-                                is_disabled = command[
-                                    0
-                                ] in ADMIN_CMDS and is_user_admin(chat, user.id)
-                                if not is_disabled:
-                                    return None
-                                else:
-                                    return args, filter_result
-
-                            return args, filter_result
-                        else:
-                            return False
+                        return args, filter_result
+                    else:
+                        return False
 
     class DisableAbleMessageHandler(MessageHandler):
         def __init__(self, pattern, callback, run_async=True, friendly="", **kwargs):
@@ -190,12 +191,14 @@ if is_module_loaded(FILENAME):
             send_message(update.effective_message, "What should I enable?")
 
     @user_admin
-    # @typing_action
+    @typing_action
     def list_cmds(update, context):
         if DISABLE_CMDS + DISABLE_OTHER:
-            result = ""
-            for cmd in set(DISABLE_CMDS + DISABLE_OTHER):
-                result += " - `{}`\n".format(escape_markdown(str(cmd)))
+            result = "".join(
+                " - `{}`\n".format(escape_markdown(str(cmd)))
+                for cmd in set(DISABLE_CMDS + DISABLE_OTHER)
+            )
+
             update.effective_message.reply_text(
                 "The following commands are toggleable:\n{}".format(result),
                 parse_mode=ParseMode.MARKDOWN,
@@ -209,9 +212,7 @@ if is_module_loaded(FILENAME):
         if not disabled:
             return "No commands are disabled!"
 
-        result = ""
-        for cmd in disabled:
-            result += " - `{}`\n".format(escape_markdown(cmd))
+        result = "".join(" - `{}`\n".format(escape_markdown(cmd)) for cmd in disabled)
         return "The following commands are currently restricted:\n{}".format(result)
 
     @typing_action
