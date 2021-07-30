@@ -6,12 +6,12 @@ def get_help(chat):
 
 __mod_name__ = "Translator"
 
-from telegram import ParseMode, message, update
+from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 @kigcmd(command=["tr", "tl"])
-def translate(update: update, context: CallbackContext):
+def translate(update: Update, context: CallbackContext):
     message = update.effective_message
     trl = SyncTranslator()
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
