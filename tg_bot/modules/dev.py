@@ -1,3 +1,4 @@
+import html
 import os
 import subprocess
 import sys
@@ -124,17 +125,48 @@ def pip_install(update: Update, context: CallbackContext):
             reply += f"*Stderr*\n`{stderr}`\n"
 
         message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
+        
+
+@dev_plus      
+def get_chat_by_id(update: Update, context: CallbackContext):
+    msg = update.effective_message
+    args = context.args
+    if not args:
+        msg.reply_text("<i>Chat ID required</i>", parse_mode=ParseMode.HTML)
+        return
+    if len(args) >= 1:
+        data = context.bot.get_chat(args[0])
+        m = "<b>Found chat, below are the details.</b>\n\n"
+        m += "<b>Title</b>: {}\n".format(html.escape(data.title))
+        m += "<b>Members</b>: {}\n\n".format(data.get_members_count())
+        if data.description:
+            m += "<i>{}</i>\n\n".format(html.escape(data.description))
+        if data.linked_chat_id:
+            m += "<b>Linked chat</b>: {}\n".format(data.linked_chat_id)
+        
+        m += "<b>Type</b>: {}\n".format(data.type)
+        if data.username:
+            m += "<b>Username</b>: {}\n".format(html.escape(data.username))
+        m += "<b>ID</b>: {}\n".format(data.id)
+        m += "\n<b>Permissions</b>:\n <code>{}</code>\n".format(data.permissions)
+        
+        if data.invite_link:
+            m += "\n<b>Invitelink</b>: {}".format(data.invite_link)
+        
+        msg.reply_text(text=m, parse_mode=ParseMode.HTML)
 
 
 PIP_INSTALL_HANDLER = CommandHandler("install", pip_install, run_async=True)
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
 GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
 RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
+GET_CHAT_HANDLER = CommandHandler("getchat", get_chat_by_id, run_async=True)
 
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)
 dispatcher.add_handler(RESTART_HANDLER)
 dispatcher.add_handler(PIP_INSTALL_HANDLER)
+dispatcher.add_handler(GET_CHAT_HANDLER)
 
 __mod_name__ = "Dev"
-__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, PIP_INSTALL_HANDLER]
+__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, PIP_INSTALL_HANDLER, GET_CHAT_HANDLER]
