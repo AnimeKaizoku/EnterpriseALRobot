@@ -166,11 +166,11 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
 
                         [
 
-                             InlineKeyboardButton(
-                                 text="Try inline",
-                                 switch_inline_query_current_chat="",
-                             ),
-                             InlineKeyboardButton(
+                            InlineKeyboardButton(
+                                text="Try inline",
+                                switch_inline_query_current_chat="",
+                            ),
+                            InlineKeyboardButton(
                                 text="Help",
                                 callback_data="help_back",
                                 ),
@@ -276,12 +276,9 @@ def error_callback(update, context):
 
     try:
         raise context.error
-    except Unauthorized:
+    except (Unauthorized, BadRequest):
         pass
         # remove update.message.chat_id from conversation list
-    except BadRequest:
-        pass
-        # handle malformed requests - read more below!
     except TimedOut:
         pass
         # handle slow connection problems

@@ -74,6 +74,8 @@ def error_callback(update: Update, context: CallbackContext):
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url=url)]]),
         parse_mode="html",
     )
+    context.bot.send_message(update.effective_chat.id, 
+            f"<b>Sorry I ran into an error!</b>\n<b>Error</b>: <code>{html.escape(e)}</code>\n<i>This incident has been reported. Contact support for queries</i>", parse_mode="html")
 
 
 def list_errors(update: Update, context: CallbackContext):
