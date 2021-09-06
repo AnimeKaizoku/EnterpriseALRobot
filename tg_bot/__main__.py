@@ -222,15 +222,15 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
                         [
                             InlineKeyboardButton(
                                 text=gs(chat.id, "support_chat_link_btn"),
-                                url=f"https://t.me/YorktownEagleUnion",
+                                url=f"https://t.me/joinchat/EII_nkvf5543MGVk",
                             ),
                             InlineKeyboardButton(
                                 text=gs(chat.id, "updates_channel_link_btn"),
-                                url="https://t.me/KigyoUpdates",
+                                url="https://t.me/LLXRMemes",
                             ),
                             InlineKeyboardButton(
                                 text=gs(chat.id, "src_btn"),
-                                url="https://github.com/Dank-del/EnterpriseALRobot",
+                                url="https://github.com/LightLegendXR/ZhongliBot",
                             ),
                             
                         ],
