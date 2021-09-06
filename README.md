@@ -1,5 +1,5 @@
-![Enterprise](https://i.imgur.com/IYqzviU.jpg)
-# Kigyō bot // @KigyoRobot
+![Enterprise](https://telegra.ph/file/fe3494357029665cff783.jpg)
+# Zhongli // @Zhongli567Bot
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/Dank-del/)</br>
@@ -14,17 +14,17 @@
 ![Repository Size](https://img.shields.io/github/repo-size/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)</br>
 
 
-[![Join Support!](https://img.shields.io/badge/Support%20Chat-EagleUnion-red)](https://t.me/YorktownEagleUnion)
+[![Join Support!](https://img.shields.io/badge/Support%20Chat-ZhongliSupport-red)](https://t.me/joinchat/EII_nkvf5543MGVk)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseALRobot&amp;utm_campaign=Badge_Grade)
 
 
 A modular telegram Python bot running on python3 with an sqlalchemy database.
 
-Originally a marie fork - Kigyō has evolved further and was built to be more useful for Anime Chats.
+Originally a Kigyō fork - Zhongli has evolved further and was built to be more useful for Anime Chats.
 
-Can be found on telegram as [Kigyō](https://t.me/kigyorobot).
+Can be found on telegram as [Zhongli](https://t.me/Zhongli567Bot).
 
-The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEagleUnion), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available.
+The Support group can be reached out to at [ZhongliSupport](https://t.me/joinchat/EII_nkvf5543MGVk), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available.
 
 
 
@@ -43,19 +43,16 @@ The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEa
 *Enjoy!*
 
 
-For queries or any issues regarding the bot please open an issue ticket or visit us at [Eagle Union](https://t.me/YorktownEagleUnion)  
+For queries or any issues regarding the bot please open an issue ticket or visit us at [ZhongliSupport](https://t.me/joinchat/EII_nkvf5543MGVk)  
 
 ## Credits
-The bot is based of on the original work done by [PaulSonOfLars](https://github.com/PaulSonOfLars)
+The bot is based of on the original work done by [Dank-del](github.com/dank-del), and [PaulSonOfLars](https://github.com/PaulSonOfLars)
 This repo was just reamped to suit an Anime-centric community. All original credits go to Paul and his dedication, Without his efforts, this fork would not have been possible!
 
 
-Should any be missing kindly let us know at [Eagle Union](https://t.me/YorktownEagleUnion) or simply submit a pull request on the readme.
+Should any be missing kindly let us know at [ZhongliSupport](https://t.me/joinchat/EII_nkvf5543MGVk) or simply submit a pull request on the readme.
 
 
 -------------------------------------------------------------------------------------
 
-
-<a href="http://u.fsf.org/16e"><img src="https://static.fsf.org/nosvn/images/badges/fsfs_icons_red-bg.png" alt="Free Software, Free Society"></a>   
-
-*Kigyo is free and open source software and supports the right to read, distribute and repair.*
+*Zhongli is free and open source software and supports the right to read, distribute and repair.*
