@@ -18,8 +18,8 @@ from telegram.ext import CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 
-@dev_plus
 @kigcmd(command='load')
+@dev_plus
 def load(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -83,9 +83,8 @@ def load(update: Update, context: CallbackContext):
         "Successfully loaded module : <b>{}</b>".format(text), parse_mode=ParseMode.HTML
     )
 
-
-@dev_plus
 @kigcmd(command='unload')
+@dev_plus
 def unload(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -151,8 +150,8 @@ def unload(update: Update, context: CallbackContext):
     )
 
 
-@sudo_plus
 @kigcmd(command='listmodules')
+@sudo_plus
 def listmodules(update: Update, context: CallbackContext):
     message = update.effective_message
     module_list = []
