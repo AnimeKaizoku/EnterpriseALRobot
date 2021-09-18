@@ -33,7 +33,7 @@ The Support group can be reached out to at [ZhongliSupport](https://t.me/joincha
 
 # How to setup
 
-- `git clone https://github.com/Dank-del/EnterpriseALRobot`
+- `git clone https://github.com/LightLegendXR/ZhongliBot`
 - `cd EnterpriseALRobot`
 - `cp sample_config.ini config.ini`
 - *Fill in all the vars*
