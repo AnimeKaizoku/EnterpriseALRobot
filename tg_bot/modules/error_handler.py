@@ -6,7 +6,7 @@ import random
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CommandHandler
 
-from tg_bot import dispatcher, DEV_USERS, OWNER_ID, log
+from tg_bot import KInit, dispatcher, DEV_USERS, OWNER_ID, log
 
 
 class ErrorsDict(dict):
@@ -33,6 +33,8 @@ def error_callback(update: Update, context: CallbackContext):
         return
 
     e = html.escape(f"{context.error}")
+    if e.find(KInit.TOKEN) != -1:
+        e = e.replace(KInit.TOKEN, "TOKEN")
 
     if update.effective_chat.type != "channel":
         try:
