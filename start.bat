@@ -1,4 +1,4 @@
 @echo off
-TITLE Kigyō bot
-:: Enables virtual env mode and then starts kigyo
+TITLE Zhongli bot
+:: Enables virtual env mode and then starts zhongli
 env\scripts\activate.bat && py -m tg_bot
