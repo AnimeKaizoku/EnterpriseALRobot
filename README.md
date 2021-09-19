@@ -1,21 +1,21 @@
 ![Enterprise](https://telegra.ph/file/fe3494357029665cff783.jpg)
-# Zhongli // @Zhongli567Bot
+# Zhongli // @Zhongli567Bot, a Fork of [Kigyō](https://github.com/Dank-del/EnterpriseALRobot)
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/Dank-del/)</br>
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/LightLegendXR/)</br>
 
 
 ![Python Version](https://img.shields.io/badge/python-3.8-green?style=for-the-badge&logo=appveyor)
-![Issues](https://img.shields.io/github/issues/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)
-![Forks](https://img.shields.io/github/forks/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)
-![Stars](https://img.shields.io/github/stars/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)
-![LICENSE](https://img.shields.io/github/license/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)
-![Contributors](https://img.shields.io/github/contributors/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)
-![Repository Size](https://img.shields.io/github/repo-size/Dank-del/EnterpriseALRobot?style=for-the-badge&logo=appveyor)</br>
+![Issues](https://img.shields.io/github/issues/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)
+![Forks](https://img.shields.io/github/forks/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)
+![Stars](https://img.shields.io/github/stars/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)
+![LICENSE](https://img.shields.io/github/license/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)
+![Contributors](https://img.shields.io/github/contributors/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)
+![Repository Size](https://img.shields.io/github/repo-size/LightLegendXR/ZhongliBot?style=for-the-badge&logo=appveyor)</br>
 
 
 [![Join Support!](https://img.shields.io/badge/Support%20Chat-ZhongliSupport-red)](https://t.me/joinchat/EII_nkvf5543MGVk)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dank-del/EnterpriseALRobot&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cfb691a93a064d9ea753ef2b5fccf797)](https://www.codacy.com/manual/Dank-del/EnterpriseALRobot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LightLegendXR/ZhongliBot&amp;utm_campaign=Badge_Grade)
 
 
 A modular telegram Python bot running on python3 with an sqlalchemy database.
