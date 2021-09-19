@@ -47,7 +47,7 @@ def promote(update: Update, context: CallbackContext) -> str:
 
     if not user_id:
         message.reply_text(
-            "You don't seem to be referring to a user or the ID specified is incorrect.."
+            "NOOB!, You don't seem to be referring to a user or the ID specified is incorrect.."
         )
         return
 
@@ -57,11 +57,11 @@ def promote(update: Update, context: CallbackContext) -> str:
         return
 
     if user_member.status in ("administrator", "creator"):
-        message.reply_text("How am I meant to promote someone that's already an admin?")
+        message.reply_text("How am I meant to promote someone that's already an admin, Faggot?")
         return
 
     if user_id == bot.id:
-        message.reply_text("I can't promote myself! Get an admin to do it for me.")
+        message.reply_text("I can't promote myself! Get an abusive admin to do it for me.")
         return
 
     # set same perms as bot - bot can't assign higher perms than itself!
@@ -130,7 +130,7 @@ def demote(update: Update, context: CallbackContext) -> str:
         return
 
     if user_member.status == "creator":
-        message.reply_text("This person CREATED the chat, how would I demote them?")
+        message.reply_text("This person CREATED the chat, how would I demote them, NOOB!?")
         return
 
     if user_member.status != "administrator":
@@ -138,7 +138,7 @@ def demote(update: Update, context: CallbackContext) -> str:
         return
 
     if user_id == bot.id:
-        message.reply_text("I can't demote myself! Get an admin to do it for me.")
+        message.reply_text("Huh trying to demote me, NOOB!.")
         return
 
     try:
