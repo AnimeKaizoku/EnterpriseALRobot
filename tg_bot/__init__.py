@@ -39,7 +39,7 @@ parser = ConfigParser()
 parser.read("config.ini")
 kigconfig = parser["kigconfig"]
 
-class KigyoINIT:
+class ZhongliINIT:
     def __init__(self, parser):
         self.parser = parser
         self.SYS_ADMIN = self.parser.getint('SYS_ADMIN', 0)
@@ -72,8 +72,8 @@ class KigyoINIT:
         self.LASTFM_API_KEY = self.parser.get('LASTFM_API_KEY', None)
         self.CF_API_KEY =  self.parser.get("CF_API_KEY", None)
         self.bot_id = 0 #placeholder
-        self.bot_name = "Kigyo" #placeholder
-        self.bot_username = "KigyoRobot" #placeholder
+        self.bot_name = "Zhongli" #placeholder
+        self.bot_username = "Zhongli567bot" #placeholder
 
 
     def init_sw(self):
@@ -90,7 +90,7 @@ class KigyoINIT:
                 return sw
 
 
-KInit = KigyoINIT(parser=kigconfig)
+KInit = ZhongliINIT(parser=kigconfig)
 
 SYS_ADMIN = KInit.SYS_ADMIN
 OWNER_ID = KInit.OWNER_ID

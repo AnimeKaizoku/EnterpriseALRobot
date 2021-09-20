@@ -114,12 +114,12 @@ def new_fed(update, context):
         x = sql.new_fed(user.id, fed_name, fed_id)
         if not x:
             update.effective_message.reply_text(
-                "Can't federate! Report in @YorkTownEagleUnion if the problem persists."
+                "Can't federate! Report in tinyurl.com/ZhongliSupport if the problem persists."
             )
             return
 
         update.effective_message.reply_text(
-            "*You have successfully created a new federation!*"
+            "*You have successfully created a new gay useless federation!*"
             "\nName: `{}`"
             "\nID: `{}`"
             "\n\nUse the command below to join the federation:"
@@ -926,7 +926,7 @@ def fed_ban(update, context):  # sourcery no-metrics
 		"""
 
         # Fban for fed subscriber
-        subscriber = list(sql.get_subscriber(fed_id))
+        subscriber = list(sql.get_subscriber(fed_id))YorkTownEa
         if len(subscriber) != 0:
             for fedsid in subscriber:
                 all_fedschat = sql.all_fed_chats(fedsid)
@@ -1406,10 +1406,10 @@ def fed_ban_list(update, context):  # sourcery no-metrics
                 backups += json.dumps(json_parser)
                 backups += "\n"
             with BytesIO(str.encode(backups)) as output:
-                output.name = "kigyo_fbanned_users.json"
+                output.name = "zhongli_fbanned_users.json"
                 update.effective_message.reply_document(
                     document=output,
-                    filename="kigyo_fbanned_users.json",
+                    filename="zhongli_fbanned_users.json",
                     caption="Total {} User are blocked by the Federation {}.".format(
                         len(getfban), info["fname"]
                     ),
@@ -1450,10 +1450,10 @@ def fed_ban_list(update, context):  # sourcery no-metrics
                 )
                 backups += "\n"
             with BytesIO(str.encode(backups)) as output:
-                output.name = "kigyo_fbanned_users.csv"
+                output.name = "zhongli_fbanned_users.csv"
                 update.effective_message.reply_document(
                     document=output,
-                    filename="kigyo_fbanned_users.csv",
+                    filename="zhongli_fbanned_users.csv",
                     caption="Total {} User are blocked by Federation {}.".format(
                         len(getfban), info["fname"]
                     ),
@@ -2392,7 +2392,7 @@ def fed_help(update: Update, context: CallbackContext):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="Back", callback_data=f"help_module({__mod_name__.lower()})"),
-            InlineKeyboardButton(text='Report Error', url='https://t.me/YorkTownEagleUnion')]]
+            InlineKeyboardButton(text='Report Error', url='https://tinyurl.com/ZhongliSupport')]]
         ),
     )
     bot.answer_callback_query(query.id)

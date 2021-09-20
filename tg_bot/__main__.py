@@ -29,7 +29,7 @@ from tg_bot import (
     URL,
     log,
     telethn,
-    KigyoINIT
+    ZhongliINIT
 )
 
 # needed to dynamically load modules
@@ -651,9 +651,9 @@ def main():
 
     else:
         log.info(f"Zhongli started, Using long polling. | BOT: [@{dispatcher.bot.username}]")
-        KigyoINIT.bot_id = dispatcher.bot.id
-        KigyoINIT.bot_username = dispatcher.bot.username
-        KigyoINIT.bot_name = dispatcher.bot.first_name
+        ZhongliINIT.bot_id = dispatcher.bot.id
+        ZhongliINIT.bot_username = dispatcher.bot.username
+        ZhongliINIT.bot_name = dispatcher.bot.first_name
         updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True)
     if len(argv) not in (1, 3, 4):
         telethn.disconnect()

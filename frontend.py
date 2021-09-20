@@ -9,8 +9,8 @@ except ImportError:
     pver = "N/A"
 
 with window("About"):
-    add_text("Kigyo telegram bot")
-    add_text("Maintained with <3 by Dank-del (github.com/Dank-del)")
+    add_text("Zhongli telegram bot")
+    add_text("Maintained with <3 by LightLegendXR (github.com/LightLegendXR)")
     add_text("Enviroment:")
     add_text(f"Bot lib: python-telegram-bot v{pver}.", bullet=True)
     add_text(f"Python version: {python_version()}.", bullet=True)

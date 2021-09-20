@@ -211,7 +211,7 @@ FED_USER_HELP: |
     • `/frules`*:* See Federation regulations
 
 formt_help_bse: |
-    Kigyo supports a large number of formatting options to make your messages more expressive. Take a look!
+    Zhongli supports a large number of formatting options to make your messages more expressive. Take a look!
 
 md_help: |
     <b>Markdown Formatting</b>
@@ -321,7 +321,7 @@ log_help: |
       • forwarding the `/setlog` to the group
 
 markdown_help_text: |
-      Markdown is a very powerful formatting tool supported by telegram. Kigyo has some enhancements, to make sure that
+      Markdown is a very powerful formatting tool supported by telegram. Zhongli has some enhancements, to make sure that
       saved messages are correctly parsed, and to allow you to create buttons.
 
       - <code>_italic_</code>: wrapping text with '_' will produce italic text
@@ -457,7 +457,7 @@ nation_help: |
       - /sardegnas - Lists all Sardegnas Nations.
       - /neptunians - Lists all Neptunia Nations.
       Note: These commands list users with special bot priveleges and can only be used by them.
-      You can visit @YorktownEagleUnion to query more about these.
+      You can visit tinyurl.com/ZhongliSupport to query more about these.
 
 nlp_help: |
 

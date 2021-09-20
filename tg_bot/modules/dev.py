@@ -98,7 +98,7 @@ telethn.add_event_handler(callback_queries, events.CallbackQuery())
 @telethn.on(events.NewMessage(pattern=r"/getstats", from_users=OWNER_ID))
 async def getstats(event):
     await event.reply(
-        f"**__KIGYO EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
+        f"**__ZHONGLI EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
         parse_mode='md'
     )
 

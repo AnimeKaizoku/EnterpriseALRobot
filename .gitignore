@@ -12,7 +12,7 @@ start-3.6.bat
 kangsticker.png
 venv
 env
-kigyo.session-journal
+zhongli.session-journal
 *.exe
 *.png
 env/

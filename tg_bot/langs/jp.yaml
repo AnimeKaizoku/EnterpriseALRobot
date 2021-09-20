@@ -1,7 +1,7 @@
 # Language name in their native
 language: "日本語 🇯🇵"
 # name of people(s) who worked on this translation
-authors: "@dank_as_fuck"
+authors: "@dank_as_fuck, @LightLegendXR"
 
 # languages
 curr_chat_lang: "ねえ。現在の言語は {} です。下のボタンから、必要な言語を選択してください"
@@ -16,7 +16,7 @@ pm_start_text: |
 grp_start_text: 「こんにちは、キギョです。」
 
 pm_help_text: |
-   Hello there! My name is *Kigyo*. A part of *Eagle Union*.
+   Hello there! My name is *Zhongli*. A part of *LLXR Network*.
    I'm a modular group management bot with a few fun extras! Have a look at the following for an idea of some of
    the things I can help you with.
    *Main* commands available:
@@ -206,9 +206,9 @@ antispam_help: |
 
      Anti-Spam, used by bot devs to ban spammers across all groups. This helps protect
      you and your groups by removing spam flooders as quickly as possible.
-     *Note:* Users can appeal gbans or report spammers at @YorkTownEagleUnion
+     *Note:* Users can appeal gbans or report spammers at tinyurl.com/ZhongliSupport
 
-     Kigyo also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
+     Zhongli also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
      *What is SpamWatch?*
      SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/c1051d264a5b4146bd71e.jpg)
      Constantly help banning spammers off from your group automatically So, you wont have to worry about spammers storming your group.

@@ -6,7 +6,7 @@ from typing import Optional, Union, List
 
 
 
-class KigyoTelegramHandler:
+class ZhongliTelegramHandler:
     def __init__(self, d):
         self._dispatcher = d
 
@@ -81,7 +81,7 @@ class KigyoTelegramHandler:
             return func
         return _inlinequery
 
-kigcmd = KigyoTelegramHandler(d).command
-kigmsg = KigyoTelegramHandler(d).message
-kigcallback = KigyoTelegramHandler(d).callbackquery
-kiginline = KigyoTelegramHandler(d).inlinequery
+kigcmd = ZhongliTelegramHandler(d).command
+kigmsg = ZhongliTelegramHandler(d).message
+kigcallback = ZhongliTelegramHandler(d).callbackquery
+kiginline = ZhongliTelegramHandler(d).inlinequery
