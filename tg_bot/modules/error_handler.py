@@ -39,7 +39,7 @@ def error_callback(update: Update, context: CallbackContext):
     if update.effective_chat.type != "channel":
         try:
             context.bot.send_message(update.effective_chat.id, 
-            f"<b>Sorry I ran into an error!</b>\n<b>Error</b>: <code>{e}</code>\n<i>This incident has been reported. Contact support for queries</i>",
+            f"<b>Sorry I ran into an error!</b>\n<b>Error</b>: <code>{e}</code>\n<i>This incident has been logged. No further action is required.</i>",
             parse_mode="html")
         except BaseException as e:
             log.exception(e)
