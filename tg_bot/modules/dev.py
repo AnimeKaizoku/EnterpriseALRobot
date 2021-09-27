@@ -1,11 +1,14 @@
 import html
 import os
+import re
 import subprocess
 import sys
 from time import sleep
-from tg_bot import dispatcher, telethn, OWNER_ID
+
+from telegram.ext.callbackqueryhandler import CallbackQueryHandler
+from tg_bot import DEV_USERS, dispatcher, telethn, OWNER_ID
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
-from telegram import TelegramError, Update, ParseMode
+from telegram import TelegramError, Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler
 import asyncio
 from statistics import mean
@@ -19,14 +22,33 @@ def leave(update: Update, context: CallbackContext):
     args = context.args
     if args:
         chat_id = str(args[0])
+        leave_msg = " ".join(args[1:])
         try:
+            context.bot.send_message(chat_id, leave_msg)
             bot.leave_chat(int(chat_id))
             update.effective_message.reply_text("Left chat.")
         except TelegramError:
             update.effective_message.reply_text("Failed to leave chat for some reason.")
     else:
-        update.effective_message.reply_text("Send a valid chat ID")
+        chat = update.effective_chat
+        # user = update.effective_user
+        kb = [[
+            InlineKeyboardButton(text="I am sure of this action.", callback_data="leavechat_cb_({})".format(chat.id))
+        ]]
+        update.effective_message.reply_text("I'm going to leave {}, press the button below to confirm".format(chat.title), reply_markup=InlineKeyboardMarkup(kb))
 
+
+def leave_cb(update: Update, context: CallbackContext):
+    bot = context.bot
+    callback = update.callback_query
+    if callback.from_user.id not in DEV_USERS:
+        callback.answer(text="This isn't for you", show_alert=True)
+        return
+    
+    match = re.match(r"leavechat_cb_\((.+?)\)", callback.data)
+    chat = int(match.group(1))
+    bot.leave_chat(chat_id=chat)
+    callback.answer(text="Left chat")
 
 @dev_plus
 def gitpull(update: Update, context: CallbackContext):
@@ -161,12 +183,16 @@ LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
 GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
 RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
 GET_CHAT_HANDLER = CommandHandler("getchat", get_chat_by_id, run_async=True)
+LEAVE_CALLBACK = CallbackQueryHandler(
+    leave_cb, pattern=r"leavechat_cb_", run_async=True
+)
 
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)
 dispatcher.add_handler(RESTART_HANDLER)
 dispatcher.add_handler(PIP_INSTALL_HANDLER)
 dispatcher.add_handler(GET_CHAT_HANDLER)
+dispatcher.add_handler(LEAVE_CALLBACK)
 
 __mod_name__ = "Dev"
-__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, PIP_INSTALL_HANDLER, GET_CHAT_HANDLER]
+__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, PIP_INSTALL_HANDLER, GET_CHAT_HANDLER, LEAVE_CALLBACK]
