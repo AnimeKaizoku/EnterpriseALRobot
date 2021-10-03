@@ -6,40 +6,47 @@ def get_help(chat):
 
 __mod_name__ = "Translator"
 
+trans = SyncTranslator()
+
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 @kigcmd(command=["tr", "tl"])
-def translate(update: Update, context: CallbackContext):
+def translate(update: Update, context: CallbackContext) -> None:
+    bot = context.bot
     message = update.effective_message
-    trl = SyncTranslator()
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
-        if len(message.text.split()) == 1:
-            message.delete()
-            return
-        target = message.text.split()[1]
-        if message.reply_to_message.text:
-            text = message.reply_to_message.text
+    reply_msg = message.reply_to_message
+    if not reply_msg:
+        message.reply_text("Reply to a message to translate it!")
+        return
+    if reply_msg.caption:
+        to_translate = reply_msg.caption
+    elif reply_msg.text:
+        to_translate = reply_msg.text
+    try:
+        args = message.text.split()[1].lower()
+        if "//" in args:
+            source = args.split("//")[0]
+            dest = args.split("//")[1]
         else:
-            text = message.reply_to_message.caption
-        detectlang = trl.detect(text)
-        try:
-            tekstr = trl(text, targetlang=target)
-        except ValueError as err:
-            message.reply_text(f"Error: `{str(err)}`", parse_mode=ParseMode.MARKDOWN)
-            return
-    else:
-        if len(message.text.split()) <= 2:
-            message.delete()
-            return
-        target = message.text.split(None, 2)[1]
-        text = message.text.split(None, 2)[2]
-        detectlang = trl.detect(text)
-        try:
-            tekstr = trl(text, targetlang=target)
-        except ValueError as err:
-            message.reply_text("Error: `{}`".format(str(err)), parse_mode=ParseMode.MARKDOWN)
-            return
+            source = trans.detect(to_translate)
+            dest = args
+    except IndexError:
+        source = trans.detect(to_translate)
+        dest = "en"
+    translation = trans(to_translate,
+                        sourcelang=source, targetlang=dest)
+    reply = f"<b>Translated from {source} to {dest}</b>:\n" \
+        f"<code>{translation.text}</code>"
 
-    message.reply_text(f"*Translated from {detectlang}:*\n```{tekstr.text}```", parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(text=reply, chat_id=message.chat.id, parse_mode=ParseMode.HTML)
+
+
+@kigcmd(command='langs')
+def languages(update: Update, context: CallbackContext) -> None:
+    message = update.effective_message
+    bot = context.bot
+    bot.send_message(
+        text="Click [here](https://cloud.google.com/translate/docs/languages) to see the list of supported language codes!",
+        chat_id=message.chat.id, disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN)
