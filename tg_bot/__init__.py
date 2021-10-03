@@ -27,7 +27,7 @@ def get_user_list(key):
 
 fileConfig('logging.ini')
 
-print(flag)
+#print(flag)
 log = logging.getLogger('[Enterprise]')
 logging.getLogger('ptbcontrib.postgres_persistence.postgrespersistence').setLevel(logging.WARNING)
 log.info("[KIGYO] Kigyo is starting. | An Eagle Union Project. | Licensed under GPLv3.")
@@ -80,6 +80,8 @@ class KigyoINIT:
         self.bot_id = 0 #placeholder
         self.bot_name = "Kigyo" #placeholder
         self.bot_username = "KigyoRobot" #placeholder
+        self.DEBUG = self.parser.getboolean("IS_DEBUG", False)
+        self.DROP_UPDATES = self.parser.getboolean("DROP_UPDATES", True)
 
 
     def init_sw(self):
@@ -138,8 +140,12 @@ sw = KInit.init_sw()
 
 from tg_bot.modules.sql import SESSION
 
-
-updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(session=SESSION))
+if not KInit.DROP_UPDATES:
+    updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10}, persistence=PostgresPersistence(session=SESSION))
+    
+else:
+    updater = tg.Updater(TOKEN, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
+    
 telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
