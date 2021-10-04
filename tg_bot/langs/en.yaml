@@ -276,15 +276,16 @@ antispam_help: |
      Uses @Intellivoid's Coffeehouse Artificial Engine. Every ban is checked by real trusty people before being finalized.
 
 gtranslate_help: |
-     Translate some text by give a text or reply that text/caption.
-     Translate by Google Translate
+     Use this module to translate stuff... duh!
 
-     `/tr (lang) (""text)`
+     *Commands:*
+     • `/tl` (or `/tr`): as a reply to a message, translates it to English.
+     • `/tl <lang>`: translates to <lang>
+       eg: `/tl ja`: translates to Japanese.
+     • `/tl <source>//<dest>`: translates from <source> to <lang>.
+       eg: `/tl ja//en`: translates from Japanese to English.
+     • `/langs`: get a list of supported languages for translation.
 
-     Give a target language and text as args for translate to that target.
-     Reply a message to translate that.
-
-     "" = Not used when replied to a message.
 
 locks_help: |
      Do stickers annoy you? or want to avoid people sharing links? or pictures?

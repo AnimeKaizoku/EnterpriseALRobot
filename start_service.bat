@@ -24,5 +24,6 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 :--------------------------------------
-net stop KigyoRobot
-net start KigyoRobot
+:: your commands begin from this point.
+:: stops the service and then starts it
+nssm restart KigyoRobot
