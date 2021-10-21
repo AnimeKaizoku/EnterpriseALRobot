@@ -19,7 +19,8 @@ from tg_bot import (
     WHITELIST_USERS,
     INFOPIC,
     sw,
-    StartTime
+    StartTime,
+    KInit
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.sql import SESSION
@@ -174,10 +175,8 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     try:
         user_member = chat.get_member(user.id)
         if user_member.status == "administrator":
-            result = requests.post(
-                f"https://api.telegram.org/bot{TOKEN}/getChatMember?chat_id={chat.id}&user_id={user.id}"
-            )
-            result = result.json()["result"]
+            result = bot.get_chat_member(chat.id, user.id).to_json()
+            result = result["result"]
             if "custom_title" in result.keys():
                 custom_title = result["custom_title"]
                 text += f"\nThis user holds the title <b>{custom_title}</b> here."
@@ -186,22 +185,22 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
 
 
     if user.id == OWNER_ID:
-        text += f"\nThis person is my owner"
+        text += '\nThis person is my owner'
         Nation_level_present = True
     elif user.id in DEV_USERS:
-        text += f"\nThis Person is a part of Eagle Union"
+        text += '\nThis Person is a part of Eagle Union'
         Nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += f"\nThe Nation level of this person is Royal"
+        text += '\nThe Nation level of this person is Royal'
         Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += f"\nThe Nation level of this person is Sakura"
+        text += '\nThe Nation level of this person is Sakura'
         Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += f"\nThe Nation level of this person is Sardegna"
+        text += '\nThe Nation level of this person is Sardegna'
         Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += f"\nThe Nation level of this person is Neptunia"
+        text += '\nThe Nation level of this person is Neptunia'
         Nation_level_present = True
 
     if Nation_level_present:
