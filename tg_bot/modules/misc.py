@@ -175,11 +175,9 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     try:
         user_member = chat.get_member(user.id)
         if user_member.status == "administrator":
-            result = bot.get_chat_member(chat.id, user.id).to_json()
-            result = result["result"]
-            if "custom_title" in result.keys():
-                custom_title = result["custom_title"]
-                text += f"\nThis user holds the title <b>{custom_title}</b> here."
+            result = bot.get_chat_member(chat.id, user.id)
+            if result.custom_title:
+                text += f"\nThis user holds the title <b>{result.custom_title}</b> here."
     except BadRequest:
         pass
 
