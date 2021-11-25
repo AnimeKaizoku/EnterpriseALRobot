@@ -48,3 +48,8 @@ def convert(update: Update, context: CallbackContext):
             f"*Invalid Args!!:* Required 3 But Passed {len(args) -1}",
             parse_mode=ParseMode.MARKDOWN,
         )
+        
+__help__ = """
+ - /cash : currency converter
+ example syntax: /cash 1 USD INR
+"""
