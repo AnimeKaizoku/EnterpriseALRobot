@@ -18,7 +18,6 @@ from tg_bot.modules.helper_funcs.chat_status import (
     can_restrict,
     connection_status,
     is_user_admin,
-    user_admin,
     user_admin_no_reply,
 )
 from tg_bot.modules.log_channel import loggable
@@ -30,17 +29,14 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import mention_html, escape_markdown
 from tg_bot import dispatcher
-from tg_bot.modules.helper_funcs.chat_status import (
-    is_user_admin,
-    user_admin,
-    can_restrict,
-)
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql import antiflood_sql as sql
 from tg_bot.modules.connection import connected
 from tg_bot.modules.helper_funcs.alternate import send_message
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 FLOOD_GROUP = -5
 
@@ -161,7 +157,7 @@ def flood_button(update: Update, context: CallbackContext):
 
 @kigcmd(command='setflood', pass_args=True, filters=Filters.chat_type.groups)
 @connection_status
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @can_restrict
 @loggable
 def set_flood(update, context) -> str:  # sourcery no-metrics
@@ -256,8 +252,8 @@ def set_flood(update, context) -> str:  # sourcery no-metrics
     return ""
 
 
-@connection_status
 @kigcmd(command="flood", filters=Filters.chat_type.groups)
+@connection_status
 def flood(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -299,7 +295,7 @@ def flood(update, context):
         )
 
 @kigcmd(command="setfloodmode", pass_args=True, filters=Filters.chat_type.groups)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def set_flood_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]

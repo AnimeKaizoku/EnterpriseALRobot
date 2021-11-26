@@ -15,12 +15,14 @@ from tg_bot.modules.helper_funcs.chat_status import (
     is_user_admin,
     user_not_admin,
     is_bot_admin,
-    user_admin,
+    user_admin as u_admin,
 )
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.connection import connected
 
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 ad = AlphabetDetector()
 
@@ -136,7 +138,7 @@ def locktypes(update, context):
     )
 
 @kigcmd(command='lock', pass_args=True)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 @typing_action
 def lock(update, context) -> str:  # sourcery no-metrics
@@ -243,7 +245,7 @@ def lock(update, context) -> str:  # sourcery no-metrics
     return ""
 
 @kigcmd(command='unlock', pass_args=True)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 @typing_action
 def unlock(update, context) -> str:  # sourcery no-metrics
@@ -475,7 +477,7 @@ def build_lock_message(chat_id):
     return res
 
 @kigcmd(command='locks')
-@user_admin
+@u_admin
 @typing_action
 def list_locks(update, context):
     chat = update.effective_chat  # type: Optional[Chat]

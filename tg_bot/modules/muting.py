@@ -7,7 +7,6 @@ from tg_bot.modules.helper_funcs.chat_status import (
     can_restrict,
     connection_status,
     is_user_admin,
-    user_admin,
 )
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text
 from tg_bot.modules.helper_funcs.string_handling import extract_time
@@ -19,6 +18,7 @@ from telegram.utils.helpers import mention_html
 from tg_bot.modules.language import gs
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
     if not user_id:
@@ -43,7 +43,8 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
 @kigcmd(command='mute')
 @connection_status
 @bot_admin
-@user_admin
+@can_restrict
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def mute(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -92,7 +93,8 @@ def mute(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='unmute')
 @connection_status
 @bot_admin
-@user_admin
+@can_restrict
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def unmute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
@@ -156,7 +158,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
 @connection_status
 @bot_admin
 @can_restrict
-@user_admin
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def temp_mute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args

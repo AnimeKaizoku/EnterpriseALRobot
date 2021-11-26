@@ -18,7 +18,7 @@ from tg_bot import (
 )
 from tg_bot.modules.helper_funcs.chat_status import (
     is_user_ban_protected,
-    user_admin,
+    user_admin as u_admin,
 )
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from tg_bot.modules.helper_funcs.msg_types import get_welcome_type
@@ -44,6 +44,8 @@ from telegram.ext import (
     MessageHandler,
 )
 from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 VALID_WELCOME_FORMATTERS = [
     "first",
@@ -665,7 +667,7 @@ def left_member(update: Update, context: CallbackContext):  # sourcery no-metric
             )
 
 
-@user_admin
+@u_admin
 def welcome(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
@@ -727,7 +729,7 @@ def welcome(update: Update, context: CallbackContext):
             )
 
 
-@user_admin
+@u_admin
 def goodbye(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
@@ -777,7 +779,7 @@ def goodbye(update: Update, context: CallbackContext):
             )
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def set_welcome(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -801,7 +803,7 @@ def set_welcome(update: Update, context: CallbackContext) -> str:
     )
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def reset_welcome(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -820,7 +822,7 @@ def reset_welcome(update: Update, context: CallbackContext) -> str:
     )
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def set_goodbye(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -842,7 +844,7 @@ def set_goodbye(update: Update, context: CallbackContext) -> str:
     )
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def reset_goodbye(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -861,7 +863,7 @@ def reset_goodbye(update: Update, context: CallbackContext) -> str:
     )
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def welcomemute(update: Update, context: CallbackContext) -> str:
     args = context.args
@@ -928,7 +930,7 @@ def welcomemute(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 def clean_welcome(update: Update, context: CallbackContext) -> str:
     args = context.args
@@ -970,7 +972,7 @@ def clean_welcome(update: Update, context: CallbackContext) -> str:
         return ""
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def cleanservice(update: Update, context: CallbackContext) -> str:
     args = context.args
     chat = update.effective_chat  # type: Optional[Chat]
@@ -1186,12 +1188,12 @@ WELC_MUTE_HELP_TXT = (
 )
 
 
-@user_admin
+@u_admin
 def welcome_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
 
 
-@user_admin
+@u_admin
 def welcome_mute_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         WELC_MUTE_HELP_TXT, parse_mode=ParseMode.MARKDOWN

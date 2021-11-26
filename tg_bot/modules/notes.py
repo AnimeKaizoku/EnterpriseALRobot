@@ -4,7 +4,7 @@ from typing import Optional
 
 import tg_bot.modules.sql.notes_sql as sql
 from tg_bot import log, dispatcher, SUDO_USERS
-from tg_bot.modules.helper_funcs.chat_status import user_admin, connection_status
+from tg_bot.modules.helper_funcs.chat_status import connection_status
 from tg_bot.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from tg_bot.modules.helper_funcs.msg_types import get_note_type
 from tg_bot.modules.helper_funcs.handlers import MessageHandlerChecker
@@ -25,6 +25,8 @@ from telegram.ext import (
 )
 
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 JOIN_LOGGER = None
 FILE_MATCHER = re.compile(r"^###file_id(!photo)?###:(.*?)(?:\s|$)")
@@ -247,7 +249,7 @@ def slash_get(update: Update, context: CallbackContext):
         update.effective_message.reply_text("Wrong Note ID 😾")
 
 @kigcmd(command='save')
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @connection_status
 def save(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
@@ -289,7 +291,7 @@ def save(update: Update, context: CallbackContext):
         return
 
 @kigcmd(command='clear')
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @connection_status
 def clear(update: Update, context: CallbackContext):
     args = context.args
