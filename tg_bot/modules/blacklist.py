@@ -7,7 +7,7 @@ from telegram.utils.helpers import mention_html
 from tg_bot.modules.sql.approve_sql import is_approved
 import tg_bot.modules.sql.blacklist_sql as sql
 from tg_bot import log, dispatcher
-from tg_bot.modules.helper_funcs.chat_status import user_admin, user_not_admin
+from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin, user_not_admin
 from tg_bot.modules.helper_funcs.extraction import extract_text
 from tg_bot.modules.helper_funcs.misc import split_message
 from tg_bot.modules.log_channel import loggable
@@ -17,10 +17,12 @@ from tg_bot.modules.connection import connected
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
 BLACKLIST_GROUP = -3
 
 @kigcmd(command="blacklist", pass_args=True, admin_ok=True)
-@user_admin
+@u_admin
 @typing_action
 def blacklist(update, context):
     chat = update.effective_chat
@@ -64,7 +66,7 @@ def blacklist(update, context):
         send_message(update.effective_message, text, parse_mode=ParseMode.HTML)
 
 @kigcmd(command="addblacklist", pass_args=True)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
 def add_blacklist(update, context):
     msg = update.effective_message
@@ -122,7 +124,7 @@ def add_blacklist(update, context):
         )
 
 @kigcmd(command="unblacklist", pass_args=True)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
 def unblacklist(update, context):
     msg = update.effective_message
@@ -207,7 +209,7 @@ def unblacklist(update, context):
 
 @kigcmd(command="blacklistmode", pass_args=True)
 @loggable
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
 def blacklist_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat

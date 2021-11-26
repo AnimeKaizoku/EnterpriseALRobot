@@ -11,7 +11,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     can_pin,
     can_promote,
     connection_status,
-    user_admin,
+    user_admin as u_admin,
     ADMIN_CACHE,
 )
 
@@ -20,11 +20,13 @@ from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.language import gs
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
 @kigcmd(command="promote", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
-@user_admin
+@user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
 @loggable
 def promote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -107,7 +109,7 @@ def promote(update: Update, context: CallbackContext) -> str:
 @connection_status
 @bot_admin
 @can_promote
-@user_admin
+@user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
 @loggable
 def demote(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -178,7 +180,7 @@ def demote(update: Update, context: CallbackContext) -> str:
         return
 
 @kigcmd(command="admincache", can_disable=False)
-@user_admin
+@u_admin
 def refresh_admin(update, _):
     ADMIN_CACHE.pop(update.effective_chat.id)
     update.effective_message.reply_text("Admins cache refreshed!")
@@ -187,7 +189,7 @@ def refresh_admin(update, _):
 @connection_status
 @bot_admin
 @can_promote
-@user_admin
+@user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
 def set_title(update: Update, context: CallbackContext):
     bot = context.bot
     args = context.args
@@ -250,7 +252,7 @@ def set_title(update: Update, context: CallbackContext):
 @kigcmd(command="pin", can_disable=False)
 @bot_admin
 @can_pin
-@user_admin
+@user_admin(AdminPerms.CAN_PIN_MESSAGES)
 @loggable
 def pin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -291,7 +293,7 @@ def pin(update: Update, context: CallbackContext) -> str:
 @kigcmd(command="unpin", can_disable=False)
 @bot_admin
 @can_pin
-@user_admin
+@user_admin(AdminPerms.CAN_PIN_MESSAGES)
 @loggable
 def unpin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -316,7 +318,7 @@ def unpin(update: Update, context: CallbackContext) -> str:
 
 @kigcmd(command="invitelink", can_disable=False)
 @bot_admin
-@user_admin
+@user_admin(AdminPerms.CAN_INVITE_USERS)
 @connection_status
 def invite(update: Update, context: CallbackContext):
     bot = context.bot

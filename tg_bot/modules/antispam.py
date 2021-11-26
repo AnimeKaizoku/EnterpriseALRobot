@@ -20,7 +20,6 @@ from tg_bot import (
 from tg_bot.modules.helper_funcs.chat_status import (
     is_user_admin,
     support_plus,
-    user_admin,
 )
 from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.helper_funcs.misc import send_to_list
@@ -31,6 +30,8 @@ from telegram.utils.helpers import mention_html
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from spamwatch.errors import SpamWatchError, Error, UnauthorizedError, NotFoundError, Forbidden, TooManyRequests
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 GBAN_ENFORCE_GROUP = -1
 
@@ -506,7 +507,7 @@ def enforce_gban(update: Update, context: CallbackContext):
                 check_and_ban(update, user.id, should_message=False)
 
 @kigcmd(command="antispam")
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def gbanstat(update: Update, context: CallbackContext):
     args = context.args
     if len(args) > 0:

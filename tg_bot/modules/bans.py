@@ -20,18 +20,19 @@ from tg_bot.modules.helper_funcs.chat_status import (
     is_user_admin,
     is_user_ban_protected,
     is_user_in_chat,
-    user_admin,
 )
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable, gloggable
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
+@kigcmd(command='ban', pass_args=True)
 @connection_status
 @bot_admin
-@kigcmd(command='ban', pass_args=True)
 @can_restrict
-@user_admin
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def ban(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
@@ -114,11 +115,11 @@ def ban(update, context):  # sourcery no-metrics
     return ""
 
 
-@connection_status
 @kigcmd(command='tban', pass_args=True)
+@connection_status
 @bot_admin
 @can_restrict
-@user_admin
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def temp_ban(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -202,11 +203,11 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-@connection_status
 @kigcmd(command='kick', pass_args=True)
+@connection_status
 @bot_admin
 @can_restrict
-@user_admin
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def kick(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
@@ -260,9 +261,9 @@ def kick(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
+@kigcmd(command='kickme', pass_args=True, filters=Filters.chat_type.groups)
 @bot_admin
 @can_restrict
-@kigcmd(command='kickme', pass_args=True, filters=Filters.chat_type.groups)
 def kickme(update: Update, context: CallbackContext):
     user_id = update.effective_message.from_user.id
     if is_user_admin(update.effective_chat, user_id):
@@ -276,11 +277,11 @@ def kickme(update: Update, context: CallbackContext):
         update.effective_message.reply_text("Huh? I can't :/")
 
 
-@connection_status
 @kigcmd(command='unban', pass_args=True)
+@connection_status
 @bot_admin
 @can_restrict
-@user_admin
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
 def unban(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
@@ -330,8 +331,8 @@ def unban(update: Update, context: CallbackContext) -> str:
     return log
 
 
-@connection_status
 @kigcmd(command='selfunban', pass_args=True)
+@connection_status
 @bot_admin
 @can_restrict
 @gloggable

@@ -6,7 +6,6 @@ from tg_bot.modules.helper_funcs.chat_status import (
     bot_can_delete,
     connection_status,
     dev_plus,
-    user_admin,
 )
 from tg_bot.modules.sql import cleaner_sql as sql
 from telegram import ParseMode, Update
@@ -16,6 +15,8 @@ from telegram.ext import (
     Filters,
     MessageHandler,
 )
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 CMD_STARTERS = ("/", "!") if ALLOW_EXCL else "/"
 BLUE_TEXT_CLEAN_GROUP = 13
@@ -65,7 +66,7 @@ def clean_blue_text_must_click(update: Update, context: CallbackContext):
 
 @connection_status
 @bot_can_delete
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def set_blue_text_must_click(update: Update, context: CallbackContext):
     chat = update.effective_chat
     message = update.effective_message
@@ -98,7 +99,7 @@ def set_blue_text_must_click(update: Update, context: CallbackContext):
         message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def add_bluetext_ignore(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
@@ -119,7 +120,7 @@ def add_bluetext_ignore(update: Update, context: CallbackContext):
         message.reply_text(reply)
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def remove_bluetext_ignore(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
@@ -142,7 +143,7 @@ def remove_bluetext_ignore(update: Update, context: CallbackContext):
         message.reply_text(reply)
 
 
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def add_bluetext_ignore_global(update: Update, context: CallbackContext):
     message = update.effective_message
     args = context.args

@@ -2,7 +2,6 @@ from typing import Optional
 
 import tg_bot.modules.sql.rules_sql as sql
 from tg_bot import dispatcher
-from tg_bot.modules.helper_funcs.chat_status import user_admin
 from tg_bot.modules.helper_funcs.string_handling import markdown_parser
 from telegram import (
     InlineKeyboardButton,
@@ -17,6 +16,7 @@ from telegram.ext import CallbackContext, Filters
 from telegram.utils.helpers import escape_markdown
 from tg_bot.modules.helper_funcs.decorators import kigcmd
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 @kigcmd(command='rules', filters=Filters.chat_type.groups)
 def get_rules(update: Update, context: CallbackContext):
@@ -73,7 +73,7 @@ def send_rules(update, chat_id, from_pm=False):
         )
 
 @kigcmd(command='setrules', filters=Filters.chat_type.groups)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def set_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -90,7 +90,7 @@ def set_rules(update: Update, context: CallbackContext):
         update.effective_message.reply_text("Successfully set rules for this group.")
 
 @kigcmd(command='clearrules', filters=Filters.chat_type.groups)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def clear_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")
