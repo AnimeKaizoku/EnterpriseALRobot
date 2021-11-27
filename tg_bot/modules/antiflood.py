@@ -252,8 +252,8 @@ def set_flood(update, context) -> str:  # sourcery no-metrics
     return ""
 
 
-@connection_status
 @kigcmd(command="flood", filters=Filters.chat_type.groups)
+@connection_status
 def flood(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]

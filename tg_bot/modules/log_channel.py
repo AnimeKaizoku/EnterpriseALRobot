@@ -94,8 +94,8 @@ if is_module_loaded(FILENAME):
                     + "\n\nFormatting has been disabled due to an unexpected error.",
                 )
 
-    @u_admin
     @kigcmd(command='logchannel')
+    @u_admin
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -113,8 +113,8 @@ if is_module_loaded(FILENAME):
         else:
             message.reply_text("No log channel has been set for this group!")
 
-    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     @kigcmd(command='setlog')
+    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -155,8 +155,8 @@ if is_module_loaded(FILENAME):
                 " - forward the /setlog to the group\n"
             )
 
-    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     @kigcmd(command='unsetlog')
+    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
