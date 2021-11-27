@@ -6,6 +6,8 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 from tg_bot.modules.helper_funcs.misc import is_module_loaded
 from tg_bot.modules.language import gs
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
 def get_help(chat):
     return gs(chat, "log_help")
 
@@ -17,7 +19,7 @@ if is_module_loaded(FILENAME):
     from telegram.utils.helpers import escape_markdown
 
     from tg_bot import GBAN_LOGS, log, dispatcher
-    from tg_bot.modules.helper_funcs.chat_status import user_admin
+    from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin
     from tg_bot.modules.sql import log_channel_sql as sql
 
     def loggable(func):
@@ -92,7 +94,7 @@ if is_module_loaded(FILENAME):
                     + "\n\nFormatting has been disabled due to an unexpected error.",
                 )
 
-    @user_admin
+    @u_admin
     @kigcmd(command='logchannel')
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
@@ -111,7 +113,7 @@ if is_module_loaded(FILENAME):
         else:
             message.reply_text("No log channel has been set for this group!")
 
-    @user_admin
+    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     @kigcmd(command='setlog')
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
@@ -153,7 +155,7 @@ if is_module_loaded(FILENAME):
                 " - forward the /setlog to the group\n"
             )
 
-    @user_admin
+    @user_admin(AdminPerms.CAN_CHANGE_INFO)
     @kigcmd(command='unsetlog')
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot

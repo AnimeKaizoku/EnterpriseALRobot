@@ -5,8 +5,9 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
 import requests, telegram
 from tg_bot.modules.helper_funcs.chat_status import (
     bot_admin,
-    user_admin,
 )
+
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 __mod_name__ = "NLP"
 
@@ -15,7 +16,7 @@ def get_help(chat):
 
 
 @kigcmd(command="nlpstat", group=8)
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 @bot_admin
 def nlp_mode(update, context):
     message = update.effective_message

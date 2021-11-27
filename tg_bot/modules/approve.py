@@ -4,16 +4,18 @@ from tg_bot import dispatcher, SUDO_USERS
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from telegram.ext import CallbackContext, CallbackQueryHandler, Filters
 import tg_bot.modules.sql.approve_sql as sql
-from tg_bot.modules.helper_funcs.chat_status import user_admin
+from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin
 from tg_bot.modules.log_channel import loggable
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, Update
 from telegram.utils.helpers import mention_html
 from telegram.error import BadRequest
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 
+from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
 @kigcmd(command='approve', filters=Filters.chat_type.groups)
 @loggable
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def approve(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -56,7 +58,7 @@ def approve(update, context):
 
 @kigcmd(command='unapprove', filters=Filters.chat_type.groups)
 @loggable
-@user_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def disapprove(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -91,7 +93,7 @@ def disapprove(update, context):
     return log_message
 
 @kigcmd(command='approved', filters=Filters.chat_type.groups)
-@user_admin
+@u_admin
 def approved(update, context):
     message = update.effective_message
     chat_title = message.chat.title
@@ -109,7 +111,7 @@ def approved(update, context):
 
 
 @kigcmd(command='approval', filters=Filters.chat_type.groups)
-@user_admin
+@u_admin
 def approval(update, context):
     message = update.effective_message
     chat = update.effective_chat
