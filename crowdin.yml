@@ -1,0 +1,3 @@
+files:
+  - source: /tg_bot/langs/en.yaml
+    translation: /tg_bot/langs/%two_letters_code%.json
