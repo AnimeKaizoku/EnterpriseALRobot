@@ -136,8 +136,6 @@ WALL_API = KInit.WALL_API
 LASTFM_API_KEY = KInit.LASTFM_API_KEY
 CF_API_KEY = KInit.CF_API_KEY
 
-SPB_MODE = kigconfig.getboolean('SPB_MODE', False)
-
 # SpamWatch
 sw = KInit.init_sw()
 
