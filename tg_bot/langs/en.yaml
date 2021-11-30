@@ -265,15 +265,11 @@ antispam_help: |
      you and your groups by removing spam flooders as quickly as possible.
      *Note:* Users can appeal gbans or report spammers at @YorkTownEagleUnion
 
-     Kigyo also integrates @Spamwatch and @Intellivoid's SpamProtectionBot API to remove Spammers as much as possible from your chatroom!
+     Kigyo also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
      *What is SpamWatch?*
      SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters.
      Constantly help banning spammers off from your group automatically So, you wont have to worry about spammers storming your group.
      *Note:* Users can appeal spamwatch bans at @SpamwatchSupport
-
-     *What is Spam protection?*
-     SpamProtection is the new AI antispam service which makes sure that your chat is free of spambots, scammers, and pedophiles.
-     Uses @Intellivoid's Coffeehouse Artificial Engine. Every ban is checked by real trusty people before being finalized.
 
 gtranslate_help: |
      Use this module to translate stuff... duh!
