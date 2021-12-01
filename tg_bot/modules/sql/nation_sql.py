@@ -1,13 +1,15 @@
 import threading
 import traceback
+
+from sqlalchemy.sql.sqltypes import BigInteger
 from tg_bot.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, Integer, String, UnicodeText, distinct, func
+from sqlalchemy import Column, String
 from sqlalchemy.dialects import postgresql
 
 class Royals(BASE):
 	__tablename__ = "royals"
 
-	user_id = Column(Integer, primary_key=True)
+	user_id = Column(BigInteger, primary_key=True)
 	role_name = Column(String(255))
 
 	def __init__(self, user_id, role):

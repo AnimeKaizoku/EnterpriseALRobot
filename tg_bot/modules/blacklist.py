@@ -66,7 +66,7 @@ def blacklist(update, context):
         send_message(update.effective_message, text, parse_mode=ParseMode.HTML)
 
 @kigcmd(command="addblacklist", pass_args=True)
-@user_admin(AdminPerms.CAN_CHANGE_INFO)
+@user_admin(AdminPerms.CAN_DELETE_MESSAGES)
 @typing_action
 def add_blacklist(update, context):
     msg = update.effective_message
@@ -124,7 +124,7 @@ def add_blacklist(update, context):
         )
 
 @kigcmd(command="unblacklist", pass_args=True)
-@user_admin(AdminPerms.CAN_CHANGE_INFO)
+@user_admin(AdminPerms.CAN_DELETE_MESSAGES)
 @typing_action
 def unblacklist(update, context):
     msg = update.effective_message
@@ -209,7 +209,7 @@ def unblacklist(update, context):
 
 @kigcmd(command="blacklistmode", pass_args=True)
 @loggable
-@user_admin(AdminPerms.CAN_CHANGE_INFO)
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @typing_action
 def blacklist_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat
