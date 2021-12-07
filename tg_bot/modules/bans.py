@@ -28,19 +28,38 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
+
 @kigcmd(command='ban', pass_args=True)
 @connection_status
 @bot_admin
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
-def ban(update, context):  # sourcery no-metrics
+def ban(update: Update, context: CallbackContext):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     message = update.effective_message  # type: Optional[Message]
     args = context.args
+    bot = context.bot
     log_message = ""
     reason = ""
+    if message.reply_to_message and message.reply_to_message.sender_chat:
+        r = bot._request.post(bot.base_url + '/banChatSenderChat', {
+            'sender_chat_id': message.reply_to_message.sender_chat.id,
+            'chat_id': chat.id
+        },
+                              )
+        if r:
+            message.reply_text("Channel {} was banned successfully from {}".format(
+                html.escape(message.reply_to_message.sender_chat.title),
+                html.escape(chat.title)
+            ),
+                parse_mode="html"
+            )
+        else:
+            message.reply_text("Failed to ban channel")
+        return
+
     user_id, reason = extract_user_and_text(message, args)
 
     if not user_id:
@@ -90,7 +109,8 @@ def ban(update, context):  # sourcery no-metrics
         context.bot.sendMessage(
             chat.id,
             "{} was banned by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
-                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
+                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name),
+                message.chat.title, reason
             ),
             parse_mode=ParseMode.HTML,
         )
@@ -312,12 +332,13 @@ def unban(update: Update, context: CallbackContext) -> str:
 
     chat.unban_member(user_id)
     bot.sendMessage(
-            chat.id,
-            "{} was unbanned by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
-                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
-            ),
-            parse_mode=ParseMode.HTML,
-        )
+        chat.id,
+        "{} was unbanned by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
+            mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name),
+            message.chat.title, reason
+        ),
+        parse_mode=ParseMode.HTML,
+    )
 
     log = (
         f"<b>{html.escape(chat.title)}:</b>\n"
@@ -375,11 +396,12 @@ def selfunban(context: CallbackContext, update: Update) -> str:
 
     return log
 
+
 from tg_bot.modules.language import gs
+
 
 def get_help(chat):
     return gs(chat, "bans_help")
-
 
 
 __mod_name__ = "Bans"
