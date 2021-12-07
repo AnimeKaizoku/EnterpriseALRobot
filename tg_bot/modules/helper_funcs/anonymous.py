@@ -18,6 +18,10 @@ class AdminPerms(Enum):
     CAN_PIN_MESSAGES = 'can_pin_messages'
 
 
+class ChatStatus(Enum):
+    CREATOR = "creator"
+    ADMIN   = "administrator"
+
 anon_callbacks = {}
 anon_callback_messages = {}
 def user_admin(permission: AdminPerms):
@@ -28,7 +32,7 @@ def user_admin(permission: AdminPerms):
             if update.effective_chat.type == 'private':
                 return func(update, context, *args, **kwargs)
             message = update.effective_message
-            is_anon = bool(update.effective_user.id == 1087968824)
+            is_anon = bool(update.effective_message.sender_chat)
 
             if is_anon:
                 callback_id = f'anoncb/{message.chat.id}/{message.message_id}/{permission.value}'
@@ -60,8 +64,8 @@ def anon_callback_handler1(upd: Update, _: CallbackContext):
     except BaseException as e:
         callback.answer(f"Error: {e}", show_alert=True)
         return
-    if mem.is_anonymous is False:   
-        callback.answer("You're not anonymous.")
+    if mem.status not in [ChatStatus.ADMIN.value, ChatStatus.CREATOR.value]:   
+        callback.answer("You're aren't admin.")
     elif getattr(mem, perm) is True or mem.status == "creator" or mem.user.id in DEV_USERS:
         cb = anon_callbacks.pop((chat_id, message_id), None)
         if cb:
