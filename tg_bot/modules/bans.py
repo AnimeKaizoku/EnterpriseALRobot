@@ -36,7 +36,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
-def ban(update: Update, context: CallbackContext):  # sourcery no-metrics
+def ban(update: Update, context: CallbackContext) -> Optional[str]:  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     message = update.effective_message  # type: Optional[Message]
@@ -56,6 +56,12 @@ def ban(update: Update, context: CallbackContext):  # sourcery no-metrics
                 html.escape(chat.title)
             ),
                 parse_mode="html"
+            )
+            return (
+                f"<b>{html.escape(chat.title)}:</b>\n"
+                f"#BANNED\n"
+                f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+                f"<b>Channel:</b> {html.escape(message.reply_to_message.sender_chat.title)} ({message.reply_to_message.sender_chat.id})"
             )
         else:
             message.reply_text("Failed to ban channel")
@@ -79,7 +85,7 @@ def ban(update: Update, context: CallbackContext):  # sourcery no-metrics
         message.reply_text("Oh yeah, ban myself, noob!")
         return log_message
 
-    if is_user_ban_protected(chat, user_id, member) and user not in DEV_USERS:
+    if is_user_ban_protected(update, user_id, member) and user not in DEV_USERS:
         if user_id == OWNER_ID:
             message.reply_text("I'd never ban my owner.")
         elif user_id in DEV_USERS:
@@ -167,7 +173,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
         message.reply_text("I'm not gonna BAN myself, are you crazy?")
         return log_message
 
-    if is_user_ban_protected(chat, user_id, member):
+    if is_user_ban_protected(update, user_id, member):
         message.reply_text("I don't feel like it.")
         return log_message
 
@@ -254,7 +260,7 @@ def kick(update: Update, context: CallbackContext) -> str:
         message.reply_text("Yeahhh I'm not gonna do that.")
         return log_message
 
-    if is_user_ban_protected(chat, user_id):
+    if is_user_ban_protected(update, user_id):
         message.reply_text("I really wish I could kick this user....")
         return log_message
 
@@ -323,6 +329,12 @@ def unban(update: Update, context: CallbackContext) -> Optional[str]:
                 html.escape(chat.title)
             ),
                 parse_mode="html"
+            )
+            return (
+                f"<b>{html.escape(chat.title)}:</b>\n"
+                f"#UNBANNED\n"
+                f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+                f"<b>Channel:</b> {html.escape(message.reply_to_message.sender_chat.title)} ({message.reply_to_message.sender_chat.id})"
             )
         else:
             message.reply_text("Failed to unban channel")
