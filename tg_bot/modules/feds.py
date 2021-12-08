@@ -197,7 +197,7 @@ def fed_chat(update, context):
     fed_id = sql.get_fed_id(chat.id)
 
     user_id = update.effective_message.from_user.id
-    if not is_user_admin(update.effective_chat, user_id):
+    if not is_user_admin(update, user_id):
         update.effective_message.reply_text(
             "You must be an admin to execute this command"
         )

@@ -38,13 +38,15 @@ def is_sudo_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     return user_id in SUDO_USERS or user_id in DEV_USERS
 
 
-def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
+def is_user_admin(update: Update, user_id: int, member: ChatMember = None) -> bool:
+    chat = update.effective_chat
+    msg = update.effective_message
     if (
         chat.type == "private"
         or user_id in SUDO_USERS
         or user_id in DEV_USERS
         or chat.all_members_are_administrators
-        or user_id in [777000, 1087968824]
+        or (msg.sender_chat is not None and msg.sender_chat.type != "channel")
     ):  # Count telegram and Group Anonymous as admin
         return True
 
@@ -53,9 +55,9 @@ def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
         try:
             return user_id in ADMIN_CACHE[chat.id]
         except KeyError:
-            # keyerror happend means cache is deleted,
+            # KeyError happened means cache is deleted,
             # so query bot api again and return user status
-            # while saving it in cache for future useage...
+            # while saving it in cache for future usage...
             chat_admins = dispatcher.bot.getChatAdministrators(chat.id)
             admin_list = [x.user.id for x in chat_admins]
             ADMIN_CACHE[chat.id] = admin_list
@@ -194,7 +196,7 @@ def user_admin(func):
         user = update.effective_user
         chat = update.effective_chat
 
-        if user and is_user_admin(chat, user.id):
+        if user and is_user_admin(update, user.id):
             return func(update, context, *args, **kwargs)
         elif not user:
             pass
@@ -220,7 +222,7 @@ def user_admin_no_reply(func):
         user = update.effective_user
         chat = update.effective_chat
 
-        if user and is_user_admin(chat, user.id):
+        if user and is_user_admin(update, user.id):
             return func(update, context, *args, **kwargs)
         elif not user:
             pass
@@ -240,7 +242,7 @@ def user_not_admin(func):
         user = update.effective_user
         chat = update.effective_chat
 
-        if user and not is_user_admin(chat, user.id):
+        if user and not is_user_admin(update, user.id):
             return func(update, context, *args, **kwargs)
         elif not user:
             pass

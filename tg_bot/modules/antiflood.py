@@ -52,7 +52,7 @@ def check_flood(update, context) -> str:
 
     # ignore admins and whitelists
     if (
-        is_user_admin(chat, user.id)
+        is_user_admin(update, user.id)
         or user.id in WHITELIST_USERS
         or user.id in SARDEGNA_USERS
     ):

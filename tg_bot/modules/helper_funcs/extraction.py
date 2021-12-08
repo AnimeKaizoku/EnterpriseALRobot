@@ -12,6 +12,8 @@ def id_from_reply(message):
         return None, None
     user_id = prev_message.from_user.id
     res = message.text.split(None, 1)
+    if prev_message.sender_chat:
+        user_id = prev_message.sender_chat.id
     if len(res) < 2:
         return user_id, ""
     return user_id, res[1]
