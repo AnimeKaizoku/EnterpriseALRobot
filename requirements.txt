@@ -8,13 +8,11 @@ currencyconverter
 emoji
 feedparser
 future
-geopy
 git+https://github.com/python-telegram-bot/ptbcontrib.git
 gitpython
 gpytranslate
 markdown2
 multicolorcaptcha
-nltk
 pillow>=4.2.0
 psutil
 psycopg2-binary
@@ -24,10 +22,6 @@ python-telegram-bot==13.8.1
 requests
 spamwatch
 speedtest-cli
-spongemock
 sqlalchemy==1.4.11
 telethon==1.16.4
-tgcrypto
-tswift
 ujson
-zalgo-text
