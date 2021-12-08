@@ -6,8 +6,9 @@ from telegram.utils.helpers import escape_markdown
 
 import tg_bot.modules.sql.userinfo_sql as sql
 from tg_bot import SUDO_USERS, DEV_USERS
-from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.extraction import extract_user
+
 
 @kigcmd(command='me', pass_args=True)
 def about_me(update: Update, context: CallbackContext):
@@ -66,6 +67,7 @@ def set_about_me(update: Update, context: CallbackContext):
                 )
             )
 
+
 @kigcmd(command='bio', pass_args=True)
 def about_bio(update: Update, context: CallbackContext):
     args = context.args
@@ -104,9 +106,9 @@ def about_bio(update: Update, context: CallbackContext):
         sender_id = update.effective_user.id
 
         if (
-            user_id == bot.id
-            and sender_id not in SUDO_USERS
-            and sender_id not in DEV_USERS
+                user_id == bot.id
+                and sender_id not in SUDO_USERS
+                and sender_id not in DEV_USERS
         ):
             message.reply_text(
                 "Erm... yeah, I only trust sudo users or developers to set my bio."
@@ -131,6 +133,7 @@ def about_bio(update: Update, context: CallbackContext):
                 )
     else:
         message.reply_text("Reply to someone's message to set their bio!")
+
 
 @kigcmd(command='setbio')
 def set_about_bio(update: Update, context: CallbackContext):
@@ -194,6 +197,7 @@ def __user_info__(user_id):
 
 
 from tg_bot.modules.language import gs
+
 
 def get_help(chat):
     return gs(chat, "userinfo_help")
