@@ -160,7 +160,7 @@ def get_chat_by_id(update: Update, context: CallbackContext):
         data = context.bot.get_chat(args[0])
         m = "<b>Found chat, below are the details.</b>\n\n"
         m += "<b>Title</b>: {}\n".format(html.escape(data.title))
-        m += "<b>Members</b>: {}\n\n".format(data.get_members_count())
+        m += "<b>Members</b>: {}\n\n".format(data.get_member_count())
         if data.description:
             m += "<i>{}</i>\n\n".format(html.escape(data.description))
         if data.linked_chat_id:
