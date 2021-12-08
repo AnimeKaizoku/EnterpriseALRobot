@@ -1,4 +1,5 @@
 import html
+from typing import Optional
 
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
@@ -22,13 +23,14 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
+
 @kigcmd(command="promote", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
 @loggable
-def promote(update: Update, context: CallbackContext) -> str:
+def promote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
     args = context.args
 
@@ -39,8 +41,8 @@ def promote(update: Update, context: CallbackContext) -> str:
     promoter = chat.get_member(user.id)
 
     if (
-        not (promoter.can_promote_members or promoter.status == "creator")
-        and not user.id in SUDO_USERS
+            not (promoter.can_promote_members or promoter.status == "creator")
+            and not user.id in SUDO_USERS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
         return
@@ -105,13 +107,14 @@ def promote(update: Update, context: CallbackContext) -> str:
 
     return log_message
 
+
 @kigcmd(command="demote", can_disable=False)
 @connection_status
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
 @loggable
-def demote(update: Update, context: CallbackContext) -> str:
+def demote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
     args = context.args
 
@@ -179,11 +182,13 @@ def demote(update: Update, context: CallbackContext) -> str:
         )
         return
 
+
 @kigcmd(command="admincache", can_disable=False)
 @u_admin
 def refresh_admin(update, _):
     ADMIN_CACHE.pop(update.effective_chat.id)
     update.effective_message.reply_text("Admins cache refreshed!")
+
 
 @kigcmd(command="title", can_disable=False)
 @connection_status
@@ -249,6 +254,7 @@ def set_title(update: Update, context: CallbackContext):
         parse_mode=ParseMode.HTML,
     )
 
+
 @kigcmd(command="pin", can_disable=False)
 @bot_admin
 @can_pin
@@ -267,9 +273,9 @@ def pin(update: Update, context: CallbackContext) -> str:
     is_silent = True
     if len(args) >= 1:
         is_silent = (
-            args[0].lower() != "notify"
-            or args[0].lower() == "loud"
-            or args[0].lower() == "violent"
+                args[0].lower() != "notify"
+                or args[0].lower() == "loud"
+                or args[0].lower() == "violent"
         )
 
     if prev_message and is_group:
@@ -289,6 +295,7 @@ def pin(update: Update, context: CallbackContext) -> str:
         )
 
         return log_message
+
 
 @kigcmd(command="unpin", can_disable=False)
 @bot_admin
@@ -316,6 +323,7 @@ def unpin(update: Update, context: CallbackContext) -> str:
 
     return log_message
 
+
 @kigcmd(command="invitelink", can_disable=False)
 @bot_admin
 @user_admin(AdminPerms.CAN_INVITE_USERS)
@@ -341,7 +349,6 @@ def invite(update: Update, context: CallbackContext):
         )
 
 
-
 @kigcmd(command=["admin", "admins"])
 def adminlist(update, context):
     administrators = update.effective_chat.get_administrators()
@@ -358,5 +365,6 @@ def adminlist(update, context):
 
 def get_help(chat):
     return gs(chat, "admin_help")
+
 
 __mod_name__ = "Admin"

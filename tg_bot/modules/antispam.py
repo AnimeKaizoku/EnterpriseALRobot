@@ -259,6 +259,7 @@ def gban(update: Update, context: CallbackContext):  # sourcery no-metrics
     except:
         pass  # bot probably blocked by user
 
+
 @kigcmd(command="ungban")
 @support_plus
 def ungban(update: Update, context: CallbackContext):  # sourcery no-metrics
@@ -369,6 +370,7 @@ def ungban(update: Update, context: CallbackContext):  # sourcery no-metrics
     else:
         message.reply_text(f"Person has been un-gbanned. Took {ungban_time} sec")
 
+
 @kigcmd(command="gbanlist")
 @support_plus
 def gbanlist(update: Update, context: CallbackContext):
@@ -428,19 +430,20 @@ def check_and_ban(update, user_id, should_message=True):
                 text += f"\n<b>Ban Reason:</b> <code>{html.escape(user.reason)}</code>"
             update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
+
 @kigmsg((Filters.all & Filters.chat_type.groups), can_disable=False, group=GBAN_ENFORCE_GROUP)
 def enforce_gban(update: Update, context: CallbackContext):
     # Not using @restrict handler to avoid spamming - just ignore if cant gban.
     bot = context.bot
     if (
-        sql.does_chat_gban(update.effective_chat.id)
-        and update.effective_chat.get_member(bot.id).can_restrict_members
+            sql.does_chat_gban(update.effective_chat.id)
+            and update.effective_chat.get_member(bot.id).can_restrict_members
     ):
         user = update.effective_user
         chat = update.effective_chat
         msg = update.effective_message
 
-        if user and not is_user_admin(chat, user.id):
+        if user and not is_user_admin(update, user.id):
             check_and_ban(update, user.id)
             return
 
@@ -451,8 +454,9 @@ def enforce_gban(update: Update, context: CallbackContext):
 
         if msg.reply_to_message:
             user = msg.reply_to_message.from_user
-            if user and not is_user_admin(chat, user.id):
+            if user and not is_user_admin(update, user.id):
                 check_and_ban(update, user.id, should_message=False)
+
 
 @kigcmd(command="antispam")
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
@@ -519,7 +523,9 @@ def __chat_settings__(chat_id, user_id):
 
 from tg_bot.modules.language import gs
 
+
 def get_help(chat):
     return gs(chat, "antispam_help")
+
 
 __mod_name__ = 'AntiSpam'

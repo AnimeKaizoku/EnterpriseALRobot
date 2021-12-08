@@ -253,7 +253,7 @@ def unlock(update, context) -> str:  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user
     message = update.effective_message
-    if is_user_admin(chat, message.from_user.id):
+    if is_user_admin(update, message.from_user.id):
         if len(args) >= 1:
             ltype = args[0].lower()
             if ltype in LOCK_TYPES:

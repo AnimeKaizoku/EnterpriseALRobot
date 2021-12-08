@@ -74,9 +74,21 @@ def report(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
 
+    if message.sender_chat:
+        admin_list = bot.getChatAdministrators(chat.id)
+        reported = "Reported to admins."
+        for admin in admin_list:
+            if admin.user.is_bot:  # AI didnt take over yet
+                continue
+            try:
+                reported += f"<a href=\"tg://user?id={admin.user.id}\">\u2063</a>"
+            except BadRequest:
+                log.exception("Exception while reporting user")
+        message.reply_text(reported, parse_mode=ParseMode.HTML)
+
     if chat and message.reply_to_message and sql.chat_should_report(chat.id):
         reported_user = message.reply_to_message.from_user
-        chat_name = chat.title or chat.first or chat.username
+        chat_name = chat.title or chat.username
         admin_list = chat.get_administrators()
         message = update.effective_message
 

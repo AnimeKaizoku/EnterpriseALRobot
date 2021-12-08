@@ -20,13 +20,13 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
-def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
+
+def check_user(user_id: int, bot: Bot, update: Update) -> Optional[str]:
     if not user_id:
         return "You don't seem to be referring to a user or the ID specified is incorrect.."
 
-
     try:
-        member = chat.get_member(user_id)
+        member = update.effective_chat.get_member(user_id)
     except BadRequest as excp:
         if excp.message == 'User not found':
             return "I can't seem to find this user"
@@ -35,10 +35,11 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
     if user_id == bot.id:
         return "I'm not gonna MUTE myself, How high are you?"
 
-    if is_user_admin(chat, user_id, member) or user_id in SARDEGNA_USERS:
+    if is_user_admin(update, user_id, member) or user_id in SARDEGNA_USERS:
         return "Can't. Find someone else to mute but not this one."
 
     return None
+
 
 @kigcmd(command='mute')
 @connection_status
@@ -55,7 +56,7 @@ def mute(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
 
     user_id, reason = extract_user_and_text(message, args)
-    reply = check_user(user_id, bot, chat)
+    reply = check_user(user_id, bot, update)
 
     if reply:
         message.reply_text(reply)
@@ -79,7 +80,8 @@ def mute(update: Update, context: CallbackContext) -> str:
         bot.sendMessage(
             chat.id,
             "{} was muted by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
-                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
+                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name),
+                message.chat.title, reason
             ),
             parse_mode=ParseMode.HTML,
         )
@@ -89,6 +91,7 @@ def mute(update: Update, context: CallbackContext) -> str:
         message.reply_text("This user is already muted!")
 
     return ""
+
 
 @kigcmd(command='unmute')
 @connection_status
@@ -122,7 +125,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
             and member.can_send_media_messages
             and member.can_send_other_messages
             and member.can_add_web_page_previews
-        ):
+    ):
         message.reply_text("This user already has the right to speak.")
     else:
         chat_permissions = ChatPermissions(
@@ -140,11 +143,12 @@ def unmute(update: Update, context: CallbackContext) -> str:
         except BadRequest:
             pass
         bot.sendMessage(
-        chat.id,
-        "{} was unmuted by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
-            mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name), message.chat.title, reason
-        ),
-        parse_mode=ParseMode.HTML,
+            chat.id,
+            "{} was unmuted by {} in <b>{}</b>\n<b>Reason</b>: <code>{}</code>".format(
+                mention_html(member.user.id, member.user.first_name), mention_html(user.id, user.first_name),
+                message.chat.title, reason
+            ),
+            parse_mode=ParseMode.HTML,
         )
         return (
             f"<b>{html.escape(chat.title)}:</b>\n"
@@ -153,6 +157,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
             f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
         )
     return ""
+
 
 @kigcmd(command=['tmute', 'tempmute'])
 @connection_status
@@ -167,7 +172,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
 
     user_id, reason = extract_user_and_text(message, args)
-    reply = check_user(user_id, bot, chat)
+    reply = check_user(user_id, bot, update)
 
     if reply:
         message.reply_text(reply)
@@ -231,7 +236,9 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
 
     return ""
 
+
 def get_help(chat):
     return gs(chat, "muting_help")
+
 
 __mod_name__ = "Muting"

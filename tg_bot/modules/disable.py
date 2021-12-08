@@ -76,7 +76,7 @@ if is_module_loaded(FILENAME):
                             # check if command was disabled
                             is_disabled = command[
                                 0
-                            ] in ADMIN_CMDS and is_user_admin(chat, user.id)
+                            ] in ADMIN_CMDS and is_user_admin(update, user.id)
                             if not is_disabled:
                                 return None
                             else:
