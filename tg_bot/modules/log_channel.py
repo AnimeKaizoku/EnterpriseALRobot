@@ -2,25 +2,28 @@ from datetime import datetime
 from functools import wraps
 
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
 from tg_bot.modules.helper_funcs.misc import is_module_loaded
 from tg_bot.modules.language import gs
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
+
 def get_help(chat):
     return gs(chat, "log_help")
+
 
 FILENAME = __name__.rsplit(".", 1)[-1]
 
 if is_module_loaded(FILENAME):
-    from telegram import ParseMode, Update
+    from telegram import ParseMode, Update, InlineKeyboardMarkup, InlineKeyboardButton
     from telegram.error import BadRequest, Unauthorized
     from telegram.utils.helpers import escape_markdown
 
     from tg_bot import GBAN_LOGS, log, dispatcher
-    from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin
+    from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin, is_user_admin
     from tg_bot.modules.sql import log_channel_sql as sql
+
 
     def loggable(func):
         @wraps(func)
@@ -42,6 +45,7 @@ if is_module_loaded(FILENAME):
             return result
 
         return log_action
+
 
     def gloggable(func):
         @wraps(func)
@@ -66,8 +70,9 @@ if is_module_loaded(FILENAME):
 
         return glog_action
 
+
     def send_log(
-        context: CallbackContext, log_chat_id: str, orig_chat_id: str, result: str
+            context: CallbackContext, log_chat_id: str, orig_chat_id: str, result: str
     ):
         bot = context.bot
         try:
@@ -94,6 +99,7 @@ if is_module_loaded(FILENAME):
                     + "\n\nFormatting has been disabled due to an unexpected error.",
                 )
 
+
     @kigcmd(command='logchannel')
     @u_admin
     def logging(update: Update, context: CallbackContext):
@@ -112,6 +118,7 @@ if is_module_loaded(FILENAME):
 
         else:
             message.reply_text("No log channel has been set for this group!")
+
 
     @kigcmd(command='setlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
@@ -155,6 +162,7 @@ if is_module_loaded(FILENAME):
                 " - forward the /setlog to the group\n"
             )
 
+
     @kigcmd(command='unsetlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
     def unsetlog(update: Update, context: CallbackContext):
@@ -172,11 +180,14 @@ if is_module_loaded(FILENAME):
         else:
             message.reply_text("No log channel has been set yet!")
 
+
     def __stats__():
         return f"• {sql.num_logchannels()} log channels set."
 
+
     def __migrate__(old_chat_id, new_chat_id):
         sql.migrate_chat(old_chat_id, new_chat_id)
+
 
     def __chat_settings__(chat_id, user_id):
         log_channel = sql.get_chat_log_channel(chat_id)
@@ -184,6 +195,7 @@ if is_module_loaded(FILENAME):
             log_channel_info = dispatcher.bot.get_chat(log_channel)
             return f"This group has all it's logs sent to: {escape_markdown(log_channel_info.title)} (`{log_channel}`)"
         return "No log channel is set for this group!"
+
 
     __help__ = """
 *Admins only:*
@@ -204,5 +216,73 @@ else:
     def loggable(func):
         return func
 
+
     def gloggable(func):
         return func
+
+
+@kigcmd("logsettings")
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
+def log_settings(update: Update, _: CallbackContext):
+    chat = update.effective_chat
+    chat_set = sql.get_chat_setting(chat_id=chat.id)
+    if not chat_set:
+        sql.set_chat_setting(setting=sql.LogChannelSettings(chat.id, True, True, True, True, True))
+    btn = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(text="Warn", callback_data="log_tog_warn"),
+                InlineKeyboardButton(text="Action", callback_data="log_tog_act")
+            ],
+            [
+                InlineKeyboardButton(text="Join", callback_data="log_tog_join"),
+                InlineKeyboardButton(text="Leave", callback_data="log_tog_leave")
+            ],
+            [
+                InlineKeyboardButton(text="Report", callback_data="log_tog_rep")
+            ]
+        ]
+    )
+    msg = update.effective_message
+    msg.reply_text("Toggle channel log settings", reply_markup=btn)
+
+
+from tg_bot.modules.sql import log_channel_sql as sql
+
+
+@kigcallback(pattern=r"log_tog_.*")
+def log_setting_callback(update: Update, context: CallbackContext):
+    cb = update.callback_query
+    user = cb.from_user
+    chat = cb.message.chat
+    if not is_user_admin(update, user.id):
+        cb.answer("You aren't admin", show_alert=True)
+        return
+    setting = cb.data.replace("log_tog_", "")
+    chat_set = sql.get_chat_setting(chat_id=chat.id)
+    if not chat_set:
+        sql.set_chat_setting(setting=sql.LogChannelSettings(chat.id, True, True, True, True, True))
+
+    t = sql.get_chat_setting(chat.id)
+    if setting == "warn":
+        r = t.toggle_warn()
+        cb.answer("Warning log set to {}".format(r))
+        return
+    if setting == "act":
+        r = t.toggle_action()
+        cb.answer("Action log set to {}".format(r))
+        return
+    if setting == "join":
+        r = t.toggle_joins()
+        cb.answer("Join log set to {}".format(r))
+        return
+    if setting == "leave":
+        r = t.toggle_leave()
+        cb.answer("Leave log set to {}".format(r))
+        return
+    if setting == "rep":
+        r = t.toggle_report()
+        cb.answer("Report log set to {}".format(r))
+        return
+
+    cb.answer("Idk what to do")
