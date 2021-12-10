@@ -10,6 +10,7 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 import tg_bot.modules.sql.logger_sql as sql
 from ..modules.helper_funcs.anonymous import user_admin as u_admin, AdminPerms
 
+
 @kigcmd(command="announce", pass_args=True)
 @u_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
@@ -29,7 +30,7 @@ def announcestat(update: Update, context: CallbackContext) -> str:
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"#ANNOUNCE_TOGGLED\n"
                 f"Admin actions announcement has been <b>enabled</b>\n"
-                f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+                f"<b>Admin:</b> {mention_html(user.id, user.first_name) if not message.sender_chat else message.sender_chat.title}\n "
             )
             return logmsg
         elif args[0].lower() in ["off", "no", "false"]:
@@ -41,7 +42,7 @@ def announcestat(update: Update, context: CallbackContext) -> str:
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"#ANNOUNCE_TOGGLED\n"
                 f"Admin actions announcement has been <b>disabled</b>\n"
-                f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+                f"<b>Admin:</b> {mention_html(user.id, user.first_name) if not message.sender_chat else message.sender_chat.title}\n "
             )
             return logmsg
     else:
@@ -49,11 +50,11 @@ def announcestat(update: Update, context: CallbackContext) -> str:
             "Give me some arguments to choose a setting! on/off, yes/no!\n\n"
             "Your current setting is: {}\n"
             "When True, any admin actions in your group will be announced."
-            "When False, admin actions in your group will not be announced.".format(sql.does_chat_log(update.effective_chat.id))
+            "When False, admin actions in your group will not be announced.".format(
+                sql.does_chat_log(update.effective_chat.id))
         )
         return ''
 
 
 def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
-
