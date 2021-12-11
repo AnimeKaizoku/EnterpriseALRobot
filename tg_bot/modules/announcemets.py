@@ -38,7 +38,11 @@ def chatmemberupdates(update: Update, context: CallbackContext) -> Optional[str]
     bot = context.bot
     chat = update.effective_chat
     message = update.effective_message
-
+    log_setting = logsql.get_chat_setting(chat.id)
+    if not log_setting:
+        logsql.set_chat_setting(logsql.LogChannelSettings(chat.id, True, True, True, True, True))
+        log_setting = logsql.get_chat_setting(chat.id)
+        
     result = extract_status_change(update.chat_member)
     status_change, title_change = result
 
@@ -106,8 +110,6 @@ def chatmemberupdates(update: Update, context: CallbackContext) -> Optional[str]
         status = ','.join(status_change)
         oldstat = str(status.split(",")[0])
         newstat = str(status.split(",")[1])
-
-        log_setting = logsql.get_chat_setting(chat.id)
 
         if str(update.chat_member.from_user.id) == str(bot.id):
             return ''  # we handle these in their respective modules same as before

@@ -167,7 +167,10 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user
     msg = update.effective_message
-
+    log_setting = logsql.get_chat_setting(chat.id)
+    if not log_setting:
+        logsql.set_chat_setting(logsql.LogChannelSettings(chat.id, True, True, True, True, True))
+        log_setting = logsql.get_chat_setting(chat.id)
     should_welc, cust_welcome, cust_content, welc_type = sql.get_welc_pref(chat.id)
     welc_mutes = sql.welcome_mutes(chat.id)
     human_checks = sql.get_human_checks(user.id, chat.id)
@@ -533,7 +536,6 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                 if sent:
                     sql.set_clean_welcome(chat.id, sent.message_id)
 
-        log_setting = logsql.get_chat_setting(chat.id)
         if not log_setting.log_joins:
             return ""
         if welcome_log:
