@@ -18,8 +18,9 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
+
 @kigcmd(command='rules', filters=Filters.chat_type.groups)
-def get_rules(update: Update, context: CallbackContext):
+def get_rules(update: Update, _: CallbackContext):
     chat_id = update.effective_chat.id
     send_rules(update, chat_id)
 
@@ -28,6 +29,7 @@ def get_rules(update: Update, context: CallbackContext):
 def send_rules(update, chat_id, from_pm=False):
     bot = dispatcher.bot
     user = update.effective_user  # type: Optional[User]
+    message = update.effective_message
     try:
         chat = bot.get_chat(chat_id)
     except BadRequest as excp:
@@ -54,9 +56,7 @@ def send_rules(update, chat_id, from_pm=False):
             "This probably doesn't mean it's lawless though...!",
         )
     elif rules:
-        update.effective_message.reply_text(
-            "Please click the button below to see the rules.",
-            reply_markup=InlineKeyboardMarkup(
+        btn = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton(
@@ -64,13 +64,19 @@ def send_rules(update, chat_id, from_pm=False):
                         )
                     ]
                 ]
-            ),
         )
+        txt = "Please click the button below to see the rules."
+        if not message.reply_to_message:
+            message.reply_text(txt, reply_markup=btn)
+
+        if message.reply_to_message:
+            message.reply_to_message.reply_text(txt, reply_markup=btn)
     else:
         update.effective_message.reply_text(
             "The group admins haven't set any rules for this chat yet. "
             "This probably doesn't mean it's lawless though...!"
         )
+
 
 @kigcmd(command='setrules', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
@@ -88,6 +94,7 @@ def set_rules(update: Update, context: CallbackContext):
 
         sql.set_rules(chat_id, markdown_rules)
         update.effective_message.reply_text("Successfully set rules for this group.")
+
 
 @kigcmd(command='clearrules', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
@@ -114,7 +121,9 @@ def __migrate__(old_chat_id, new_chat_id):
 def __chat_settings__(chat_id, user_id):
     return f"This chat has had it's rules set: `{bool(sql.get_rules(chat_id))}`"
 
+
 from tg_bot.modules.language import gs
+
 
 def get_help(chat):
     return gs(chat, "rules_help")

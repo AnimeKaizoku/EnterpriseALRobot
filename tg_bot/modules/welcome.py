@@ -33,7 +33,7 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     ParseMode,
-    Update,
+    Update, ChatMember,
 )
 from telegram.error import BadRequest
 from telegram.ext import (
@@ -121,7 +121,8 @@ def send(update, message, keyboard, backup_message):
                 markdown_parser(
                     (
                         backup_message
-                        + '\nNote: the current message has buttons which use url protocols that are unsupported by telegram. Please update.'
+                        + '\nNote: the current message has buttons which use url protocols that are unsupported by '
+                          'telegram. Please update. '
                     )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
@@ -326,14 +327,14 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
         # Join welcome: soft mute
         if new_mem.is_bot:
             should_mute = False
-
+        mem: ChatMember = bot.get_chat_member(chat.id, new_mem.id)
         if user.id == new_mem.id and should_mute:
             if welc_mutes == "soft":
                 bot.restrict_chat_member(
                     chat.id,
                     new_mem.id,
                     permissions=ChatPermissions(
-                        can_send_messages=True,
+                        can_send_messages=mem.can_send_messages,
                         can_send_media_messages=False,
                         can_send_other_messages=False,
                         can_invite_users=False,
