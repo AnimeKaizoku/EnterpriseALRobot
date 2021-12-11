@@ -30,7 +30,7 @@ def enable_chat_log(chat_id):
         SESSION.add(chat)
         SESSION.commit()
         if str(chat_id) in LOGSTAT_LIST:
-            LOGSTAT_LIST.remove(str(chat_id))
+            LOGSTAT_LIST.add(str(chat_id))
 
 def disable_chat_log(chat_id):
     with LOG_SETTING_LOCK:
@@ -41,16 +41,16 @@ def disable_chat_log(chat_id):
         chat.setting = False
         SESSION.add(chat)
         SESSION.commit()
-        LOGSTAT_LIST.add(str(chat_id))
+        LOGSTAT_LIST.remove(str(chat_id))
 
 def does_chat_log(chat_id):
-    return str(chat_id) not in LOGSTAT_LIST
+    return str(chat_id) in LOGSTAT_LIST
 
 def __load_chat_log_stat_list():
     global LOGSTAT_LIST
     try:
         LOGSTAT_LIST = {
-            x.chat_id for x in SESSION.query(LoggerSettings).all() if not x.setting
+            x.chat_id for x in SESSION.query(LoggerSettings).all() if x.setting
         }
     finally:
         SESSION.close()
