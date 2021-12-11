@@ -18,27 +18,27 @@ def lookup(update, context):
     response = a.get('success')
     if response is True:
         date = a.get("results").get("last_updated")
-        stats = f"**◢ Intellivoid• SpamProtection Info**:\n"
+        stats = '**◢ Intellivoid• SpamProtection Info**:\n'
         stats += f' • **Updated on**: `{datetime.datetime.fromtimestamp(date).strftime("%Y-%m-%d %I:%M:%S %p")}`\n'
         stats += (
             f" • **Chat Info**: [Link](t.me/SpamProtectionBot/?start=00_{user_id})\n"
         )
 
         if a.get("results").get("attributes").get("is_potential_spammer") is True:
-            stats += f" • *User*: `USERxSPAM`\n"
+            stats += ' • *User*: `USERxSPAM`\n'
         elif a.get("results").get("attributes").get("is_operator") is True:
-            stats += f" • *User*: `USERxOPERATOR`\n"
+            stats += ' • *User*: `USERxOPERATOR`\n'
         elif a.get("results").get("attributes").get("is_agent") is True:
-            stats += f" • *User*: `USERxAGENT`\n"
+            stats += ' • *User*: `USERxAGENT`\n'
         elif a.get("results").get("attributes").get("is_whitelisted") is True:
-            stats += f" • *User*: `USERxWHITELISTED`\n"
+            stats += ' • *User*: `USERxWHITELISTED`\n'
 
         stats += f' • *Type*: `{a.get("results").get("entity_type")}`\n'
         stats += (
             f' • *Language*: `{a.get("results").get("language_prediction").get("language")}`\n'
         )
         stats += f' • *Language Probability*: `{a.get("results").get("language_prediction").get("probability")}`\n'
-        stats += f"*Spam Prediction*:\n"
+        stats += '*Spam Prediction*:\n'
         stats += f' • *Ham Prediction*: `{a.get("results").get("spam_prediction").get("ham_prediction")}`\n'
         stats += f' • *Spam Prediction*: `{a.get("results").get("spam_prediction").get("spam_prediction")}`\n'
         stats += f'*Blacklisted*: `{a.get("results").get("attributes").get("is_blacklisted")}`\n'
