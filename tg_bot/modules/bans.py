@@ -45,11 +45,7 @@ def ban(update: Update, context: CallbackContext) -> Optional[str]:  # sourcery 
     log_message = ""
     reason = ""
     if message.reply_to_message and message.reply_to_message.sender_chat:
-        r = bot._request.post(bot.base_url + '/banChatSenderChat', {
-            'sender_chat_id': message.reply_to_message.sender_chat.id,
-            'chat_id': chat.id
-        },
-                              )
+        r = bot.ban_chat_sender_chat(chat_id=chat.id, sender_chat_id=message.reply_to_message.sender_chat.id)
         if r:
             message.reply_text("Channel {} was banned successfully from {}".format(
                 html.escape(message.reply_to_message.sender_chat.title),
@@ -318,11 +314,7 @@ def unban(update: Update, context: CallbackContext) -> Optional[str]:
     log_message = ""
     bot, args = context.bot, context.args
     if message.reply_to_message and message.reply_to_message.sender_chat:
-        r = bot._request.post(bot.base_url + '/unbanChatSenderChat', {
-            'sender_chat_id': message.reply_to_message.sender_chat.id,
-            'chat_id': chat.id
-        },
-                              )
+        r = bot.unban_chat_sender_chat(chat_id=chat.id, sender_chat_id=message.reply_to_message.sender_chat.id)
         if r:
             message.reply_text("Channel {} was unbanned successfully from {}".format(
                 html.escape(message.reply_to_message.sender_chat.title),
