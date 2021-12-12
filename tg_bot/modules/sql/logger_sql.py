@@ -19,7 +19,6 @@ class LoggerSettings(BASE):
 LoggerSettings.__table__.create(checkfirst=True)
 
 LOG_SETTING_LOCK = threading.RLock()
-LOGSTAT_LIST = set()
 
 def enable_chat_log(chat_id):
     with LOG_SETTING_LOCK:
@@ -29,8 +28,6 @@ def enable_chat_log(chat_id):
         chat.setting = True
         SESSION.add(chat)
         SESSION.commit()
-        if str(chat_id) in LOGSTAT_LIST:
-            LOGSTAT_LIST.remove(str(chat_id))
 
 def disable_chat_log(chat_id):
     with LOG_SETTING_LOCK:
@@ -41,19 +38,14 @@ def disable_chat_log(chat_id):
         chat.setting = False
         SESSION.add(chat)
         SESSION.commit()
-        LOGSTAT_LIST.add(str(chat_id))
 
 def does_chat_log(chat_id):
-    return str(chat_id) not in LOGSTAT_LIST
+    with LOG_SETTING_LOCK:
+        d = SESSION.query(LoggerSettings).get(str(chat_id))
+        if not d:
+            return False
+        return d.setting
 
-def __load_chat_log_stat_list():
-    global LOGSTAT_LIST
-    try:
-        LOGSTAT_LIST = {
-            x.chat_id for x in SESSION.query(LoggerSettings).all() if not x.setting
-        }
-    finally:
-        SESSION.close()
 
 def migrate_chat(old_chat_id, new_chat_id):
     with LOG_SETTING_LOCK:
@@ -64,6 +56,3 @@ def migrate_chat(old_chat_id, new_chat_id):
 
         SESSION.commit()
 
-
-# Create in memory userid to avoid disk access
-__load_chat_log_stat_list()

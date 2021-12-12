@@ -10,6 +10,7 @@ from telegram.ext import (
     CallbackContext,
     Filters,
 )
+import tg_bot.modules.sql.log_channel_sql as logsql
 from telegram.utils.helpers import mention_html
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
 
@@ -17,6 +18,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 REPORT_GROUP = 12
 REPORT_IMMUNE_USERS = SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS
+
 
 @kigcmd(command='reports')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
@@ -68,12 +70,18 @@ def report_setting(update: Update, context: CallbackContext):
 @loggable
 def report(update: Update, context: CallbackContext) -> str:
     # sourcery no-metrics
+    global reply_markup
     bot = context.bot
     args = context.args
     message = update.effective_message
     chat = update.effective_chat
     user = update.effective_user
-
+    
+    log_setting = logsql.get_chat_setting(chat.id)
+    if not log_setting:
+        logsql.set_chat_setting(logsql.LogChannelSettings(chat.id, True, True, True, True, True))
+        log_setting = logsql.get_chat_setting(chat.id)
+        
     if message.sender_chat:
         admin_list = bot.getChatAdministrators(chat.id)
         reported = "Reported to admins."
@@ -169,7 +177,7 @@ def report(update: Update, context: CallbackContext) -> str:
                             message.reply_to_message.forward(admin.user.id)
 
                             if (
-                                len(message.text.split()) > 1
+                                    len(message.text.split()) > 1
                             ):  # If user is giving a reason, send his message too
                                 message.forward(admin.user.id)
                     if not chat.username:
@@ -181,7 +189,7 @@ def report(update: Update, context: CallbackContext) -> str:
                             message.reply_to_message.forward(admin.user.id)
 
                             if (
-                                len(message.text.split()) > 1
+                                    len(message.text.split()) > 1
                             ):  # If user is giving a reason, send his message too
                                 message.forward(admin.user.id)
 
@@ -197,23 +205,26 @@ def report(update: Update, context: CallbackContext) -> str:
                             message.reply_to_message.forward(admin.user.id)
 
                             if (
-                                len(message.text.split()) > 1
+                                    len(message.text.split()) > 1
                             ):  # If user is giving a reason, send his message too
                                 message.forward(admin.user.id)
 
                 except Unauthorized:
                     pass
                 except BadRequest as excp:  # TODO: cleanup exceptions
-                    log.exception("Exception while reporting user")
+                    log.exception("Exception while reporting user\n{}".format(excp))
 
         try:
-            update.effective_message.reply_sticker("CAACAgUAAx0CRSKHWwABAXGoYB2UJauytkH4RJWSStz9DTlxQg0AAlcHAAKAUF41_sNx9Y1z2DQeBA")
+            update.effective_message.reply_sticker(
+                "CAACAgUAAx0CRSKHWwABAXGoYB2UJauytkH4RJWSStz9DTlxQg0AAlcHAAKAUF41_sNx9Y1z2DQeBA")
         except:
             pass
         message.reply_to_message.reply_text(
-            f"{mention_html(user.id, user.first_name)} reported the message to the admins.",
+            reported,
             parse_mode=ParseMode.HTML,
         )
+        if not log_setting.log_report:
+            return ""
         return msg
 
     return ""
@@ -232,6 +243,7 @@ def __user_settings__(user_id):
         return "You will receive reports from chats you're admin."
     else:
         return "You will *not* receive reports from chats you're admin."
+
 
 @kigcallback(pattern=r"report_")
 def buttons(update: Update, context: CallbackContext):
@@ -278,6 +290,7 @@ def buttons(update: Update, context: CallbackContext):
 
 
 from tg_bot.modules.language import gs
+
 
 def get_help(chat):
     return gs(chat, "reports_help")

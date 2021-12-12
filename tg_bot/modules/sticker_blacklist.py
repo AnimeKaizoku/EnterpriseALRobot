@@ -16,6 +16,7 @@ from tg_bot.modules.helper_funcs.anonymous import user_admin
 from tg_bot.modules.helper_funcs.chat_status import user_not_admin
 from tg_bot.modules.helper_funcs.misc import split_message
 from tg_bot.modules.helper_funcs.string_handling import extract_time
+from tg_bot.modules.language import gs
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql.approve_sql import is_approved
 from tg_bot.modules.warns import warn
@@ -498,7 +499,10 @@ def __stats__():
     )
 
 
-__mod_name__ = "Stickers Blacklist"
+__mod_name__ = "Sticker Ban"
+def get_help(chat):
+    return gs(chat, "sticker_blacklist_help")
+
 
 BLACKLIST_STICKER_HANDLER = DisableAbleCommandHandler(
     "blsticker", blackliststicker, admin_ok=True,
