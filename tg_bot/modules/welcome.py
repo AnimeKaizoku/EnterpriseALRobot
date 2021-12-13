@@ -330,14 +330,14 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
         # Join welcome: soft mute
         if new_mem.is_bot:
             should_mute = False
-        mem: ChatMember = bot.get_chat_member(chat.id, new_mem.id)
+            
         if user.id == new_mem.id and should_mute:
             if welc_mutes == "soft":
                 bot.restrict_chat_member(
                     chat.id,
                     new_mem.id,
                     permissions=ChatPermissions(
-                        can_send_messages=mem.can_send_messages,
+                        can_send_messages=True,
                         can_send_media_messages=False,
                         can_send_other_messages=False,
                         can_invite_users=False,
@@ -348,6 +348,7 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                     ),
                     until_date=(int(time.time() + 24 * 60 * 60)),
                 )
+                sql.set_human_checks(user.id, chat.id)
             if welc_mutes == "strong":
                 welcome_bool = False
                 if not media_wel:
