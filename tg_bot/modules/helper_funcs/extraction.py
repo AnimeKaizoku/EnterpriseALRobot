@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from tg_bot import log
 from tg_bot.modules.users import get_user_id
@@ -25,7 +25,7 @@ def extract_user(message: Message, args: List[str]) -> Optional[int]:
 
 def extract_user_and_text(
     message: Message, args: List[str]
-) -> (Optional[int], Optional[str]):
+) -> Tuple[Optional[int], Optional[str]]:
     prev_message = message.reply_to_message
     split_text = message.text.split(None, 1)
 
@@ -99,7 +99,7 @@ def extract_text(message) -> str:
 
 def extract_unt_fedban(
     message: Message, args: List[str]
-) -> (Optional[int], Optional[str]):  # sourcery no-metrics
+) -> Tuple[Optional[int], Optional[str]]:  # sourcery no-metrics
     prev_message = message.reply_to_message
     split_text = message.text.split(None, 1)
 
