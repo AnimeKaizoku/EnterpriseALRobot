@@ -6,7 +6,8 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 import html
 from ..modules.sql.antichannel_sql import antichannel_status, disable_antichannel, enable_antichannel
 
-@kigcmd(command="antichannel", group=3)
+
+@kigcmd(command="antichannel", group=100)
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 def set_antichannel(update: Update, context: CallbackContext):
     message = update.effective_message
@@ -23,10 +24,11 @@ def set_antichannel(update: Update, context: CallbackContext):
         else:
             message.reply_text("Unrecognized arguments {}".format(s))
         return
-    message.reply_html("Antichannel setting is currently {} in {}".format(antichannel_status(chat.id), html.escape(chat.title)))
+    message.reply_html(
+        "Antichannel setting is currently {} in {}".format(antichannel_status(chat.id), html.escape(chat.title)))
 
 
-@kigmsg(Filters.chat_type.groups, group=-3)
+@kigmsg(Filters.chat_type.groups, group=110)
 def eliminate_channel(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
@@ -37,4 +39,3 @@ def eliminate_channel(update: Update, context: CallbackContext):
         message.delete()
         sender_chat = message.sender_chat
         bot.ban_chat_sender_chat(sender_chat_id=sender_chat.id, chat_id=chat.id)
-    
