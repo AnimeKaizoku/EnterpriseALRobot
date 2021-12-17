@@ -112,6 +112,7 @@ def warn(
             f"#WARN_BAN\n"
             f"<b>Admin:</b> {warner_tag}\n"
             f"<b>User:</b> {mention_html(user.id, user.first_name)}\n"
+            f"<b>User ID:</b> <code>{user.id}</code>\n"
             f"<b>Reason:</b> {reason}\n"
             f"<b>Counts:</b> <code>{num_warns}/{limit}</code>"
         )
@@ -140,6 +141,7 @@ def warn(
             f"#WARN\n"
             f"<b>Admin:</b> {warner_tag}\n"
             f"<b>User:</b> {mention_html(user.id, user.first_name)}\n"
+            f"<b>User ID:</b> <code>{user.id}</code>\n"
             f"<b>Reason:</b> {reason}\n"
             f"<b>Counts:</b> <code>{num_warns}/{limit}</code>"
         )
@@ -178,7 +180,9 @@ def button(update: Update, context: CallbackContext) -> str:
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"#UNWARN\n"
                 f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-                f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
+                f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}\n"
+                f"<b>User ID:</b> <code>{user_member.user.id}</code>"
+                
             )
         else:
             update.effective_message.edit_text(
@@ -237,7 +241,8 @@ def reset_warns(update: Update, context: CallbackContext) -> str:
             f"<b>{html.escape(chat.title)}:</b>\n"
             f"#RESETWARNS\n"
             f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-            f"<b>User:</b> {mention_html(warned.id, warned.first_name)}"
+            f"<b>User:</b> {mention_html(warned.id, warned.first_name)}\n"
+            f"<b>User ID:</b> <code>{warned.id}</code>"
         )
     else:
         message.reply_text("No user has been designated!")
