@@ -36,7 +36,7 @@ LOCK_TYPES = {
     "url": Filters.entity(MessageEntity.URL)
     | Filters.caption_entity(MessageEntity.URL),
     "bots": Filters.status_update.new_chat_members,
-    "forward": Filters.forwarded,
+    "forward": Filters.forwarded & ~ Filters.is_automatic_forward,
     "game": Filters.game,
     "location": Filters.location,
     "egame": Filters.dice,
