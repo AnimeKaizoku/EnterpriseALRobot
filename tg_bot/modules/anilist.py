@@ -1,4 +1,5 @@
 # module to get anime info by t.me/DragSama // find him on github :  https://github.com/DragSama // he's my doraemon btw.
+import bs4
 from telegram.ext import CallbackContext
 from telegram import (
     ParseMode,
@@ -14,7 +15,7 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd
 def shorten(description, info="anilist.co"):
     msg = ""
     if len(description) > 700:
-        description = description[0:500] + "...."
+        description = f'{description[:500]}....'
         msg += f"\n*Description*: _{description}_[Read More]({info})"
     else:
         msg += f"\n*Description*:_{description}_"
@@ -35,12 +36,13 @@ def t(milliseconds: int) -> str:
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " Days, ") if days else "")
-        + ((str(hours) + " Hours, ") if hours else "")
-        + ((str(minutes) + " Minutes, ") if minutes else "")
-        + ((str(seconds) + " Seconds, ") if seconds else "")
-        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+        (f'{str(days)} Days, ' if days else "")
+        + (f'{str(hours)} Hours, ' if hours else "")
+        + (f'{str(minutes)} Minutes, ' if minutes else "")
+        + (f'{str(seconds)} Seconds, ' if seconds else "")
+        + (f'{str(milliseconds)} ms, ' if milliseconds else "")
     )
+
     return tmp[:-2]
 
 
@@ -212,12 +214,9 @@ def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
             trailer_id = trailer.get("id", None)
             site = trailer.get("site", None)
             if site == "youtube":
-                trailer = "https://youtu.be/" + trailer_id
+                trailer = f"https://youtu.be/{trailer_id}"
         description = (
-            json.get("description", "N/A")
-            .replace("<i>", "")
-            .replace("</i>", "")
-            .replace("<br>", "")
+           bs4.BeautifulSoup(json.get("description", "N/A"), features='html.parser').text
         )
         msg += shorten(description, info)
         image = json.get("bannerImage", None)
@@ -270,7 +269,7 @@ def character(update: Update, context: CallbackContext):
     if json:
         json = json["data"]["Character"]
         msg = f"*{json.get('name').get('full')}*(`{json.get('name').get('native')}`)\n"
-        description = f"{json['description']}"
+        description = bs4.BeautifulSoup(f"{json['description']}", features='html.parser').text
         site_url = json.get("siteUrl")
         msg += shorten(description, site_url)
         image = json.get("image", None)
@@ -329,7 +328,7 @@ def manga(update: Update, context: CallbackContext):
         info = json["siteUrl"]
         buttons = [[InlineKeyboardButton("More Info", url=info)]]
         image = json.get("bannerImage", False)
-        msg += f"_{json.get('description', None)}_"
+        msg += f"_{bs4.BeautifulSoup(json.get('description', None), features='html.parser').text}_"
         if image:
             try:
                 update.effective_message.reply_photo(
