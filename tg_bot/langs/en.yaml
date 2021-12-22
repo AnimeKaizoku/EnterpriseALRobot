@@ -357,13 +357,19 @@ misc_help: |
         example syntax: /cash 1 USD INR
       • /getid : get IDs of chat, user and chat message.
       • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
-      ───────────────────────────────
+      ~~~~~~
       *Last.FM*
       Share what you're what listening to with the help of this module!
       *Available commands:*
       • /setuser <username>: sets your last.fm username.
       • /clearuser: removes your last.fm username from the bot's database.
       • /lastfm: returns what you're scrobbling on last.fm.
+      ~~~~~~
+      *Anti channel*
+      Tired of telegram's stupidity? well here you go
+      *Available commands:*
+      • /antichannel <on/off>: Bans and deletes anyone who tries to talk as channel and forces em to talk as themselves
+      • /antilinkedchan <on/off: Makes Kigyo automatically delete linked channel posts from chatroom
 
 muting_help: |
       *Admins only:*
