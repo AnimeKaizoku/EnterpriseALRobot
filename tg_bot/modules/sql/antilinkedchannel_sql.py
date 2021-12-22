@@ -7,8 +7,8 @@ from sqlalchemy import Column
 from tg_bot.modules.sql import BASE, SESSION
 
 
-class AntiChannelSettings(BASE):
-    __tablename__ = "anti_channel_settings"
+class AntiLinkedChannelSettings(BASE):
+    __tablename__ = "anti_linked_channel_settings"
 
     chat_id = Column(String(14), primary_key=True)
     setting = Column(Boolean, default=False, nullable=False)
@@ -21,43 +21,43 @@ class AntiChannelSettings(BASE):
         return "<Antiflood setting {} ({})>".format(self.chat_id, self.setting)
 
 
-AntiChannelSettings.__table__.create(checkfirst=True)
-ANTICHANNEL_SETTING_LOCK = threading.RLock()
+AntiLinkedChannelSettings.__table__.create(checkfirst=True)
+ANTI_LINKED_CHANNEL_SETTING_LOCK = threading.RLock()
 
 
-def enable_antichannel(chat_id: int):
-    with ANTICHANNEL_SETTING_LOCK:
-        chat = SESSION.query(AntiChannelSettings).get(str(chat_id))
+def enable(chat_id: int):
+    with ANTI_LINKED_CHANNEL_SETTING_LOCK:
+        chat = SESSION.query(AntiLinkedChannelSettings).get(str(chat_id))
         if not chat:
-            chat = AntiChannelSettings(chat_id, True)
+            chat = AntiLinkedChannelSettings(chat_id, True)
 
         chat.setting = True
         SESSION.add(chat)
         SESSION.commit()
 
 
-def disable_antichannel(chat_id: int):
-    with ANTICHANNEL_SETTING_LOCK:
-        chat = SESSION.query(AntiChannelSettings).get(str(chat_id))
+def disable(chat_id: int):
+    with ANTI_LINKED_CHANNEL_SETTING_LOCK:
+        chat = SESSION.query(AntiLinkedChannelSettings).get(str(chat_id))
         if not chat:
-            chat = AntiChannelSettings(chat_id, False)
+            chat = AntiLinkedChannelSettings(chat_id, False)
 
         chat.setting = False
         SESSION.add(chat)
         SESSION.commit()
 
 
-def antichannel_status(chat_id: int) -> bool:
-    with ANTICHANNEL_SETTING_LOCK:
-        d = SESSION.query(AntiChannelSettings).get(str(chat_id))
+def status(chat_id: int) -> bool:
+    with ANTI_LINKED_CHANNEL_SETTING_LOCK:
+        d = SESSION.query(AntiLinkedChannelSettings).get(str(chat_id))
         if not d:
             return False
         return d.setting
 
 
 def migrate_chat(old_chat_id, new_chat_id):
-    with ANTICHANNEL_SETTING_LOCK:
-        chat = SESSION.query(AntiChannelSettings).get(str(old_chat_id))
+    with ANTI_LINKED_CHANNEL_SETTING_LOCK:
+        chat = SESSION.query(AntiLinkedChannelSettings).get(str(old_chat_id))
         if chat:
             chat.chat_id = new_chat_id
             SESSION.add(chat)
