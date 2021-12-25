@@ -369,7 +369,8 @@ misc_help: |
       Tired of telegram's stupidity? well here you go
       *Available commands:*
       • /antichannel <on/off>: Bans and deletes anyone who tries to talk as channel and forces em to talk as themselves
-      • /antilinkedchan <on/off: Makes Kigyo automatically delete linked channel posts from chatroom
+      • /antilinkedchan <on/off>: Makes Kigyo automatically delete linked channel posts from chatroom
+      • /antichannelpin <on/off>: Makes Kigyo automatically unpin linked channel posts from chatroom
 
 muting_help: |
       *Admins only:*
