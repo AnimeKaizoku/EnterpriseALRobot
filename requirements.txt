@@ -25,3 +25,5 @@ speedtest-cli
 sqlalchemy==1.4.11
 telethon==1.16.4
 ujson
+pycryptodome
+base58
