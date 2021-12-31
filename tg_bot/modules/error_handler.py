@@ -1,13 +1,11 @@
 import traceback
-import requests
 import html
 import random
-
+from .helper_funcs.misc import upload_text
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CommandHandler
 from psycopg2 import errors as sqlerrors
 from tg_bot import KInit, dispatcher, DEV_USERS, OWNER_ID, log
-
 
 class ErrorsDict(dict):
     "A custom dict to store errors and their count"
@@ -65,12 +63,10 @@ def error_callback(update: Update, context: CallbackContext):
         update.effective_message.text if update.effective_message else "No message",
         tb,
     )
-    key = requests.post(
-        "https://nekobin.com/api/documents", json={"content": pretty_message}
-    ).json()
+    paste_url = upload_text(pretty_message)
 
 
-    if not key.get("result", {}).get("key"):
+    if not paste_url:
         with open("error.txt", "w+") as f:
             f.write(pretty_message)
         context.bot.send_document(
@@ -80,12 +76,10 @@ def error_callback(update: Update, context: CallbackContext):
             parse_mode="html",
         )
         return
-    key = key.get("result").get("key")
-    url = f"https://nekobin.com/{key}.py"
     context.bot.send_message(
         OWNER_ID,
         text=f"#{context.error.identifier}\n<b>Your sugar mommy got an error for you, you cute guy:</b>\n<code>{e}</code>",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Nekobin", url=url)]]),
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("PrivateBin", url=paste_url)]]),
         parse_mode="html",
     )
     
@@ -94,9 +88,7 @@ def error_callback(update: Update, context: CallbackContext):
 def list_errors(update: Update, context: CallbackContext):
     if update.effective_user.id not in DEV_USERS:
         return
-    e = {
-        k: v for k, v in sorted(errors.items(), key=lambda item: item[1], reverse=True)
-    }
+    e = dict(sorted(errors.items(), key=lambda item: item[1], reverse=True))
     msg = "<b>Errors List:</b>\n"
     for x, value in e.items():
         msg += f"• <code>{x}:</code> <b>{e[x]}</b> #{x.identifier}\n"
