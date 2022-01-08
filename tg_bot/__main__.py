@@ -99,9 +99,9 @@ def send_help(chat_id, text, keyboard=None):
 
     if not keyboard:
         kb = paginate_modules(0, HELPABLE, "help")
-        kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
-                   InlineKeyboardButton(text='Back', callback_data='start_back'),
-                   InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
+        #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+        #           InlineKeyboardButton(text='Back', callback_data='start_back'),
+        #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
         keyboard = InlineKeyboardMarkup(kb)
     dispatcher.bot.send_message(
         chat_id=chat_id, text=text, parse_mode=ParseMode.MARKDOWN, reply_markup=keyboard
@@ -301,7 +301,7 @@ def help_button(update, context):
     next_match = re.match(r"help_next\((.+?)\)", query.data)
     back_match = re.match(r"help_back", query.data)
     chat = update.effective_chat
-    print(query.message.chat.id)
+    # print(query.message.chat.id)
 
     try:
         if mod_match:
@@ -332,9 +332,9 @@ def help_button(update, context):
         elif prev_match:
             curr_page = int(prev_match.group(1))
             kb = paginate_modules(curr_page - 1, HELPABLE, "help")
-            kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
-                       InlineKeyboardButton(text='Back', callback_data='start_back'),
-                       InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
+            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            #           InlineKeyboardButton(text='Back', callback_data='start_back'),
+            #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
                 text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
@@ -344,9 +344,9 @@ def help_button(update, context):
         elif next_match:
             next_page = int(next_match.group(1))
             kb = paginate_modules(next_page + 1, HELPABLE, "help")
-            kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
-                       InlineKeyboardButton(text='Back', callback_data='start_back'),
-                       InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
+            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            #           InlineKeyboardButton(text='Back', callback_data='start_back'),
+            #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
                 text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
@@ -355,9 +355,9 @@ def help_button(update, context):
 
         elif back_match:
             kb = paginate_modules(0, HELPABLE, "help")
-            kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
-                       InlineKeyboardButton(text='Back', callback_data='start_back'),
-                       InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
+            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            #           InlineKeyboardButton(text='Back', callback_data='start_back'),
+            #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
                 text=gs(chat.id, "pm_help_text"),
                 parse_mode=ParseMode.MARKDOWN,
