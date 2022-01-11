@@ -499,7 +499,9 @@ def __stats__():
     )
 
 
-__mod_name__ = "Sticker Ban"
+__mod_name__ = "Sticker Blacklist"
+
+
 def get_help(chat):
     return gs(chat, "sticker_blacklist_help")
 

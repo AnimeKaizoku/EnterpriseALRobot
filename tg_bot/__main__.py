@@ -306,6 +306,7 @@ def help_button(update, context):
     try:
         if mod_match:
             module = mod_match.group(1)
+            module = module.replace("_", " ")
             help_list = HELPABLE[module].get_help(update.effective_chat.id)
             if isinstance(help_list, list):
                 help_text = help_list[0]
