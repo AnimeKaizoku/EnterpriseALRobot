@@ -18,7 +18,7 @@ psutil
 psycopg2-binary
 pyYAML>=5.1.2
 pyrate-limiter
-python-telegram-bot==13.9
+python-telegram-bot==13.10
 requests
 spamwatch
 speedtest-cli
