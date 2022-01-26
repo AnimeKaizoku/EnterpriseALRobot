@@ -347,15 +347,16 @@ def invite(update: Update, context: CallbackContext):
 
 
 @kigcmd(command=["admin", "admins"])
-def adminlist(update, context):
+def adminlist(update: Update, _):
     administrators = update.effective_chat.get_administrators()
     text = "Admins in *{}*:".format(update.effective_chat.title or "this chat")
     for admin in administrators:
-        user = admin.user
-        name = "[{}](tg://user?id={})".format(user.first_name + (user.last_name or ""), user.id)
-        if user.username:
-            name = escape_markdown("@" + user.username)
-        text += "\n - {}".format(name)
+        if not admin.is_anonymous:
+            user = admin.user
+            name = user.mention_markdown()
+            text += "\n -> {} • `{}` • `{}` • `{}`".format(name, user.id, admin.status,
+                                                           escape_markdown(
+                                                               admin.custom_title) if admin.custom_title else "")
 
     update.effective_message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
 

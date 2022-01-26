@@ -1,13 +1,15 @@
-'''#TODO
+"""#TODO
 
 Dank-del
 2020-12-29
-'''
+"""
 
 import importlib
 import re
-from typing import Optional
+import threading
 from sys import argv
+from typing import Optional
+
 from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
@@ -17,6 +19,7 @@ from telegram.ext import (
 )
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
+
 from tg_bot import (
     KInit,
     dispatcher,
@@ -31,13 +34,12 @@ from tg_bot import (
     telethn,
     KigyoINIT
 )
-
 # needed to dynamically load modules
 # NOTE: Module order is not guaranteed, specify that in the config file!
 from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
-from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, kigmsg
+from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.language import gs
 
 IMPORTED = {}
@@ -89,17 +91,17 @@ for module_name in ALL_MODULES:
 
 # do not async
 def send_help(chat_id, text, keyboard=None):
-    '''#TODO
+    """#TODO
 
     Params:
         chat_id  -
         text     -
         keyboard -
-    '''
+    """
 
     if not keyboard:
         kb = paginate_modules(0, HELPABLE, "help")
-        #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+        # kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
         #           InlineKeyboardButton(text='Back', callback_data='start_back'),
         #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
         keyboard = InlineKeyboardMarkup(kb)
@@ -109,13 +111,13 @@ def send_help(chat_id, text, keyboard=None):
 
 
 @kigcmd(command='text')
-def test(update: Update, context: CallbackContext):
-    '''#TODO
+def test(update: Update, _: CallbackContext):
+    """#TODO
 
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
     # pprint(ast.literal_eval(str(update)))
     # update.effective_message.reply_text("Hola tester! _I_ *have* `markdown`", parse_mode=ParseMode.MARKDOWN)
     update.effective_message.reply_text("This person edited a message")
@@ -125,12 +127,12 @@ def test(update: Update, context: CallbackContext):
 @kigcallback(pattern=r'start_back')
 @kigcmd(command='start', pass_args=True)
 def start(update: Update, context: CallbackContext):  # sourcery no-metrics
-    '''#TODO
+    """#TODO
 
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
     chat = update.effective_chat
     args = context.args
 
@@ -188,6 +190,32 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
         if args and len(args) >= 1:
             if args[0].lower() == "help":
                 send_help(update.effective_chat.id, (gs(chat.id, "pm_help_text")))
+            elif args[0].lower().startswith("ghelp_"):
+                query = update.callback_query
+                mod = args[0].lower().split("_", 1)[1]
+                if not HELPABLE.get(mod, False):
+                    return
+                help_list = HELPABLE[mod].get_help(chat.id)
+                help_text = []
+                help_buttons = []
+                if isinstance(help_list, list):
+                    help_text = help_list[0]
+                    help_buttons = help_list[1:]
+                elif isinstance(help_list, str):
+                    help_text = help_list
+                text = "Here is the help for the *{}* module:\n".format(HELPABLE[mod].__mod_name__) + help_text
+                help_buttons.append(
+                    [InlineKeyboardButton(text="Back", callback_data="help_back"),
+                     InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+                )
+                send_help(
+                    chat.id,
+                    text,
+                    InlineKeyboardMarkup(help_buttons),
+                )
+
+                if hasattr(query, "id"):
+                    context.bot.answer_callback_query(query.id)
             elif args[0].lower() == "markdownhelp":
                 IMPORTED["extras"].markdown_help_sender(update)
             elif args[0].lower() == "nations":
@@ -259,13 +287,13 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
 
 
 # for test purposes
-def error_callback(update, context):
-    '''#TODO
+def error_callback(_, context: CallbackContext):
+    """#TODO
 
     Params:
         update  -
         context -
-    '''
+    """
 
     try:
         raise context.error
@@ -278,7 +306,7 @@ def error_callback(update, context):
     except NetworkError:
         pass
         # handle other connection problems
-    except ChatMigrated as e:
+    except ChatMigrated:
         pass
         # the chat_id of a group has changed, use e.new_chat_id instead
     except TelegramError:
@@ -287,13 +315,13 @@ def error_callback(update, context):
 
 
 @kigcallback(pattern=r'help_')
-def help_button(update, context):
-    '''#TODO
+def help_button(update: Update, context: CallbackContext):
+    """#TODO
 
     Params:
         update  -
         context -
-    '''
+    """
 
     query = update.callback_query
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
@@ -333,7 +361,7 @@ def help_button(update, context):
         elif prev_match:
             curr_page = int(prev_match.group(1))
             kb = paginate_modules(curr_page - 1, HELPABLE, "help")
-            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            # kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
             #           InlineKeyboardButton(text='Back', callback_data='start_back'),
             #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
@@ -345,7 +373,7 @@ def help_button(update, context):
         elif next_match:
             next_page = int(next_match.group(1))
             kb = paginate_modules(next_page + 1, HELPABLE, "help")
-            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            # kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
             #           InlineKeyboardButton(text='Back', callback_data='start_back'),
             #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
@@ -356,7 +384,7 @@ def help_button(update, context):
 
         elif back_match:
             kb = paginate_modules(0, HELPABLE, "help")
-            #kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
+            # kb.append([InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion'),
             #           InlineKeyboardButton(text='Back', callback_data='start_back'),
             #           InlineKeyboardButton(text="Try inline", switch_inline_query_current_chat="")])
             query.message.edit_text(
@@ -374,7 +402,7 @@ def help_button(update, context):
 
 
 @kigcmd(command='help')
-def get_help(update, context):
+def get_help(update: Update, context: CallbackContext):
     '''#TODO
 
     Params:
@@ -387,6 +415,31 @@ def get_help(update, context):
 
     # ONLY send help in PM
     if chat.type != chat.PRIVATE:
+
+        if len(args) >= 2:
+            if any(args[1].lower() == x for x in HELPABLE):
+                module = args[1].lower()
+                update.effective_message.reply_text(
+                    f"Contact me in PM to get help of {module.capitalize()}",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="Help",
+                                    url="t.me/{}?start=ghelp_{}".format(
+                                        context.bot.username, module
+                                    ),
+                                )
+                            ]
+                        ]
+                    ),
+                )
+            else:
+                update.effective_message.reply_text(
+                    f"<code>{args[1].lower()}</code> is not a module",
+                    parse_mode=ParseMode.HTML,
+                )
+            return
 
         update.effective_message.reply_text(
             "Contact me in PM to get the list of possible commands.",
@@ -403,27 +456,37 @@ def get_help(update, context):
         )
         return
 
-    elif len(args) >= 2 and any(args[1].lower() == x for x in HELPABLE):
-        module = args[1].lower()
-        text = (
-                "Here is the available help for the *{}* module:\n".format(
-                    HELPABLE[module].__mod_name__
-                )
-                + HELPABLE[module].get_help
-        )
-        send_help(
-            chat.id,
-            text,
-            InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Back", callback_data="help_back")]]
-            ),
-        )
-
+    if len(args) >= 2:
+        if any(args[1].lower() == x for x in HELPABLE):
+            module = args[1].lower()
+            help_list = HELPABLE[module].get_help(chat.id)
+            help_text = []
+            help_buttons = []
+            if isinstance(help_list, list):
+                help_text = help_list[0]
+                help_buttons = help_list[1:]
+            elif isinstance(help_list, str):
+                help_text = help_list
+            text = "Here is the available help for the *{}* module:\n".format(HELPABLE[module].__mod_name__) + help_text
+            help_buttons.append(
+                [InlineKeyboardButton(text="Back", callback_data="help_back"),
+                 InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+            )
+            send_help(
+                chat.id,
+                text,
+                InlineKeyboardMarkup(help_buttons),
+            )
+        else:
+            update.effective_message.reply_text(
+                f"<code>{args[1].lower()}</code> is not a module",
+                parse_mode=ParseMode.HTML,
+            )
     else:
         send_help(chat.id, (gs(chat.id, "pm_help_text")))
 
 
-def send_settings(chat_id, user_id, user=False):
+def send_settings(chat_id: int, user_id: int, user=False):
     '''#TODO
 
     Params:
@@ -601,25 +664,24 @@ def get_settings(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='donate')
-def donate(update: Update, context: CallbackContext):
-    '''#TODO
+def donate(update: Update, _: CallbackContext):
+    """#TODO
 
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
 
     update.effective_message.reply_text("I'm free for everyone! >_<")
 
 
-@kigmsg((Filters.status_update.migrate))
+@kigmsg(Filters.status_update.migrate)
 def migrate_chats(update: Update, context: CallbackContext):
-    '''#TODO
-
+    """#TODO
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
 
     msg = update.effective_message  # type: Optional[Message]
     if msg.migrate_to_chat_id:
@@ -657,7 +719,8 @@ def main():
         KigyoINIT.bot_id = dispatcher.bot.id
         KigyoINIT.bot_username = dispatcher.bot.username
         KigyoINIT.bot_name = dispatcher.bot.first_name
-        updater.start_polling(timeout=15, read_latency=4, allowed_updates=Update.ALL_TYPES, drop_pending_updates=KInit.DROP_UPDATES)
+        updater.start_polling(timeout=15, read_latency=4, allowed_updates=Update.ALL_TYPES,
+                              drop_pending_updates=KInit.DROP_UPDATES)
     if len(argv) not in (1, 3, 4):
         telethn.disconnect()
     else:
@@ -668,4 +731,4 @@ def main():
 if __name__ == "__main__":
     log.info("[KIGYO] Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
-    main()
+    threading.Thread(target=main).start()
