@@ -10,12 +10,14 @@ from tg_bot import (
     dispatcher,
 )
 from cachetools import TTLCache
-from telegram import Chat, ChatMember, ParseMode, Update, TelegramError
+from telegram import Chat, ChatMember, ParseMode, Update, TelegramError, User
 from telegram.ext import CallbackContext
 
 # stores admin in memory for 10 min.
 ADMIN_CACHE = TTLCache(maxsize=512, ttl=60 * 10)
 
+def is_anon(user: User, chat: Chat):
+    return chat.get_member(user.id).is_anonymous
 
 def is_whitelist_plus(_: Chat, user_id: int, member: ChatMember = None) -> bool:
     return any(

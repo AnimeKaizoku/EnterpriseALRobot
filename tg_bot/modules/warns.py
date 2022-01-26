@@ -10,6 +10,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     can_restrict,
     is_user_admin,
     user_admin_no_reply,
+    is_anon
 )
 from tg_bot.modules.helper_funcs.extraction import (
     extract_text,
@@ -172,7 +173,7 @@ def button(update: Update, context: CallbackContext) -> str:
         res = sql.remove_warn(user_id, chat.id)
         if res:
             update.effective_message.edit_text(
-                "Warn removed by {}.".format(mention_html(user.id, user.first_name)),
+                "Warn removed by {}.".format(mention_html(user.id, user.first_name) if not is_anon(user, chat) else "anon admin"),
                 parse_mode=ParseMode.HTML,
             )
             user_member = chat.get_member(user_id)
