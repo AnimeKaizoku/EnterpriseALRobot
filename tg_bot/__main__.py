@@ -190,6 +190,32 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
         if args and len(args) >= 1:
             if args[0].lower() == "help":
                 send_help(update.effective_chat.id, (gs(chat.id, "pm_help_text")))
+            elif args[0].lower().startswith("ghelp_"):
+                query = update.callback_query
+                mod = args[0].lower().split("_", 1)[1]
+                if not HELPABLE.get(mod, False):
+                    return
+                help_list = HELPABLE[mod].get_help(chat.id)
+                help_text = []
+                help_buttons = []
+                if isinstance(help_list, list):
+                    help_text = help_list[0]
+                    help_buttons = help_list[1:]
+                elif isinstance(help_list, str):
+                    help_text = help_list
+                text = "Here is the help for the *{}* module:\n".format(HELPABLE[mod].__mod_name__) + help_text
+                help_buttons.append(
+                    [InlineKeyboardButton(text="Back", callback_data="help_back"),
+                     InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+                )
+                send_help(
+                    chat.id,
+                    text,
+                    InlineKeyboardMarkup(help_buttons),
+                )
+
+                if hasattr(query, "id"):
+                    context.bot.answer_callback_query(query.id)
             elif args[0].lower() == "markdownhelp":
                 IMPORTED["extras"].markdown_help_sender(update)
             elif args[0].lower() == "nations":
@@ -280,7 +306,7 @@ def error_callback(_, context: CallbackContext):
     except NetworkError:
         pass
         # handle other connection problems
-    except ChatMigrated as e:
+    except ChatMigrated:
         pass
         # the chat_id of a group has changed, use e.new_chat_id instead
     except TelegramError:
@@ -390,6 +416,31 @@ def get_help(update: Update, context: CallbackContext):
     # ONLY send help in PM
     if chat.type != chat.PRIVATE:
 
+        if len(args) >= 2:
+            if any(args[1].lower() == x for x in HELPABLE):
+                module = args[1].lower()
+                update.effective_message.reply_text(
+                    f"Contact me in PM to get help of {module.capitalize()}",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="Help",
+                                    url="t.me/{}?start=ghelp_{}".format(
+                                        context.bot.username, module
+                                    ),
+                                )
+                            ]
+                        ]
+                    ),
+                )
+            else:
+                update.effective_message.reply_text(
+                    f"<code>{args[1].lower()}</code> is not a module",
+                    parse_mode=ParseMode.HTML,
+                )
+            return
+
         update.effective_message.reply_text(
             "Contact me in PM to get the list of possible commands.",
             reply_markup=InlineKeyboardMarkup(
@@ -405,22 +456,32 @@ def get_help(update: Update, context: CallbackContext):
         )
         return
 
-    elif len(args) >= 2 and any(args[1].lower() == x for x in HELPABLE):
-        module = args[1].lower()
-        text = (
-                "Here is the available help for the *{}* module:\n".format(
-                    HELPABLE[module].__mod_name__
-                )
-                + HELPABLE[module].get_help
-        )
-        send_help(
-            chat.id,
-            text,
-            InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Back", callback_data="help_back")]]
-            ),
-        )
-
+    if len(args) >= 2:
+        if any(args[1].lower() == x for x in HELPABLE):
+            module = args[1].lower()
+            help_list = HELPABLE[module].get_help(chat.id)
+            help_text = []
+            help_buttons = []
+            if isinstance(help_list, list):
+                help_text = help_list[0]
+                help_buttons = help_list[1:]
+            elif isinstance(help_list, str):
+                help_text = help_list
+            text = "Here is the available help for the *{}* module:\n".format(HELPABLE[module].__mod_name__) + help_text
+            help_buttons.append(
+                [InlineKeyboardButton(text="Back", callback_data="help_back"),
+                 InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+            )
+            send_help(
+                chat.id,
+                text,
+                InlineKeyboardMarkup(help_buttons),
+            )
+        else:
+            update.effective_message.reply_text(
+                f"<code>{args[1].lower()}</code> is not a module",
+                parse_mode=ParseMode.HTML,
+            )
     else:
         send_help(chat.id, (gs(chat.id, "pm_help_text")))
 
@@ -615,9 +676,8 @@ def donate(update: Update, _: CallbackContext):
 
 
 @kigmsg(Filters.status_update.migrate)
-def migrate_chats(update: Update, _: CallbackContext):
+def migrate_chats(update: Update, context: CallbackContext):
     """#TODO
-
     Params:
         update: Update           -
         context: CallbackContext -
