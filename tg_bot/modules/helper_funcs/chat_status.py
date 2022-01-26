@@ -16,10 +16,12 @@ from telegram.ext import CallbackContext
 # stores admin in memory for 10 min.
 ADMIN_CACHE = TTLCache(maxsize=512, ttl=60 * 10)
 
+
 def is_anon(user: User, chat: Chat):
     return chat.get_member(user.id).is_anonymous
 
-def is_whitelist_plus(_: Chat, user_id: int, member: ChatMember = None) -> bool:
+
+def is_whitelist_plus(_: Chat, user_id: int) -> bool:
     return any(
         user_id in user
         for user in [
@@ -32,11 +34,11 @@ def is_whitelist_plus(_: Chat, user_id: int, member: ChatMember = None) -> bool:
     )
 
 
-def is_support_plus(_: Chat, user_id: int, member: ChatMember = None) -> bool:
+def is_support_plus(_: Chat, user_id: int) -> bool:
     return user_id in SUPPORT_USERS or user_id in SUDO_USERS or user_id in DEV_USERS
 
 
-def is_sudo_plus(_: Chat, user_id: int, member: ChatMember = None) -> bool:
+def is_sudo_plus(_: Chat, user_id: int) -> bool:
     return user_id in SUDO_USERS or user_id in DEV_USERS
 
 
@@ -44,12 +46,11 @@ def is_user_admin(update: Update, user_id: int, member: ChatMember = None) -> bo
     chat = update.effective_chat
     msg = update.effective_message
     if (
-        chat.type == "private"
-        or user_id in SUDO_USERS
-        or user_id in DEV_USERS
-        or chat.all_members_are_administrators
-        or (msg.reply_to_message and msg.reply_to_message.sender_chat is not None and
-            msg.reply_to_message.sender_chat.type != "channel")
+            chat.type == "private"
+            or user_id in SUDO_USERS
+            or user_id in DEV_USERS
+            or chat.all_members_are_administrators
+            or (msg.sender_chat is not None and msg.sender_chat.type != "channel")
     ):
         return True
 
@@ -85,24 +86,7 @@ def can_delete(chat: Chat, bot_id: int) -> bool:
 
 
 def is_user_ban_protected(update: Update, user_id: int, member: ChatMember = None) -> bool:
-    chat = update.effective_chat
-    msg = update.effective_message
-    if (
-        chat.type == "private"
-        or user_id in SUDO_USERS
-        or user_id in DEV_USERS
-        or user_id in WHITELIST_USERS
-        or user_id in SARDEGNA_USERS
-        or chat.all_members_are_administrators
-        or (msg.reply_to_message and msg.reply_to_message.sender_chat is not None
-            and msg.reply_to_message.sender_chat.type != "channel")
-    ):
-        return True
-
-    if not member:
-        member = chat.get_member(user_id)
-
-    return member.status in ("administrator", "creator")
+    return is_user_admin(update, user_id, member)
 
 
 def is_user_in_chat(chat: Chat, user_id: int) -> bool:
@@ -179,7 +163,7 @@ def support_plus(func):
 def whitelist_plus(func):
     @wraps(func)
     def is_whitelist_plus_func(
-        update: Update, context: CallbackContext, *args, **kwargs
+            update: Update, context: CallbackContext, *args, **kwargs
     ):
         # bot = context.bot
         user = update.effective_user
@@ -222,7 +206,7 @@ def user_admin(func):
 def user_admin_no_reply(func):
     @wraps(func)
     def is_not_admin_no_reply(
-        update: Update, context: CallbackContext, *args, **kwargs
+            update: Update, context: CallbackContext, *args, **kwargs
     ):
         # bot = context.bot
         user = update.effective_user
@@ -384,8 +368,8 @@ def user_can_ban(func):
         member = update.effective_chat.get_member(user)
 
         if (
-            not (member.can_restrict_members or member.status == "creator")
-            and not user in SUDO_USERS
+                not (member.can_restrict_members or member.status == "creator")
+                and not user in SUDO_USERS
         ):
             update.effective_message.reply_text(
                 "Sorry son, but you're not worthy to wield the banhammer."
