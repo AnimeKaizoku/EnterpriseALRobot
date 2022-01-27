@@ -97,7 +97,7 @@ def disapprove(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='approved', filters=Filters.chat_type.groups)
-@u_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def approved(update: Update, _: CallbackContext):
     message = update.effective_message
     chat_title = message.chat.title
@@ -115,7 +115,7 @@ def approved(update: Update, _: CallbackContext):
 
 
 @kigcmd(command='approval', filters=Filters.chat_type.groups)
-@u_admin
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
 def approval(update, context):
     message = update.effective_message
     chat = update.effective_chat
