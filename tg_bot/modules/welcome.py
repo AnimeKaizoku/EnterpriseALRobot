@@ -194,9 +194,9 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
             bantime = deftime
             try:
                 chat.ban_member(new_mem.id, until_date=bantime)
-                return
-            except:
+            except BadRequest:
                 pass
+            return
         if sw != None:
             sw_ban = sw.get_ban(new_mem.id)
             if sw_ban:
