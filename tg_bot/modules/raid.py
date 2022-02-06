@@ -142,7 +142,7 @@ def disable_raid_cb(update: Update, _: CallbackContext) -> Optional[str]:
     sql.setRaidStatus(chat_id, False, time, acttime)
     j.scheduler.remove_job(RUNNING_RAIDS.pop(int(chat_id)))
     update.effective_message.edit_text(
-        'Raid mode has been <code>Disabled</code>, joinig members will no longer be kicked.',
+        'Raid mode has been <code>Disabled</code>, newly joining members will no longer be kicked.',
         parse_mode=ParseMode.HTML,
     )
     logmsg = (
