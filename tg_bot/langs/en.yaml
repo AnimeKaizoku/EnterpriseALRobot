@@ -485,3 +485,20 @@ sticker_blacklist_help: |
          • `<sticker link>` can be `https://t.me/addstickers/<sticker>` or just `<sticker>` or reply to the sticker message
 
 
+raid_help: |
+  Ever had your group raided by spammers or bots?
+  This module allows you to quickly stop the raiders
+  By enabling *raid mode* I will automatically kick every user that tries to join
+  When the raid is done you can toggle back lockgroup and everything will be back to normal.
+  
+   *Admins only!* 
+
+  • /raid `(off/time optional)` : toggle the raid mode (on/off)
+  if no time is given it will default to 2 hours then turn off automatically
+  By enabling *raid mode* I will kick every user on joining the group.
+
+  • /raidtime `(time optional)` : view or set the default duration for raid mode, after that time from toggling the raid mode will turn off automatically
+  Default is 6 hours
+
+  • /raidactiontime `(time optional)` : view or set the default duration that the raid mode will tempban
+  Default is 1 hour
