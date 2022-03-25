@@ -151,25 +151,43 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
         text = get_user_info(chat, user)
         is_chat = False
 
-    if INFOPIC and not is_chat:
-        try:
-            profile = bot.get_user_profile_photos(user.id).photos[0][-1]
-            _file = bot.get_file(profile["file_id"])
+    if INFOPIC:
+        if is_chat:
+            try:
+                pic = user.photo.big_file_id
+                pfp = bot.get_file(pic).download(out=BytesIO())
+                pfp.seek(0)
+                message.reply_document(
+                        document=pfp,
+                        filename=f'{user.id}.jpg',
+                        caption=text,
+                        parse_mode=ParseMode.HTML,
+                )
+            except AttributeError:  # AttributeError means no chat pic so just send text
+                message.reply_text(
+                        text,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
+                )
+        else:
+            try:
+                profile = bot.get_user_profile_photos(user.id).photos[0][-1]
+                _file = bot.get_file(profile["file_id"])
 
-            _file = _file.download(out=BytesIO())
-            _file.seek(0)
+                _file = _file.download(out=BytesIO())
+                _file.seek(0)
 
-            message.reply_document(
-                document=_file,
-                caption=(text),
-                parse_mode=ParseMode.HTML,
-            )
+                message.reply_document(
+                        document=_file,
+                        caption=(text),
+                        parse_mode=ParseMode.HTML,
+                )
 
-        # Incase user don't have profile pic, send normal text
-        except IndexError:
-            message.reply_text(
-                text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-            )
+            # Incase user don't have profile pic, send normal text
+            except IndexError:
+                message.reply_text(
+                        text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                )
 
     else:
         message.reply_text(
