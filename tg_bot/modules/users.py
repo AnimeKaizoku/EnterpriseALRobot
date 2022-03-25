@@ -1,3 +1,4 @@
+import contextlib
 from io import BytesIO
 from time import sleep
 
@@ -90,22 +91,55 @@ def broadcast(update: Update, context: CallbackContext):
         )
 
 
-def log_user(update: Update, context: CallbackContext):
+def log_user(update: Update, _: CallbackContext):
     chat = update.effective_chat
     msg = update.effective_message
 
     sql.update_user(msg.from_user.id, msg.from_user.username, chat.id, chat.title)
 
-    if msg.reply_to_message:
+    if rep := msg.reply_to_message:
         sql.update_user(
-            msg.reply_to_message.from_user.id,
-            msg.reply_to_message.from_user.username,
+            rep.from_user.id,
+            rep.from_user.username,
             chat.id,
             chat.title,
         )
 
+        if rep.forward_from:
+            sql.update_user(
+                rep.forward_from.id,
+                rep.forward_from.username,
+            )
+
+        if rep.entities:
+            for entity in rep.entities:
+                if entity.type in ["text_mention", "mention"]:
+                    with contextlib.suppress(AttributeError):
+                        sql.update_user(entity.user.id, entity.user.username)
+        if rep.sender_chat and not rep.is_automatic_forward:
+            sql.update_user(
+                rep.sender_chat.id,
+                rep.sender_chat.username,
+                chat.id,
+                chat.title,
+            )
+
     if msg.forward_from:
         sql.update_user(msg.forward_from.id, msg.forward_from.username)
+
+    if msg.entities:
+        for entity in msg.entities:
+            if entity.type in ["text_mention", "mention"]:
+                with contextlib.suppress(AttributeError):
+                    sql.update_user(entity.user.id, entity.user.username)
+    if msg.sender_chat and not msg.is_automatic_forward:
+        sql.update_user(msg.sender_chat.id, msg.sender_chat.username, chat.id, chat.title)
+
+    if msg.new_chat_members:
+        for user in msg.new_chat_members:
+            if user.id == msg.from_user.id:  # we already added that in the first place
+                continue
+            sql.update_user(user.id, user.username, chat.id, chat.title)
 
 
 @sudo_plus
