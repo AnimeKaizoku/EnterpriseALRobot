@@ -1,3 +1,4 @@
+import contextlib
 import html
 import time
 import git
@@ -19,8 +20,7 @@ from tg_bot import (
     WHITELIST_USERS,
     INFOPIC,
     sw,
-    StartTime,
-    KInit
+    StartTime
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
 from tg_bot.modules.sql import SESSION
@@ -66,10 +66,7 @@ def get_id(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
     msg = update.effective_message
-    user_id = extract_user(msg, args)
-
-    if user_id:
-
+    if user_id := extract_user(msg, args):
         if msg.reply_to_message and msg.reply_to_message.forward_from:
 
             user1 = message.reply_to_message.from_user
@@ -90,17 +87,15 @@ def get_id(update: Update, context: CallbackContext):
                 parse_mode=ParseMode.HTML,
             )
 
+    elif chat.type == "private":
+        msg.reply_text(
+            f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+        )
+
     else:
-
-        if chat.type == "private":
-            msg.reply_text(
-                f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
-
-        else:
-            msg.reply_text(
-                f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
+        msg.reply_text(
+            f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+        )
 
 @kigcmd(command='gifid')
 def gifid(update: Update, _):
@@ -207,7 +202,7 @@ def get_user_info(chat: Chat, user: User) -> str:
     if user.username:
         text += f"\nUsername: @{html.escape(user.username)}"
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
-    try:
+    with contextlib.suppress(Exception):
         if spamwtc := sw.get_ban(int(user.id)):
             text += "<b>\n\nSpamWatch:\n</b>"
             text += "<b>This person is banned in Spamwatch!</b>"
@@ -215,19 +210,15 @@ def get_user_info(chat: Chat, user: User) -> str:
             text += "\nAppeal at @SpamWatchSupport"
         else:
             text += "<b>\n\nSpamWatch:</b>\n Not banned"
-    except:
-        pass  # don't crash if api is down somehow...
     Nation_level_present = False
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\n<b>Chat count</b>: <code>{num_chats}</code>"
-    try:
+    with contextlib.suppress(BadRequest):
         user_member = chat.get_member(user.id)
         if user_member.status == "administrator":
             result = bot.get_chat_member(chat.id, user.id)
             if result.custom_title:
                 text += f"\nThis user holds the title <b>{result.custom_title}</b> here."
-    except BadRequest:
-        pass
     if user.id == OWNER_ID:
         text += '\nThis person is my owner'
         Nation_level_present = True
@@ -247,7 +238,7 @@ def get_user_info(chat: Chat, user: User) -> str:
         text += '\nThe Nation level of this person is Neptunia'
         Nation_level_present = True
     if Nation_level_present:
-        text += ' [<a href="https://t.me/{}?start=nations">?</a>]'.format(bot.username)
+        text += f' [<a href="https://t.me/{bot.username}?start=nations">?</a>]'
     text += "\n"
     for mod in USER_INFO:
         if mod.__mod_name__ == "Users":
@@ -325,7 +316,7 @@ def get_readable_time(seconds: int) -> str:
     for x in range(len(time_list)):
         time_list[x] = str(time_list[x]) + time_suffix_list[x]
     if len(time_list) == 4:
-        ping_time += time_list.pop() + ", "
+        ping_time += f'{time_list.pop()}, '
 
     time_list.reverse()
     ping_time += ":".join(time_list)
@@ -341,31 +332,35 @@ def stats(update, context):
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
     botuptime = get_readable_time((time.time() - StartTime))
     status = "*╒═══「 System statistics: 」*\n\n"
-    status += "*• System Start time:* " + str(uptime) + "\n"
+    status += f"*• System Start time:* {str(uptime)}" + "\n"
     uname = platform.uname()
-    status += "*• System:* " + str(uname.system) + "\n"
-    status += "*• Node name:* " + escape_markdown(str(uname.node)) + "\n"
-    status += "*• Release:* " + escape_markdown(str(uname.release)) + "\n"
-    status += "*• Machine:* " + escape_markdown(str(uname.machine)) + "\n"
+    status += f"*• System:* {str(uname.system)}" + "\n"
+    status += f"*• Node name:* {escape_markdown(str(uname.node))}" + "\n"
+    status += f"*• Release:* {escape_markdown(str(uname.release))}" + "\n"
+    status += f"*• Machine:* {escape_markdown(str(uname.machine))}" + "\n"
 
     mem = virtual_memory()
     cpu = cpu_percent()
     disk = disk_usage("/")
-    status += "*• CPU:* " + str(cpu) + " %\n"
-    status += "*• RAM:* " + str(mem[2]) + " %\n"
-    status += "*• Storage:* " + str(disk[3]) + " %\n\n"
-    status += "*• Python version:* " + python_version() + "\n"
-    status += "*• python-telegram-bot:* " + str(ptbver) + "\n"
-    status += "*• Uptime:* " + str(botuptime) + "\n"
-    status += "*• Database size:* " + str(db_size) + "\n"
+    status += f"*• CPU:* {str(cpu)}" + " %\n"
+    status += f"*• RAM:* {str(mem[2])}" + " %\n"
+    status += f"*• Storage:* {str(disk[3])}" + " %\n\n"
+    status += f"*• Python version:* {python_version()}" + "\n"
+    status += f"*• python-telegram-bot:* {str(ptbver)}" + "\n"
+    status += f"*• Uptime:* {str(botuptime)}" + "\n"
+    status += f"*• Database size:* {str(db_size)}" + "\n"
     kb = [
           [
            InlineKeyboardButton('Ping', callback_data='pingCB')
           ]
     ]
-    repo = git.Repo(search_parent_directories=True)
-    sha = repo.head.object.hexsha
-    status += f"*• Commit*: `{sha[0:9]}`\n"
+    try:
+        repo = git.Repo(search_parent_directories=True)
+        sha = repo.head.object.hexsha
+        status += f"*• Commit*: `{sha[:9]}`\n"
+    except git.CommandError as e:
+        status += f"*• Commit*: `{str(e)}`\\n"
+
     try:
         update.effective_message.reply_text(status +
             "\n*Bot statistics*:\n"
@@ -409,7 +404,7 @@ def pingCallback(update: Update, context: CallbackContext):
     requests.get('https://api.telegram.org')
     end_time = time.time()
     ping_time = round((end_time - start_time) * 1000, 3)
-    query.answer('Pong! {}ms'.format(ping_time))
+    query.answer(f'Pong! {ping_time}ms')
 
 
 def get_help(chat):

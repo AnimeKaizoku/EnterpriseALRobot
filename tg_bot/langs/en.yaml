@@ -356,7 +356,6 @@ misc_help: |
       • /cash : currency converter
         example syntax: /cash 1 USD INR
       • /getid : get IDs of chat, user and chat message.
-      • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
       ~~~~~~
       *Last.FM*
       Share what you're what listening to with the help of this module!
@@ -463,16 +462,6 @@ nation_help: |
       - /neptunians - Lists all Neptunia Nations.
       Note: These commands list users with special bot priveleges and can only be used by them.
       You can visit @YorktownEagleUnion to query more about these.
-
-nlp_help: |
-
-      *Chatroom Spam Prediction*
-       This feature uses @Intellivoid's Coffeehouse AI to
-       process chat messages and detect spam.
-       This comes under Coffehouse' NLP. Learn more about
-       it [here](https://docs.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom)
-       *Command:*
-        • `/nlpstat <on/off/yes/no>`*:* toggle NLP in your chat.
 
 
 sticker_blacklist_help: |
