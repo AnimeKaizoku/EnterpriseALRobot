@@ -358,7 +358,7 @@ def stats(update, context):
         repo = git.Repo(search_parent_directories=True)
         sha = repo.head.object.hexsha
         status += f"*• Commit*: `{sha[:9]}`\n"
-    except git.CommandError as e:
+    except Exception as e:
         status += f"*• Commit*: `{str(e)}`\\n"
 
     try:
