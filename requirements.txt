@@ -11,6 +11,7 @@ future
 git+https://github.com/python-telegram-bot/ptbcontrib.git
 gitpython
 gpytranslate
+humanize
 markdown2
 multicolorcaptcha
 pillow>=4.2.0
