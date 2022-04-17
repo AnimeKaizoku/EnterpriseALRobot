@@ -1,5 +1,7 @@
 import html
 import random
+import humanize
+from datetime import datetime
 
 from telegram import Update, MessageEntity
 from telegram.ext import Filters, CallbackContext
@@ -126,14 +128,14 @@ def reply_afk(update: Update, context: CallbackContext):
 def check_afk(update, context, user_id, fst_name, userc_id):
     if int(userc_id) == int(user_id):
         return
-    is_afk, reason = sql.check_afk_status(user_id)
+    is_afk, reason = sql.check_afk_status(user_id), time = humanize.naturaldelta(datetime.now() - user.time)
     if is_afk:
         if not reason:
-            res = "{} is afk".format(fst_name)
+            res = "{} is afk.\n\nLast seen {} ago".format(fst_name, time)
             update.effective_message.reply_text(res, parse_mode=None)
         else:
-            res = "{} is afk.\nReason: <code>{}</code>".format(
-                html.escape(fst_name), html.escape(reason)
+            res = "{} is afk.\nReason: <code>{}</code>\n\nLast seen {} ago".format(
+                html.escape(fst_name), html.escape(reason), html.escape(time)
             )
             update.effective_message.reply_text(res, parse_mode="html")
 
