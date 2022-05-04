@@ -33,7 +33,7 @@ The Support group can be reached out to at [Eagle Union](https://t.me/YorktownEa
 
 # How to setup
 
-- `git clone https://github.com/Dank-del/EnterpriseALRobot`
+- `git clone https://github.com/AnimeKaizoku/EnterpriseALRobot`
 - `cd EnterpriseALRobot`
 - `cp sample_config.ini config.ini`
 - *Fill in all the vars*
