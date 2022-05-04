@@ -273,7 +273,6 @@ misc_help: |
      ejemplo de sintaxis: / cash 1 USD INR
    • /cinfo: obtiene información sobre un usuario o un chat (usa métodos @Pyrogram)
    • /getid: obtiene ID de chat, usuario y mensaje de chat.
-   • /spbinfo: obtenga información sobre un usuario de la API SpamProtection de @ Intellivoid
 muting_help: |
   * Solo administradores: *
     • `/mute <userhandle>` *: * silencia a un usuario.  También se puede utilizar como respuesta, silenciando la respuesta al usuario.

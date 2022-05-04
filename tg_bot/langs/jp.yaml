@@ -297,7 +297,6 @@ misc_help: |
         example syntax: /cash 1 USD INR
       • /cinfo : get info about a user or a chat (uses @Pyrogram methods)
       • /getid : get IDs of chat, user and chat message.
-      • /spbinfo : get info about a user from @Intellivoid's SpamProtection API
       ───────────────────────────────
       *Last.FM*
       Share what you're what listening to with the help of this module!
@@ -389,12 +388,4 @@ greetings_help: |
       *Welcome markdown:*
        • `/welcomehelp`*:* view more formatting information for custom welcome/goodbye messages.
 
-nlp_help: |
 
-      *Chatroom Spam Prediction*
-       This feature uses @Intellivoid's Coffeehouse AI to
-       process chat messages and detect spam.
-       This comes under Coffehouse' NLP. Learn more about
-       it [here](https://docs.intellivoid.net/coffeehouse/v1/nlp/spam_prediction/chatroom)
-       *Command:*
-        • `/nlpstat <on/off/yes/no>`*:* toggle NLP in your chat.
