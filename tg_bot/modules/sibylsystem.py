@@ -2,7 +2,7 @@ import os
 import logging
 import threading
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 
 from telegram import Bot, Chat, Message, MessageEntity, Update, InlineKeyboardButton, InlineKeyboardMarkup, User
 from telegram.ext.commandhandler import CommandHandler
@@ -522,7 +522,7 @@ def sibyl_info(update: Update, context: CallbackContext):
     msg.edit_text(text = txt, reply_markup = reply_markup, parse_mode = ParseMode.HTML, disable_web_page_preview = True)
 
 
-def get_sibyl_info(bot: Bot, user: User, detailed: bool = False) -> (str, Optional[InlineKeyboardMarkup]):
+def get_sibyl_info(bot: Bot, user: User, detailed: bool = False) -> Tuple[str, Optional[InlineKeyboardMarkup]]:
     reply_markup = None
     txt = "<b>Cymatic Scan Results</b>"
     txt += f"\n • <b>User</b>: {mention_html(user.id, user.first_name)}"
