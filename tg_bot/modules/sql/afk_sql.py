@@ -1,6 +1,8 @@
-import threading
 
-from sqlalchemy import Column, UnicodeText, Boolean, BigInteger
+import threading
+import typing
+
+from sqlalchemy import Boolean, Column, BigInteger, UnicodeText
 
 from tg_bot.modules.sql import BASE, SESSION
 
@@ -18,7 +20,7 @@ class AFK(BASE):
         self.is_afk = is_afk
 
     def __repr__(self):
-        return "afk_status for {}".format(self.user_id)
+        return f"afk_status for {self.user_id}"
 
 
 AFK.__table__.create(checkfirst=True)
@@ -31,10 +33,11 @@ def is_afk(user_id):
     return user_id in AFK_USERS
 
 
-def check_afk_status(user_id):
-    if user_id in AFK_USERS:
-        return True, AFK_USERS[user_id]
-    return False, ""
+def check_afk_status(user_id) -> typing.Optional[AFK]:
+    try:
+        return SESSION.query(AFK).get(user_id)
+    finally:
+        SESSION.close()
 
 
 def set_afk(user_id, reason=""):
@@ -44,7 +47,6 @@ def set_afk(user_id, reason=""):
             curr = AFK(user_id, reason, True)
         else:
             curr.is_afk = True
-            curr.reason = reason
 
         AFK_USERS[user_id] = reason
 
@@ -54,8 +56,7 @@ def set_afk(user_id, reason=""):
 
 def rm_afk(user_id):
     with INSERTION_LOCK:
-        curr = SESSION.query(AFK).get(user_id)
-        if curr:
+        if curr := SESSION.query(AFK).get(user_id):
             if user_id in AFK_USERS:  # sanity check
                 del AFK_USERS[user_id]
 
@@ -65,6 +66,19 @@ def rm_afk(user_id):
 
         SESSION.close()
         return False
+
+
+def toggle_afk(user_id, reason=""):
+    with INSERTION_LOCK:
+        curr = SESSION.query(AFK).get(user_id)
+        if not curr:
+            curr = AFK(user_id, reason, True)
+        elif curr.is_afk:
+            curr.is_afk = False
+        else:
+            curr.is_afk = True
+        SESSION.add(curr)
+        SESSION.commit()
 
 
 def __load_afk_users():
