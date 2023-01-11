@@ -707,12 +707,10 @@ def main():
 
     if WEBHOOK:
         log.info("Using webhooks.")
-        updater.start_webhook(listen="127.0.0.1", port=PORT, url_path=TOKEN)
-
-        if CERT_PATH:
-            updater.bot.set_webhook(url=URL + TOKEN, certificate=open(CERT_PATH, "rb"))
-        else:
-            updater.bot.set_webhook(url=URL + TOKEN)
+        updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, allowed_updates=Update.ALL_TYPES, 
+                            webhook_url=URL+TOKEN, drop_pending_updates=KInit.DROP_UPDATES, 
+                            cert=CERT_PATH if CERT_PATH else None)
+        log.info(f"Kigyo started, Using webhooks. | BOT: [@{dispatcher.bot.username}]")
 
     else:
         log.info(f"Kigyo started, Using long polling. | BOT: [@{dispatcher.bot.username}]")
@@ -721,10 +719,7 @@ def main():
         KigyoINIT.bot_name = dispatcher.bot.first_name
         updater.start_polling(timeout=15, read_latency=4, allowed_updates=Update.ALL_TYPES,
                               drop_pending_updates=KInit.DROP_UPDATES)
-    if len(argv) not in (1, 3, 4):
-        telethn.disconnect()
-    else:
-        telethn.run_until_disconnected()
+    telethn.run_until_disconnected()
     updater.idle()
 
 

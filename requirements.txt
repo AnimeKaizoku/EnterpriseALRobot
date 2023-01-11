@@ -8,7 +8,6 @@ currencyconverter
 emoji
 feedparser
 future
-git+https://github.com/python-telegram-bot/ptbcontrib.git
 gitpython
 gpytranslate
 markdown2
@@ -18,7 +17,7 @@ psutil
 psycopg2-binary
 pyYAML>=5.1.2
 pyrate-limiter
-python-telegram-bot==13.11
+python-telegram-bot==13.15
 requests
 spamwatch
 speedtest-cli
