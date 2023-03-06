@@ -389,7 +389,7 @@ from tg_bot.modules.language import gs
 def get_help(chat):
     return gs(chat, "connections_help")
 
-CONNECT_CHAT_HANDLER = CommandHandler("connect", connect_chat, pass_args=True)
+CONNECT_CHAT_HANDLER = CommandHandler("connect", connect_chat, pass_args=True, run_async=True)
 CONNECTION_CHAT_HANDLER = CommandHandler("connection", connection_chat, run_async=True)
 DISCONNECT_CHAT_HANDLER = CommandHandler("disconnect", disconnect_chat, run_async=True)
 ALLOW_CONNECTIONS_HANDLER = CommandHandler(
