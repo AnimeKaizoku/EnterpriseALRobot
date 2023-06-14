@@ -1,9 +1,12 @@
 import time
+
 from telethon import events
 
 from tg_bot import telethn
 from tg_bot.modules.helper_funcs.telethn.chatstatus import (
-    can_delete_messages, user_is_admin)
+    can_delete_messages,
+    user_is_admin,
+)
 
 
 async def purge_messages(event):
@@ -12,20 +15,18 @@ async def purge_messages(event):
         return
 
     if not await user_is_admin(
-            user_id=event.sender_id, message=event) and event.from_id not in [
-                1087968824
-            ]:
-        await event.reply("Only Admins are allowed to use this command")
+        user_id=event.sender_id, message=event
+    ) and event.from_id not in [1087968824]:
+        await event.reply("Sólo los administradores pueden utilizar este comando")
         return
 
     if not await can_delete_messages(message=event):
-        await event.reply("Can't seem to purge the message")
+        await event.reply("Parece que no se puede purgar el mensaje")
         return
 
     reply_msg = await event.get_reply_message()
     if not reply_msg:
-        await event.reply(
-            "Reply to a message to select where to start purging from.")
+        await event.reply("Responder a un mensaje para seleccionar desde dónde empezar a purgar.")
         return
     messages = []
     message_id = reply_msg.id
@@ -43,8 +44,8 @@ async def purge_messages(event):
     except:
         pass
     time_ = time.perf_counter() - start
-    text = f"Purged Successfully in {time_:0.2f} Second(s)"
-    await event.respond(text, parse_mode='markdown')
+    text = f"`Purgado con éxito en {time_:0.2f} Segundos.`"
+    await event.respond(text, parse_mode="markdown")
 
 
 async def delete_messages(event):
@@ -52,31 +53,28 @@ async def delete_messages(event):
         return
 
     if not await user_is_admin(
-            user_id=event.sender_id, message=event) and event.from_id not in [
-                1087968824
-            ]:
-        await event.reply("Only Admins are allowed to use this command")
+        user_id=event.sender_id, message=event
+    ) and event.from_id not in [1087968824]:
+        await event.reply("Sólo los administradores pueden utilizar este comando")
         return
 
     if not await can_delete_messages(message=event):
-        await event.reply("Can't seem to delete this?")
+        await event.reply("Parece que no puedo borrar esto")
         return
 
     message = await event.get_reply_message()
     if not message:
-        await event.reply("Whadya want to delete?")
+        await event.reply("¿Qué quieres borrar?")
         return
     chat = await event.get_input_chat()
     del_message = [message, event.message]
     await event.client.delete_messages(chat, del_message)
 
-from tg_bot.modules.language import gs
 
-def get_help(chat):
-    return gs(chat, "purge_help")
-
-
-
+__help__ = """
+ ❍ /del*:* borra el mensaje al que has respondido
+ ❍ /purge*:* borra todos los mensajes entre éste y el mensaje contestado.
+"""
 
 PURGE_HANDLER = purge_messages, events.NewMessage(pattern="^[!/]purge$")
 DEL_HANDLER = delete_messages, events.NewMessage(pattern="^[!/]del$")
