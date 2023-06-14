@@ -25,10 +25,10 @@ pm_start_text: |
    
    *Click on help to learn more!*
    
-grp_start_text: "Hi, I'm Kigyo."
+grp_start_text: "Hi, I'm Izanami."
 
 pm_help_text: |
-   Hello there! My name is *Kigyo*. A part of *Eagle Union*.
+   Hello there! My name is *Izanami* from Uchiha Clan.
    I'm a modular group management bot with a few fun extras! Have a look at the following for an idea of some of
    the things I can help you with.
    *Main* commands available:
@@ -40,7 +40,7 @@ pm_help_text: |
       - in a group: will redirect you to pm, with all that chat's settings.
     Click on the buttons below to get documentation about specific modules!
 
-add_bot_to_group_btn: "Add Kigyo"
+add_bot_to_group_btn: "Add Izanami"
 support_chat_link_btn: "Support"
 updates_channel_link_btn: "Updates"
 src_btn: "Source code"
