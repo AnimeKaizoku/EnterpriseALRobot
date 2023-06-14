@@ -2,7 +2,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg_bot import pbot as Client
-from tg_bot.utils.fonts import Fonts
+from tg_bot.fonts import Fonts
 
 
 @Client.on_message(filters.command(["font", "fonts"]))
