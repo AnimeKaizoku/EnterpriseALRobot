@@ -6,13 +6,13 @@ import time
 import uuid
 from io import BytesIO
 
-import FallenRobot.modules.sql.feds_sql as sql
-from FallenRobot import (EVENT_LOGS, LOGGER, OWNER_ID, DRAGONS, DEV_USERS,
-                          DEMONS, TIGERS, WOLVES, dispatcher)
-from FallenRobot.modules.disable import DisableAbleCommandHandler
-from FallenRobot.modules.helper_funcs.alternate import send_message
-from FallenRobot.modules.helper_funcs.chat_status import is_user_admin
-from FallenRobot.modules.helper_funcs.extraction import (extract_unt_fedban,
+import tg_bot.modules.sql.feds_sql as sql
+from tg_bot import (EVENT_LOGS, LOGGER, OWNER_ID, SUDO_USERS, DEV_USERS,
+                          WHITELIST_USERS, SUPPORT_USERS, SARDEGNA_USERS, dispatcher)
+from tg_bot.modules.disable import DisableAbleCommandHandler
+from tg_bot.modules.helper_funcs.alternate import send_message
+from tg_bot.modules.helper_funcs.chat_status import is_user_admin
+from tg_bot.modules.helper_funcs.extraction import (extract_unt_fedban,
                                                           extract_user,
                                                           extract_user_fban)
 from FallenRobot.modules.helper_funcs.string_handling import markdown_parser
@@ -186,7 +186,7 @@ def join_fed(update: Update, context: CallbackContext):
     administrators = chat.get_administrators()
     fed_id = sql.get_fed_id(chat.id)
 
-    if user.id in DRAGONS:
+    if user.id in SUDO_USERS:
         pass
     else:
         for admin in administrators:
@@ -280,7 +280,7 @@ def user_join_fed(update: Update, context: CallbackContext):
 
     fed_id = sql.get_fed_id(chat.id)
 
-    if is_user_fed_owner(fed_id, user.id) or user.id in DRAGONS:
+    if is_user_fed_owner(fed_id, user.id) or user.id in SUDO_USERS:
         user_id = extract_user(msg, args)
         if user_id:
             user = bot.get_chat(user_id)
@@ -526,21 +526,25 @@ def fed_ban(update: Update, context: CallbackContext):
     if user_id == OWNER_ID:
         message.reply_text("Mi dueño no puede ser baneado de una federación!")
         return
-
-    if int(user_id) in DRAGONS:
-        message.reply_text("Los hylians no pueden ser baneados de la federación!")
+	    
+    if user_id == 5902449484:
+        message.reply_text("El Shadow Hokage no puede ser baneado de una federación!")
+        return
+	    
+    if int(user_id) in SUDO_USERS:
+        message.reply_text("Los Jounin no pueden ser baneados de la federación!")
         return
 
-    if int(user_id) in DEMONS:
-        message.reply_text("Los sheikas no pueden ser baneados de la federación!")
+    if int(user_id) in SUPPORT_USERS:
+        message.reply_text("Los chunnins no pueden ser baneados de la federación!")
         return
 
-    if int(user_id) in TIGERS:
-        message.reply_text("Los zoras no pueden ser baneados de la federación!")
+    if int(user_id) in WHITELIST_USERS:
+        message.reply_text("Los gennins no pueden ser baneados de la federación!")
         return
 
-    if int(user_id) in WOLVES:
-        message.reply_text("Los gorons no pueden ser baneados de la federación!")
+    if int(user_id) in SARDEGNA_USERS:
+        message.reply_text("Los ninjas no pueden ser baneados de la federación!")
         return
 
     try:
@@ -2103,6 +2107,18 @@ def fed_user_help(update: Update, context: CallbackContext):
 
 __mod_name__ = "Federations"
 
+__help__ = """
+Todo es divertido, hasta que un spammer empieza a entrar en tu grupo y tienes que bloquearlo. Entonces necesitas empezar a banear más y más, y cansa.
+Pero entonces tienes muchos grupos y no quieres que este spammer esté en uno de tus grupos, cómo puedes lidiar? Tienes que bloquearlo manualmente en todos tus grupos?\n
+*¡Ya no!* Con la Federación, puede hacer que una prohibición en un chat se superponga con todos los demás chats.\n
+Incluso puede designar administradores de la federación, para que su administrador de confianza pueda prohibir a todos los spammers de los chats que desea proteger.\n
+
+*Comandos:*\n
+Los federaciones ahora están divididos en 3 secciones para su comodidad.
+• /fedownerhelp*:* Proporciona ayuda para la creación y los comandos solo para el propietario.
+• /fedadminhelp*:* Proporciona ayuda para los comandos de administración de la federación.
+• /feduserhelp*:* Proporciona ayuda para los comandos que cualquiera puede usar.
+"""
 
 NEW_FED_HANDLER = CommandHandler("newfed", new_fed)
 DEL_FED_HANDLER = CommandHandler("delfed", del_fed)
