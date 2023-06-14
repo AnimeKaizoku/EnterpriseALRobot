@@ -274,12 +274,10 @@ def info(update: Update, context: CallbackContext):
 
     if user.id == OWNER_ID:
         text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ɴɪᴠᴇʟ <b>Hᴏᴋᴀɢᴇ</b>.\n"
-    elif user.id == 5902449484:
-        text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ɴɪᴠᴇʟ <b>Sʜᴀᴅᴏᴡ Hᴏᴋᴀɢᴇ</b>.\n"
     elif user.id in DEV_USERS:
-        text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ᴍɪᴇᴍʙʀᴏ ᴅᴇ ʟᴀ <b>Rᴏʏᴀʟ Fᴀᴍɪʟʏ</b>.\n"
+        text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ᴍɪᴇᴍʙʀᴏ ᴅᴇ ʟᴀ <b>Jᴏᴜɴɪɴ</b>.\n"
     elif user.id in SUDO_USERS:
-        text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ɴɪᴠᴇʟ <b>Jᴏᴜɴɪɴ</b>.\n"
+        text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ɴɪᴠᴇʟ <b>Sʜᴀᴅᴏᴡ Hᴏᴋᴀɢᴇ</b>.\n"
     elif user.id in SUPPORT_USERS:
         text += "\n\nᴇsᴛᴇ ᴜsᴜᴀʀɪᴏ ᴇs ɴɪᴠᴇʟ <b>Cʜᴜɴɪɴ</b>.\n"
     elif user.id in WHITELIST_USERS:
