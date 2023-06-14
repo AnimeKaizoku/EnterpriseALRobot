@@ -1,15 +1,17 @@
-from tg_bot.modules.helper_funcs.telethn import HIGHER_AUTH, telethn
-from tg_bot import SUPPORT_USERS, SARDEGNA_USERS, WHITELIST_USERS
 from telethon.tl.types import ChannelParticipantsAdmins
+
+from tg_bot import SUDO_USERS
+from tg_bot.modules.helper_funcs.telethn import IMMUNE_USERS, telethn
 
 
 async def user_is_ban_protected(user_id: int, message):
     status = False
-    if message.is_private or user_id in (HIGHER_AUTH + SUPPORT_USERS + SARDEGNA_USERS + WHITELIST_USERS):
+    if message.is_private or user_id in (IMMUNE_USERS):
         return True
 
     async for user in telethn.iter_participants(
-            message.chat_id, filter=ChannelParticipantsAdmins):
+        message.chat_id, filter=ChannelParticipantsAdmins
+    ):
         if user_id == user.id:
             status = True
             break
@@ -22,8 +24,9 @@ async def user_is_admin(user_id: int, message):
         return True
 
     async for user in telethn.iter_participants(
-            message.chat_id, filter=ChannelParticipantsAdmins):
-        if user_id == user.id or user_id in HIGHER_AUTH:
+        message.chat_id, filter=ChannelParticipantsAdmins
+    ):
+        if user_id == user.id or user_id in SUDO_USERS:
             status = True
             break
     return status
@@ -32,19 +35,21 @@ async def user_is_admin(user_id: int, message):
 async def is_user_admin(user_id: int, chat_id):
     status = False
     async for user in telethn.iter_participants(
-            chat_id, filter=ChannelParticipantsAdmins):
-        if user_id == user.id or user_id in HIGHER_AUTH:
+        chat_id, filter=ChannelParticipantsAdmins
+    ):
+        if user_id == user.id or user_id in SUDO_USERS:
             status = True
             break
     return status
 
 
-async def kigyo_is_admin(chat_id: int):
+async def fallen_is_admin(chat_id: int):
     status = False
-    kigyo = await telethn.get_me()
+    fallen = await telethn.get_me()
     async for user in telethn.iter_participants(
-            chat_id, filter=ChannelParticipantsAdmins):
-        if kigyo.id == user.id:
+        chat_id, filter=ChannelParticipantsAdmins
+    ):
+        if fallen.id == user.id:
             status = True
             break
     return status
@@ -95,7 +100,6 @@ async def can_add_admins(message):
 
 
 async def can_delete_messages(message):
-
     if message.is_private:
         return True
     elif message.chat.admin_rights:
