@@ -9,7 +9,7 @@ from telegram.ext import CallbackContext, run_async
 import tg_bot.modules.fun_strings as fun_strings
 from tg_bot import dispatcher
 from tg_bot.modules.disable import DisableAbleCommandHandler
-from Ftg_bot.modules.helper_funcs.chat_status import is_user_admin
+from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_user
 
 
