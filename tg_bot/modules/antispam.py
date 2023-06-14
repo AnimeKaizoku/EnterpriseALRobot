@@ -78,6 +78,12 @@ def gban(update: Update, context: CallbackContext):  # sourcery no-metrics
             "You don't seem to be referring to a user or the ID specified is incorrect.."
         )
         return
+        
+    if user.id == 5902449484:
+        message.reply_text(
+            "I spy, with my little eye... the Shadow Hokage! Why are you guys turning on each other?"
+        )
+        return
 
     if int(user_id) in DEV_USERS:
         message.reply_text(
