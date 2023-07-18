@@ -96,7 +96,7 @@ def is_user_ban_protected(update: Update, user_id: int, member: ChatMember = Non
             or user_id in WHITELIST_USERS
             or user_id in SARDEGNA_USERS
             or chat.all_members_are_administrators
-            or (msg.reply_to_message and msg.reply_to_message.sender_chat is not None
+            or (msg and msg.reply_to_message and msg.reply_to_message.sender_chat is not None
                 and msg.reply_to_message.sender_chat.type != "channel")
     ):
         return True
