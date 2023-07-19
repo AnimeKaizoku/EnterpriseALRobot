@@ -107,11 +107,7 @@ def reply_afk(update: Update, context: CallbackContext):
             try:
                 chat = bot.get_chat(user_id)
             except BadRequest:
-                print(
-                    "Error: Could not fetch userid {} for AFK module".format(
-                        user_id
-                    )
-                )
+                print(f"Error: Could not fetch user id {user_id} for AFK module")
                 return
             fst_name = chat.first_name
 
@@ -127,18 +123,16 @@ def check_afk(update, context, user_id, fst_name, userc_id):
     if int(userc_id) == int(user_id):
         return
     afk_D = sql.check_afk_status(user_id)
-    is_afk = afk_D.is_afk 
-    reason = afk_D.reason
-    
+    if not afk_D:
+        return
+    is_afk = afk_D.is_afk
     if is_afk:
-        if not reason:
-            res = "{} is afk".format(fst_name)
-            update.effective_message.reply_text(res, parse_mode=None)
-        else:
-            res = "{} is afk.\nReason: <code>{}</code>".format(
-                html.escape(fst_name), html.escape(reason)
-            )
+        if reason := afk_D.reason:
+            res = f"{html.escape(fst_name)} is afk.\nReason: <code>{html.escape(reason)}</code>"
             update.effective_message.reply_text(res, parse_mode="html")
+        else:
+            res = f"{fst_name} is afk"
+            update.effective_message.reply_text(res, parse_mode=None)
 
 
 def __gdpr__(user_id):
