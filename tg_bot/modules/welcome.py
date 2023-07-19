@@ -83,13 +83,6 @@ WHITELISTED = [OWNER_ID, SYS_ADMIN] + DEV_USERS + SUDO_USERS + SUPPORT_USERS + W
 # do not async
 def send(update, message, keyboard, backup_message):
     chat = update.effective_chat
-    cleanserv = sql.clean_service(chat.id)
-    # Clean service welcome
-    if cleanserv:
-        try:
-            dispatcher.bot.delete_message(chat.id, update.message.message_id)
-        except BadRequest:
-            pass
     try:
         msg = dispatcher.bot.send_message(chat.id,
             message,
@@ -183,7 +176,7 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     human_checks = sql.get_human_checks(user.id, chat.id)
     raid, _, deftime = sql.getRaidStatus(str(chat.id))
 
-    new_mem = update.chat_member.from_user
+    new_mem = update.chat_member.new_chat_member.user
 
     welcome_log = None
     res = None
@@ -599,7 +592,7 @@ def left_member(update: Update, context: CallbackContext):  # sourcery no-metric
         return
 
     if should_goodbye:
-        left_mem = update.chat_member.from_user
+        left_mem = update.chat_member.new_chat_member.user
         if left_mem:
 
             # Thingy for spamwatched users
