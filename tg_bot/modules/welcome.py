@@ -153,6 +153,8 @@ def send(update, message, keyboard, backup_message):
     return msg
 
 def welcomeFilter(update: Update, context: CallbackContext):
+    if update.effective_chat.type != "group" and update.effective_chat.type != "supergroup":
+        return
     if nm := update.chat_member.new_chat_member:
         om = update.chat_member.old_chat_member
         if nm.status == nm.MEMBER and (om.status == nm.KICKED or om.status == nm.LEFT):
