@@ -39,7 +39,7 @@ def rate_limit(messages_per_window: int, window_seconds: int):
             message_history[user_id] = [t for t in message_history[user_id] if current_time - t <= window_seconds]
 
             if len(message_history[user_id]) >= messages_per_window:
-                log.warn(f"Rate limit exceeded for user {user_id}. Allowed {messages_per_window} updates in {window_seconds} seconds for {func.__name__}")
+                log.debug(f"Rate limit exceeded for user {user_id}. Allowed {messages_per_window} updates in {window_seconds} seconds for {func.__name__}")
                 return
 
             message_history[user_id].append(current_time)
