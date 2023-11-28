@@ -376,7 +376,7 @@ def list_warn_filters(update: Update, context: CallbackContext):
 
 
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def reply_filter(update: Update, context: CallbackContext) -> Optional[str]:
     chat: Optional[Chat] = update.effective_chat
     message: Optional[Message] = update.effective_message

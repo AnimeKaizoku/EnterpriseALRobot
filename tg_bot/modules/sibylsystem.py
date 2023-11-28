@@ -199,7 +199,7 @@ def get_sibyl_setting(chat_id):
 
 
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibyl_ban(update: Update, context: CallbackContext) -> Optional[str]:
     message = update.effective_message
     chat = update.effective_chat

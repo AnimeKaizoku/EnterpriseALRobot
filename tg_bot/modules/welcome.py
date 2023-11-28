@@ -551,12 +551,12 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
 
     return ""
 
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def cleanServiceFilter(u: Update, _):
     if u.effective_message.left_chat_member or u.effective_message.new_chat_members:
         return handleCleanService(u)
 
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def handleCleanService(update: Update):
     if sql.clean_service(update.effective_chat.id):
         try:
