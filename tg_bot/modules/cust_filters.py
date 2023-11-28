@@ -48,7 +48,7 @@ ENUM_FUNC_MAP = {
 
 @typing_action
 @kigcmd(command='filters', admin_ok=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def list_handlers(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -98,7 +98,7 @@ def list_handlers(update, context):
 @kigcmd(command='filter', run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def filters(update, context):  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user
@@ -223,7 +223,7 @@ def filters(update, context):  # sourcery no-metrics
 @kigcmd(command='stop', run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def stop_filter(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -457,7 +457,7 @@ def reply_filter(update, context):  # sourcery no-metrics
 
 
 @kigcmd(command="removeallfilters", filters=Filters.chat_type.groups)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def rmall_filters(update, _):
     chat = update.effective_chat
     user = update.effective_user
@@ -485,7 +485,7 @@ def rmall_filters(update, _):
 
 
 @kigcallback(pattern=r"filters_.*")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def rmall_callback(update, _):
     query = update.callback_query
     chat = update.effective_chat

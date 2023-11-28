@@ -24,7 +24,7 @@ BLACKLIST_GROUP = -3
 @kigcmd(command="blacklist", pass_args=True, admin_ok=True)
 @u_admin
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def blacklist(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -69,7 +69,7 @@ def blacklist(update, context):
 @kigcmd(command="addblacklist", pass_args=True)
 @user_admin(AdminPerms.CAN_DELETE_MESSAGES)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def add_blacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -128,7 +128,7 @@ def add_blacklist(update, context):
 @kigcmd(command="unblacklist", pass_args=True)
 @user_admin(AdminPerms.CAN_DELETE_MESSAGES)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unblacklist(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -214,7 +214,7 @@ def unblacklist(update, context):
 @loggable
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def blacklist_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user

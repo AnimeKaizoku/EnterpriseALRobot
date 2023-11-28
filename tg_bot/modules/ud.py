@@ -4,7 +4,7 @@ from telegram.ext import CallbackContext, run_async
 from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 @kigcmd(command=["ud", "urban"])
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def ud(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text[len("/ud ") :]

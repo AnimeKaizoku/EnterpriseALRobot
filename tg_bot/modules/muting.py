@@ -47,7 +47,7 @@ def check_user(user_id: int, bot: Bot, update: Update) -> Optional[str]:
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def mute(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -100,7 +100,7 @@ def mute(update: Update, context: CallbackContext) -> str:
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unmute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -167,7 +167,7 @@ def unmute(update: Update, context: CallbackContext) -> str:
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def temp_mute(update: Update, context: CallbackContext) -> str:
     bot, args = context.bot, context.args
     chat = update.effective_chat

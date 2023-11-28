@@ -29,7 +29,7 @@ __mod_name__ = "Backup"
 @kigcmd(command='import')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def import_data(update, context):
     msg = update.effective_message
     chat = update.effective_chat
@@ -122,7 +122,7 @@ def import_data(update, context):
 
 @kigcmd(command='export')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def export_data(update, context):  # sourcery no-metrics
     chat_data = context.chat_data
     msg = update.effective_message  # type: Optional[Message]

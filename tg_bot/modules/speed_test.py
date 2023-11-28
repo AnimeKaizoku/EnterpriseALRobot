@@ -12,7 +12,7 @@ def convert(speed):
 
 @kigcmd(command='speedtest')
 @dev_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def speedtestxyz(update: Update, context: CallbackContext):
     buttons = [
         [
@@ -26,7 +26,7 @@ def speedtestxyz(update: Update, context: CallbackContext):
 
 
 @kigcallback(pattern="speedtest_.*")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def speedtestxyz_callback(update: Update, context: CallbackContext):
     query = update.callback_query
 

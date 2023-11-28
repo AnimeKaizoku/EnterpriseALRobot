@@ -213,7 +213,7 @@ def get(update, context, notename, show_none=True, no_format=False):
 
 @kigcmd(command="get")
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def cmd_get(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     if len(args) >= 2 and args[1].lower() == "noformat":
@@ -227,7 +227,7 @@ def cmd_get(update: Update, context: CallbackContext):
 
 @kigmsg((Filters.regex(r"^#[^\s]+")), group=-14)
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def hash_get(update: Update, context: CallbackContext):
     message = update.effective_message.text
     fst_word = message.split()[0]
@@ -238,7 +238,7 @@ def hash_get(update: Update, context: CallbackContext):
 
 @kigmsg((Filters.regex(r"^/\d+$")), group=-16)
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def slash_get(update: Update, context: CallbackContext):
     message, chat_id = update.effective_message.text, update.effective_chat.id
     no_slash = message[1:]
@@ -254,7 +254,7 @@ def slash_get(update: Update, context: CallbackContext):
 @kigcmd(command='save')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def save(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -297,7 +297,7 @@ def save(update: Update, context: CallbackContext):
 @kigcmd(command='clear')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def clear(update: Update, context: CallbackContext):
     args = context.args
     chat_id = update.effective_chat.id
@@ -313,7 +313,7 @@ def clear(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='removeallnotes')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def clearall(update: Update, context: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user
@@ -341,7 +341,7 @@ def clearall(update: Update, context: CallbackContext):
 
 
 @kigcallback(pattern=r"notes_.*")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def clearall_btn(update: Update, context: CallbackContext):
     query = update.callback_query
     chat = update.effective_chat
@@ -375,7 +375,7 @@ def clearall_btn(update: Update, context: CallbackContext):
 
 @kigcmd(command=["notes", "saved"])
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def list_notes(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     note_list = sql.get_all_chat_notes(chat_id)

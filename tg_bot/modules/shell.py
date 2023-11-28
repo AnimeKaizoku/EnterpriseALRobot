@@ -6,7 +6,7 @@ from telegram.ext import Filters, CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 @kigcmd(command='sh', filters=Filters.user(SYS_ADMIN))
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def shell(update: Update, context: CallbackContext):
     message = update.effective_message
     cmd = message.text.split(" ", 1)

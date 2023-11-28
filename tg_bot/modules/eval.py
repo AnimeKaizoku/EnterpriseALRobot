@@ -50,14 +50,14 @@ def send(msg, bot, update):
 
 
 @kigcmd(command=("e", "ev", "eva", "eval"), filters=Filters.user(SYS_ADMIN))
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def evaluate(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(eval, bot, update), bot, update)
 
 
 @kigcmd(command=("x", "ex", "exe", "exec", "py"), filters=Filters.user(SYS_ADMIN))
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def execute(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(exec, bot, update), bot, update)
@@ -117,7 +117,7 @@ def do(func, bot, update):
 
 
 @kigcmd(command="clearlocals", filters=Filters.user(SYS_ADMIN))
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def clear(update: Update, context: CallbackContext):
     bot = context.bot
     log_input(update)

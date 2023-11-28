@@ -36,7 +36,7 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
 @kigcmd(command='addsudo')
 @dev_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def addsudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -89,7 +89,7 @@ def addsudo(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='addsupport')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def addsupport(
     update: Update,
     context: CallbackContext,
@@ -141,7 +141,7 @@ def addsupport(
 @kigcmd(command='addwhitelist')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def addwhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -190,7 +190,7 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='addsardegna')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def addsardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -243,7 +243,7 @@ def addsardegna(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='removesudo')
 @dev_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def removesudo(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -281,7 +281,7 @@ def removesudo(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='removesupport')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def removesupport(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -319,7 +319,7 @@ def removesupport(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='removewhitelist')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def removewhitelist(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -356,7 +356,7 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='removesardegna')
 @sudo_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def removesardegna(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -410,7 +410,7 @@ def send_nations(update):
 
 @kigcmd(command='removesardegna')
 @whitelist_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def whitelistlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Neptunia Nations :</b>\n"
@@ -426,7 +426,7 @@ def whitelistlist(update: Update, context: CallbackContext):
 
 @kigcmd(command='sardegnas')
 @whitelist_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def Sardegnalist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sardegna Nations :</b>\n"
@@ -441,7 +441,7 @@ def Sardegnalist(update: Update, context: CallbackContext):
 
 @kigcmd(command=["supportlist", "sakuras"])
 @whitelist_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def supportlist(update: Update, context: CallbackContext):
     bot = context.bot
     reply = "<b>Known Sakura Nations :</b>\n"
@@ -456,7 +456,7 @@ def supportlist(update: Update, context: CallbackContext):
 
 @kigcmd(command=["sudolist", "royals"])
 @whitelist_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
     true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
@@ -472,7 +472,7 @@ def sudolist(update: Update, context: CallbackContext):
 
 @kigcmd(command=["devlist", "eagle"])
 @whitelist_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def devlist(update: Update, context: CallbackContext):
     bot = context.bot
     true_dev = list(set(DEV_USERS) - {OWNER_ID})

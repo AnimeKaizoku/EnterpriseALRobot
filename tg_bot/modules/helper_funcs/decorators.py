@@ -21,7 +21,7 @@ def rate_limit(messages_per_window: int, window_seconds: int):
         function: The decorated function.
 
     Example:
-        @rate_limit(5, 60)
+        @rate_limit(40, 60)
         def my_function(update: Update, context: CallbackContext):
             # Function implementation
     """

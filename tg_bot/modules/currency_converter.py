@@ -5,7 +5,7 @@ from telegram.ext import CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 @kigcmd(command='cash')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def convert(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(" ")
 

@@ -24,7 +24,7 @@ from tg_bot.modules.warns import warn
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def blackliststicker(update: Update, context: CallbackContext):
     global text
     msg = update.effective_message  # type: Optional[Message]
@@ -71,7 +71,7 @@ def blackliststicker(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def add_blackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message  # type: Optional[Message]
@@ -163,7 +163,7 @@ def add_blackliststicker(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unblackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message  # type: Optional[Message]
@@ -261,7 +261,7 @@ def unblackliststicker(update: Update, context: CallbackContext):
 
 @loggable
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def blacklist_mode(update: Update, context: CallbackContext):
     global settypeblacklist
     chat = update.effective_chat  # type: Optional[Chat]
@@ -375,7 +375,7 @@ def blacklist_mode(update: Update, context: CallbackContext):
 
 
 @user_not_admin
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def del_blackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     chat = update.effective_chat  # type: Optional[Chat]

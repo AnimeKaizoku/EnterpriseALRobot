@@ -20,7 +20,7 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 @kigcmd(command='load')
 @dev_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def load(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -86,7 +86,7 @@ def load(update: Update, context: CallbackContext):
 
 @kigcmd(command='unload')
 @dev_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unload(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -154,7 +154,7 @@ def unload(update: Update, context: CallbackContext):
 
 @kigcmd(command='listmodules')
 @sudo_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def listmodules(update: Update, context: CallbackContext):
     message = update.effective_message
     module_list = []

@@ -27,7 +27,7 @@ BLABLEUSERS = [OWNER_ID] + DEV_USERS
 @kigcmd(command='ignore', pass_args=True)
 @dev_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def bl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -68,7 +68,7 @@ def bl_user(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='notice', pass_args=True)
 @dev_plus
 @gloggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unbl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -110,7 +110,7 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
 
 @kigcmd(command='ignoredlist', pass_args=True)
 @dev_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def bl_users(update: Update, context: CallbackContext):
     users = []
     bot = context.bot

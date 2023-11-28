@@ -9,7 +9,7 @@ from ..modules.sql.antichannel_sql import antichannel_status, disable_antichanne
 
 @kigcmd(command="antichannel", group=100)
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def set_antichannel(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
