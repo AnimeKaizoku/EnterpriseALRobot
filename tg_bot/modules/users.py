@@ -1,6 +1,7 @@
 import contextlib
 from io import BytesIO
 from time import sleep
+from tg_bot.modules.helper_funcs.decorators import rate_limit
 
 import tg_bot.modules.sql.users_sql as sql
 from tg_bot import DEV_USERS, log, OWNER_ID, dispatcher
@@ -46,6 +47,7 @@ def get_user_id(username):
 
 
 @dev_plus
+@rate_limit(5, 60)
 def broadcast(update: Update, context: CallbackContext):
     to_send = update.effective_message.text.split(None, 1)
 
@@ -90,7 +92,7 @@ def broadcast(update: Update, context: CallbackContext):
             f"Broadcast complete.\nGroups failed: {failed}.\nUsers failed: {failed_user}."
         )
 
-
+@rate_limit(30, 60)
 def log_user(update: Update, _: CallbackContext):
     chat = update.effective_chat
     msg = update.effective_message
@@ -143,6 +145,7 @@ def log_user(update: Update, _: CallbackContext):
 
 
 @sudo_plus
+@rate_limit(5, 60)
 def chats(update: Update, context: CallbackContext):
     all_chats = sql.get_all_chats() or []
     chatfile = "List of chats.\n0. Chat name | Chat ID | Members count\n"
@@ -167,7 +170,7 @@ def chats(update: Update, context: CallbackContext):
             caption="Here be the list of groups in my database.",
         )
 
-
+@rate_limit(30, 60)
 def chat_checker(update: Update, context: CallbackContext):
     bot = context.bot
     if update.effective_message.chat.get_member(bot.id).can_send_messages is False:

@@ -9,10 +9,11 @@ from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ParseMode,
                       TelegramError, Update)
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 
 @kigcmd(command='stickerid')
+@rate_limit(5, 60)
 def stickerid(update: Update, context: CallbackContext):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -34,6 +35,7 @@ def stickerid(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='getsticker')
+@rate_limit(5, 60)
 def getsticker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message
@@ -66,6 +68,7 @@ def getsticker(update: Update, context: CallbackContext):
 
 
 @kigcmd(command=["steal", "kang"])
+@rate_limit(5, 60)
 def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
     global ppref
     msg = update.effective_message

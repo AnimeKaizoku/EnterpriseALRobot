@@ -25,7 +25,7 @@ from tg_bot import (
     sw, log
 )
 from tg_bot.modules.helper_funcs.misc import article
-from tg_bot.modules.helper_funcs.decorators import kiginline
+from tg_bot.modules.helper_funcs.decorators import kiginline, rate_limit
 
 
 def remove_prefix(text, prefix):
@@ -34,6 +34,7 @@ def remove_prefix(text, prefix):
     return text
 
 @kiginline()
+@rate_limit(5, 60)
 def inlinequery(update: Update, _) -> None:
     """
     Main InlineQueryHandler callback.

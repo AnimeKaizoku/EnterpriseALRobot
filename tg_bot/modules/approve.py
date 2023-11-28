@@ -8,7 +8,7 @@ from telegram.utils.helpers import mention_html
 import tg_bot.modules.sql.approve_sql as sql
 from tg_bot import SUDO_USERS
 from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, rate_limit
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot.modules.log_channel import loggable
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
@@ -17,6 +17,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 @kigcmd(command='approve', filters=Filters.chat_type.groups)
 @loggable
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def approve(update: Update, context: CallbackContext):
     message = update.effective_message
     chat_title = message.chat.title
@@ -62,6 +63,7 @@ def approve(update: Update, context: CallbackContext):
 @kigcmd(command='unapprove', filters=Filters.chat_type.groups)
 @loggable
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def disapprove(update: Update, context: CallbackContext):
     message = update.effective_message
     chat_title = message.chat.title
@@ -98,6 +100,7 @@ def disapprove(update: Update, context: CallbackContext):
 
 @kigcmd(command='approved', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def approved(update: Update, _: CallbackContext):
     message = update.effective_message
     chat_title = message.chat.title
@@ -116,6 +119,7 @@ def approved(update: Update, _: CallbackContext):
 
 @kigcmd(command='approval', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def approval(update, context):
     message = update.effective_message
     chat = update.effective_chat
@@ -139,6 +143,7 @@ def approval(update, context):
 
 
 @kigcmd(command='unapproveall', filters=Filters.chat_type.groups)
+@rate_limit(5, 60)
 def unapproveall(update: Update, _: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user

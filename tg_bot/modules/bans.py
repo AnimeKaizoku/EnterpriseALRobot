@@ -25,7 +25,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
 from tg_bot.modules.helper_funcs.extraction import extract_user_and_text
 from tg_bot.modules.helper_funcs.string_handling import extract_time
 from tg_bot.modules.log_channel import loggable, gloggable
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
@@ -36,6 +36,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
+@rate_limit(5, 60)
 def ban(update: Update, context: CallbackContext) -> Optional[str]:  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -144,6 +145,7 @@ def ban(update: Update, context: CallbackContext) -> Optional[str]:  # sourcery 
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
+@rate_limit(5, 60)
 def temp_ban(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -233,6 +235,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
+@rate_limit(5, 60)
 def kick(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -288,6 +291,7 @@ def kick(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='kickme', pass_args=True, filters=Filters.chat_type.groups)
 @bot_admin
 @can_restrict
+@rate_limit(5, 60)
 def kickme(update: Update, context: CallbackContext):
     user_id = update.effective_message.from_user.id
     if is_user_admin(update, user_id):
@@ -307,6 +311,7 @@ def kickme(update: Update, context: CallbackContext):
 @can_restrict
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @loggable
+@rate_limit(5, 60)
 def unban(update: Update, context: CallbackContext) -> Optional[str]:
     message = update.effective_message
     user = update.effective_user
@@ -378,6 +383,7 @@ def unban(update: Update, context: CallbackContext) -> Optional[str]:
 @bot_admin
 @can_restrict
 @gloggable
+@rate_limit(5, 60)
 def selfunban(context: CallbackContext, update: Update) -> Optional[str]:
     message = update.effective_message
     user = update.effective_user

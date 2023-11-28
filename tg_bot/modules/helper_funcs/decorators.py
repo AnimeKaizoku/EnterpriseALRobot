@@ -1,9 +1,53 @@
+import time
+from telegram import Update
 from tg_bot.modules.disable import DisableAbleCommandHandler, DisableAbleMessageHandler
-from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, InlineQueryHandler
+from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, InlineQueryHandler, CallbackContext
 from telegram.ext.filters import BaseFilter, Filters
 from tg_bot import dispatcher as d, log
-from typing import Optional, Union, List
+from typing import Optional, List
+from functools import lru_cache
 
+message_history = {}
+
+def rate_limit(messages_per_window: int, window_seconds: int):
+    """
+    Decorator that limits the rate at which a function can be called.
+
+    Args:
+        messages_per_window (int): The maximum number of messages allowed within the time window.
+        window_seconds (int): The duration of the time window in seconds.
+
+    Returns:
+        function: The decorated function.
+
+    Example:
+        @rate_limit(5, 60)
+        def my_function(update: Update, context: CallbackContext):
+            # Function implementation
+    """
+    def decorator(func):
+
+        @lru_cache(maxsize=1024)
+        def wrapper(update: Update, context: CallbackContext):
+            user_id = update.effective_user.id
+            current_time = time.time()
+
+            if user_id not in message_history:
+                message_history[user_id] = []
+
+            # Remove messages outside the current time window
+            message_history[user_id] = [t for t in message_history[user_id] if current_time - t <= window_seconds]
+
+            if len(message_history[user_id]) >= messages_per_window:
+                log.warn(f"Rate limit exceeded for user {user_id}. Allowed {messages_per_window} updates in {window_seconds} seconds for {func.__name__}")
+                return
+
+            message_history[user_id].append(current_time)
+            func(update, context)
+
+        return wrapper
+
+    return decorator
 
 class KigyoTelegramHandler:
     def __init__(self, d):
