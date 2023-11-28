@@ -4,6 +4,7 @@ import re
 import time
 from functools import partial
 from io import BytesIO
+from tg_bot.modules.helper_funcs.decorators import rate_limit
 import tg_bot.modules.sql.welcome_sql as sql
 from tg_bot import (
     DEV_USERS,
@@ -34,7 +35,7 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     ParseMode,
-    Update, ChatMember, User,
+    Update, User,
 )
 from telegram.error import BadRequest, TelegramError
 from telegram.ext import (
@@ -152,6 +153,7 @@ def send(update, message, keyboard, backup_message):
             log.exception()
     return msg
 
+@rate_limit(5, 60)
 def welcomeFilter(update: Update, context: CallbackContext):
     if update.effective_chat.type != "group" and update.effective_chat.type != "supergroup":
         return
@@ -165,6 +167,7 @@ def welcomeFilter(update: Update, context: CallbackContext):
 
 
 @loggable
+@rate_limit(5, 60)
 def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot, job_queue = context.bot, context.job_queue
     chat = update.effective_chat
@@ -548,11 +551,12 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
 
     return ""
 
+@rate_limit(40, 60)
 def cleanServiceFilter(u: Update, _):
     if u.effective_message.left_chat_member or u.effective_message.new_chat_members:
         return handleCleanService(u)
 
-
+@rate_limit(40, 60)
 def handleCleanService(update: Update):
     if sql.clean_service(update.effective_chat.id):
         try:
@@ -583,7 +587,7 @@ def check_not_bot(member: User, chat_id: int, message_id: int, context: Callback
                                                                                                      member.first_name)),
                              chat_id=chat_id, parse_mode=ParseMode.HTML)
 
-
+@rate_limit(5, 60)
 def left_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot = context.bot
     chat = update.effective_chat
@@ -682,6 +686,7 @@ def left_member(update: Update, context: CallbackContext):  # sourcery no-metric
 
 
 @u_admin
+@rate_limit(5, 60)
 def welcome(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
@@ -744,6 +749,7 @@ def welcome(update: Update, context: CallbackContext):
 
 
 @u_admin
+@rate_limit(5, 60)
 def goodbye(update: Update, context: CallbackContext):
     args = context.args
     chat = update.effective_chat
@@ -795,6 +801,7 @@ def goodbye(update: Update, context: CallbackContext):
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def set_welcome(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -819,6 +826,7 @@ def set_welcome(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def reset_welcome(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -838,6 +846,7 @@ def reset_welcome(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def set_goodbye(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -860,6 +869,7 @@ def set_goodbye(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def reset_goodbye(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
     user = update.effective_user
@@ -879,6 +889,7 @@ def reset_goodbye(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def welcomemute(update: Update, context: CallbackContext) -> str:
     args = context.args
     chat = update.effective_chat
@@ -948,6 +959,7 @@ def welcomemute(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def clean_welcome(update: Update, context: CallbackContext) -> str:
     args = context.args
     chat = update.effective_chat
@@ -989,6 +1001,7 @@ def clean_welcome(update: Update, context: CallbackContext) -> str:
 
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def cleanservice(update: Update, context: CallbackContext) -> str:
     args = context.args
     chat = update.effective_chat  # type: Optional[Chat]
@@ -1020,7 +1033,7 @@ def cleanservice(update: Update, context: CallbackContext) -> str:
             "Usage is on/yes or off/no", parse_mode=ParseMode.MARKDOWN
         )
 
-
+@rate_limit(5, 60)
 def user_button(update: Update, context: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user
@@ -1083,7 +1096,7 @@ def user_button(update: Update, context: CallbackContext):
     else:
         query.answer(text="You're not allowed to do this!")
 
-
+@rate_limit(5, 60)
 def user_captcha_button(update: Update, context: CallbackContext):
     # sourcery no-metrics
     chat = update.effective_chat
@@ -1205,11 +1218,13 @@ WELC_MUTE_HELP_TXT = (
 
 
 @u_admin
+@rate_limit(5, 60)
 def welcome_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
 
 
 @u_admin
+@rate_limit(5, 60)
 def welcome_mute_help(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
         WELC_MUTE_HELP_TXT, parse_mode=ParseMode.MARKDOWN

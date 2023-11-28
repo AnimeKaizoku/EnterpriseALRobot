@@ -11,7 +11,7 @@ from telegram.utils.helpers import mention_html
 from .log_channel import loggable
 from .helper_funcs.anonymous import user_admin, AdminPerms
 from .helper_funcs.chat_status import bot_admin, connection_status, user_admin_no_reply
-from .helper_funcs.decorators import kigcmd, kigcallback
+from .helper_funcs.decorators import kigcmd, kigcallback, rate_limit
 from .. import log, updater
 
 import tg_bot.modules.sql.welcome_sql as sql
@@ -41,6 +41,7 @@ def get_readable_time(time: int) -> str:
 @connection_status
 @loggable
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
     args = context.args
     chat = update.effective_chat
@@ -104,6 +105,7 @@ def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
 @connection_status
 @user_admin_no_reply
 @loggable
+@rate_limit(5, 60)
 def enable_raid_cb(update: Update, ctx: CallbackContext) -> Optional[str]:
     args = update.callback_query.data.replace("enable_raid=", "").split("=")
     chat = update.effective_chat
@@ -141,6 +143,7 @@ def enable_raid_cb(update: Update, ctx: CallbackContext) -> Optional[str]:
 @connection_status
 @user_admin_no_reply
 @loggable
+@rate_limit(5, 60)
 def disable_raid_cb(update: Update, _: CallbackContext) -> Optional[str]:
     args = update.callback_query.data.replace("disable_raid=", "").split("=")
     chat = update.effective_chat
@@ -166,6 +169,7 @@ def disable_raid_cb(update: Update, _: CallbackContext) -> Optional[str]:
 @kigcallback(pattern="cancel_raid=")
 @connection_status
 @user_admin_no_reply
+@rate_limit(5, 60)
 def disable_raid_cb(update: Update, _: CallbackContext):
     args = update.callback_query.data.split("=")
     what = args[0]
@@ -178,6 +182,7 @@ def disable_raid_cb(update: Update, _: CallbackContext):
 @connection_status
 @loggable
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(5, 60)
 def raidtime(update: Update, context: CallbackContext) -> Optional[str]:
     what, time, acttime = sql.getRaidStatus(update.effective_chat.id)
     args = context.args
@@ -212,6 +217,7 @@ def raidtime(update: Update, context: CallbackContext) -> Optional[str]:
 @connection_status
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
+@rate_limit(5, 60)
 def raidtime(update: Update, context: CallbackContext) -> Optional[str]:
     what, t, time = sql.getRaidStatus(update.effective_chat.id)
     args = context.args
