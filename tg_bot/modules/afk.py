@@ -37,7 +37,7 @@ def afk(update: Update, context: CallbackContext):
     except BadRequest:
         pass
 
-@kigmsg((Filters.all & Filters.chat_type.groups), friendly='afk', group=1)
+@kigmsg((Filters.all & Filters.chat_type.groups & ~Filters.user(777000)), friendly='afk', group=1)
 @rate_limit(40, 60)
 def no_longer_afk(update: Update, context: CallbackContext):
     user = update.effective_user

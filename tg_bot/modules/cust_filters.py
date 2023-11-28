@@ -262,7 +262,7 @@ def stop_filter(update, context):
     )
 
 
-@kigmsg((CustomFilters.has_text & ~Filters.update.edited_message))
+@kigmsg((CustomFilters.has_text & ~Filters.update.edited_message & ~Filters.user(777000)))
 @rate_limit(40, 60)
 def reply_filter(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
