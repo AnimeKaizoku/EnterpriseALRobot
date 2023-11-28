@@ -225,7 +225,7 @@ def cmd_get(update: Update, context: CallbackContext):
 
 
 
-@kigmsg((Filters.regex(r"^#[^\s]+")), group=-14)
+@kigmsg((Filters.regex(r"^#[^\s]+") & ~Filters.user(777000)), group=-14)
 @connection_status
 @rate_limit(40, 60)
 def hash_get(update: Update, context: CallbackContext):
