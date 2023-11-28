@@ -14,7 +14,7 @@ from ..modules.helper_funcs.anonymous import user_admin as u_admin, AdminPerms
 @kigcmd(command="announce", pass_args=True)
 @u_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def announcestat(update: Update, context: CallbackContext) -> str:
     args = context.args
     if len(args) > 0:

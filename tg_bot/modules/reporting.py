@@ -22,7 +22,7 @@ REPORT_IMMUNE_USERS = SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS
 
 @kigcmd(command='reports')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def report_setting(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -69,7 +69,7 @@ def report_setting(update: Update, context: CallbackContext):
 @kigmsg((Filters.regex(r"(?i)@admin(s)?")), group=REPORT_GROUP)
 @user_not_admin
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def report(update: Update, context: CallbackContext) -> str:
     # sourcery no-metrics
     global reply_markup

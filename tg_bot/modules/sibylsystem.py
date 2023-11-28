@@ -254,7 +254,7 @@ def sibyl_ban(update: Update, context: CallbackContext) -> Optional[str]:
 
 
 @loggable
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibyl_ban_alert(update: Update, context: CallbackContext) -> Optional[str]:
     message = update.effective_message
     chat = update.effective_chat
@@ -349,7 +349,7 @@ Connection to <a href="https://t.me/SibylSystem/2">Sibyl System</a> can be turne
 
 @connection_status
 @user_admin
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibylmain(update: Update, _: CallbackContext):
     chat = update.effective_chat
     message = update.effective_message
@@ -413,7 +413,7 @@ class SibylMode(Enum):
 
 
 @connection_status
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibyltoggle(update: Update, _: CallbackContext):
     chat: Chat = update.effective_chat
     message: Message = update.effective_message
@@ -469,7 +469,7 @@ def sibyltoggle(update: Update, _: CallbackContext):
         pass
 
 
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibyl_banned(update: Update, ctx: CallbackContext):
     chat: Chat = update.effective_chat
     args = ctx.args
@@ -493,7 +493,7 @@ def sibyl_banned(update: Update, ctx: CallbackContext):
             txt, parse_mode=ParseMode.HTML, reply_markup=reply_markup, disable_web_page_preview=True,
     )
 
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def sibyl_info(update: Update, context: CallbackContext):
     bot: Bot = context.bot
     args = context.args

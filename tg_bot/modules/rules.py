@@ -20,7 +20,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 
 @kigcmd(command='rules', filters=Filters.chat_type.groups)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def get_rules(update: Update, _: CallbackContext):
     chat_id = update.effective_chat.id
     send_rules(update, chat_id)
@@ -81,7 +81,7 @@ def send_rules(update, chat_id, from_pm=False):
 
 @kigcmd(command='setrules', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def set_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message  # type: Optional[Message]
@@ -100,7 +100,7 @@ def set_rules(update: Update, context: CallbackContext):
 
 @kigcmd(command='clearrules', filters=Filters.chat_type.groups)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def clear_rules(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")

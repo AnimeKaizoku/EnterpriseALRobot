@@ -4,7 +4,7 @@ from telegram.ext import CallbackContext
 from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 @kigcmd(command='shout')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def shout(update: Update, context: CallbackContext):
     args = context.args
     text = " ".join(args)

@@ -47,7 +47,7 @@ def get_user_id(username):
 
 
 @dev_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def broadcast(update: Update, context: CallbackContext):
     to_send = update.effective_message.text.split(None, 1)
 
@@ -145,7 +145,7 @@ def log_user(update: Update, _: CallbackContext):
 
 
 @sudo_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def chats(update: Update, context: CallbackContext):
     all_chats = sql.get_all_chats() or []
     chatfile = "List of chats.\n0. Chat name | Chat ID | Members count\n"
@@ -170,7 +170,7 @@ def chats(update: Update, context: CallbackContext):
             caption="Here be the list of groups in my database.",
         )
 
-@rate_limit(30, 60)
+@rate_limit(50, 60)
 def chat_checker(update: Update, context: CallbackContext):
     bot = context.bot
     if update.effective_message.chat.get_member(bot.id).can_send_messages is False:

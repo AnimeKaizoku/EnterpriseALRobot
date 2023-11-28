@@ -10,7 +10,7 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, rate_limit
 
 @kigmsg(Filters.regex("(?i)^brb"), friendly="afk", group=3)
 @kigcmd(command="afk", group=3)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def afk(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(None, 1)
     user = update.effective_user
@@ -70,7 +70,7 @@ def no_longer_afk(update: Update, context: CallbackContext):
             return
 
 @kigmsg((Filters.entity(MessageEntity.MENTION) | Filters.entity(MessageEntity.TEXT_MENTION) & Filters.chat_type.groups), friendly='afk', group=8)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def reply_afk(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message

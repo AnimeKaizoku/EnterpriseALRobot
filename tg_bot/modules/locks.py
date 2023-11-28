@@ -128,7 +128,7 @@ def unrestr_members(
 
 
 @kigcmd(command='locktypes')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def locktypes(update, _):
     update.effective_message.reply_text(
         "\n • ".join(
@@ -142,7 +142,7 @@ def locktypes(update, _):
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat
@@ -251,7 +251,7 @@ def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metric
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @loggable
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def unlock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat
@@ -346,7 +346,7 @@ def unlock(update: Update, context: CallbackContext) -> str:  # sourcery no-metr
 
 @kigmsg((Filters.all & Filters.chat_type.groups), group=PERM_GROUP)
 @user_not_admin
-@rate_limit(5, 60)
+@rate_limit(50, 60)
 def del_lockables(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
@@ -485,7 +485,7 @@ def build_lock_message(chat_id):
 @kigcmd(command='locks')
 @u_admin
 @typing_action
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def list_locks(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user

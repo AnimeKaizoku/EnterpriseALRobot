@@ -9,7 +9,7 @@ from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 # Wallpapers module by @TheRealPhoenix using wall.alphacoders.com
 
 @kigcmd(command='wall')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def wall(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = update.effective_message

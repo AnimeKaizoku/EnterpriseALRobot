@@ -60,7 +60,7 @@ weebyfont = [
 ]
 
 @kigcmd(command='weebify')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def weebify(update: Update, context: CallbackContext):
     args = context.args
     message = update.effective_message

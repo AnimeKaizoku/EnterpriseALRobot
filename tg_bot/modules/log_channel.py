@@ -108,7 +108,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='logchannel')
     @u_admin
-    @rate_limit(5, 60)
+    @rate_limit(40, 60)
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -129,7 +129,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='setlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
-    @rate_limit(5, 60)
+    @rate_limit(40, 60)
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -173,7 +173,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='unsetlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
-    @rate_limit(5, 60)
+    @rate_limit(40, 60)
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -232,7 +232,7 @@ else:
 
 @kigcmd("logsettings")
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def log_settings(update: Update, _: CallbackContext):
     chat = update.effective_chat
     chat_set = sql.get_chat_setting(chat_id=chat.id)
@@ -261,7 +261,7 @@ from tg_bot.modules.sql import log_channel_sql as sql
 
 
 @kigcallback(pattern=r"log_tog_.*")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def log_setting_callback(update: Update, context: CallbackContext):
     cb = update.callback_query
     user = cb.from_user

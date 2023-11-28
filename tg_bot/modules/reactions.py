@@ -210,7 +210,7 @@ reactions = [
 ]
 
 @kigcmd(command='react')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def react(update: Update, context: CallbackContext):
     message = update.effective_message
     react = random.choice(reactions)

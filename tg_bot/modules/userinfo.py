@@ -11,7 +11,7 @@ from tg_bot.modules.helper_funcs.extraction import extract_user
 
 
 @kigcmd(command='me', pass_args=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def about_me(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -38,7 +38,7 @@ def about_me(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='setme')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def set_about_me(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message
@@ -71,7 +71,7 @@ def set_about_me(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='bio', pass_args=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def about_bio(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -139,7 +139,7 @@ def about_bio(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='setbio')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def set_about_bio(update: Update, context: CallbackContext):
     message = update.effective_message
     sender_id = update.effective_user.id

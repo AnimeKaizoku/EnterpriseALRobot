@@ -61,7 +61,7 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 """
 
 @kigcmd(command='id', pass_args=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def get_id(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
@@ -99,7 +99,7 @@ def get_id(update: Update, context: CallbackContext):
         )
 
 @kigcmd(command='gifid')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def gifid(update: Update, _):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
@@ -111,7 +111,7 @@ def gifid(update: Update, _):
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
 @kigcmd(command='info', pass_args=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot = context.bot
     args = context.args
@@ -272,7 +272,7 @@ def get_chat_info(user):
 
 @kigcmd(command='echo', pass_args=True, filters=Filters.chat_type.groups)
 @user_admin
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def echo(update: Update, _):
     args = update.effective_message.text.split(None, 1)
     message = update.effective_message
@@ -291,7 +291,7 @@ def shell(command):
     return (stdout, stderr)
 
 @kigcmd(command='markdownhelp', filters=Filters.chat_type.private)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def markdown_help(update: Update, _):
     chat = update.effective_chat
     update.effective_message.reply_text((gs(chat.id, "markdown_help_text")), parse_mode=ParseMode.HTML)
@@ -332,7 +332,7 @@ stats_str = '''
 '''
 @kigcmd(command='stats', can_disable=False)
 @sudo_plus
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def stats(update, context):
     db_size = SESSION.execute("SELECT pg_size_pretty(pg_database_size(current_database()))").scalar_one_or_none()
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
@@ -392,7 +392,7 @@ def stats(update, context):
         )
 
 @kigcmd(command='ping')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def ping(update: Update, _):
     msg = update.effective_message
     start_time = time.time()
@@ -405,7 +405,7 @@ def ping(update: Update, _):
 
 
 @kigcallback(pattern=r'^pingCB')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def pingCallback(update: Update, context: CallbackContext):
     query = update.callback_query
     start_time = time.time()

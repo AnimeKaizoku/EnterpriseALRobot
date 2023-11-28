@@ -183,7 +183,7 @@ def airing(update: Update, context: CallbackContext):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 @kigcmd(command="anime")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -254,7 +254,7 @@ def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
             )
 
 @kigcmd(command="character")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def character(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -288,7 +288,7 @@ def character(update: Update, context: CallbackContext):
             )
 
 @kigcmd(command="manga")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def manga(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)

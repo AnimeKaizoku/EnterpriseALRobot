@@ -34,7 +34,7 @@ def remove_prefix(text, prefix):
     return text
 
 @kiginline()
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def inlinequery(update: Update, _) -> None:
     """
     Main InlineQueryHandler callback.

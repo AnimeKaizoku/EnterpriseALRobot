@@ -131,7 +131,7 @@ def check_flood(update, context) -> Optional[str]:
 @user_admin_no_reply
 @bot_admin
 @kigcallback(pattern=r"unmute_flooder")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def flood_button(update: Update, context: CallbackContext):
     bot = context.bot
     query = update.callback_query

@@ -126,7 +126,7 @@ def test(update: Update, _: CallbackContext):
 
 @kigcallback(pattern=r'start_back')
 @kigcmd(command='start', pass_args=True)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def start(update: Update, context: CallbackContext):  # sourcery no-metrics
     """#TODO
 
@@ -288,7 +288,6 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
 
 
 # for test purposes
-@rate_limit(5, 60)
 def error_callback(_, context: CallbackContext):
     """#TODO
 
@@ -317,7 +316,7 @@ def error_callback(_, context: CallbackContext):
 
 
 @kigcallback(pattern=r'help_')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def help_button(update: Update, context: CallbackContext):
     """#TODO
 
@@ -405,7 +404,7 @@ def help_button(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='help')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def get_help(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -539,7 +538,7 @@ def send_settings(chat_id: int, user_id: int, user=False):
 
 
 @kigcallback(pattern=r"stngs_")
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def settings_button(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -631,7 +630,7 @@ def settings_button(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='settings')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def get_settings(update: Update, context: CallbackContext):
     '''#TODO
 
@@ -670,7 +669,7 @@ def get_settings(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='donate')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def donate(update: Update, _: CallbackContext):
     """#TODO
 
@@ -683,7 +682,7 @@ def donate(update: Update, _: CallbackContext):
 
 
 @kigmsg(Filters.status_update.migrate)
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def migrate_chats(update: Update, context: CallbackContext):
     """#TODO
     Params:

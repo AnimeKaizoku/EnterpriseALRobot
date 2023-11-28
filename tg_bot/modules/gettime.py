@@ -54,7 +54,7 @@ def generate_time(to_find: str, findtype: List[str]) -> str:
     return result
 
 @kigcmd(command='time')
-@rate_limit(5, 60)
+@rate_limit(40, 60)
 def gettime(update: Update, context: CallbackContext):
     message = update.effective_message
 
