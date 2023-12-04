@@ -8,7 +8,7 @@ import telegram.ext as tg
 from telethon import TelegramClient
 from telethon.sessions import MemorySession
 from configparser import ConfigParser
-from logging.config import fileConfig
+from logging.handlers import RotatingFileHandler
 
 StartTime = time.time()
 
@@ -23,9 +23,11 @@ def get_user_list(key):
     royals = nation_sql.get_royals(key)
     return [a.user_id for a in royals]
 
-# enable logging
-
-fileConfig('logging.ini')
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[RotatingFileHandler('kigyo.log', maxBytes=1024*1024, backupCount=5), logging.StreamHandler()],
+    level=logging.INFO,
+)
 
 #print(flag)
 log = logging.getLogger('[Enterprise]')
