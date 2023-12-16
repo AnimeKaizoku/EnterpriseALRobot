@@ -95,6 +95,9 @@ def list_errors(update: Update, context: CallbackContext):
 
     msg += f"{len(errors)} have occurred since startup."
     if len(msg) > 4096:
+        msg = ""
+        for x, value in e.items():
+            msg += f"• {x}: {e[x]} #{x.identifier}\n"
         with open("errors_msg.txt", "w+") as f:
             f.write(msg)
         context.bot.send_document(
