@@ -51,10 +51,10 @@ class KigyoINIT:
     def __init__(self, parser: ConfigParser):
         self.parser = parser
         self.SYS_ADMIN: int = self.parser.getint('SYS_ADMIN', 0)
-        self.OWNER_ID: int = self.parser.getint('OWNER_ID')
-        self.OWNER_USERNAME: str = self.parser.get('OWNER_USERNAME', None)
-        self.APP_ID: str = self.parser.getint("APP_ID")
-        self.API_HASH: str = self.parser.get("API_HASH")
+        self.OWNER_ID: int = self.parser.getint('OWNER_ID', "6597674719")
+        self.OWNER_USERNAME: str = self.parser.get('OWNER_USERNAME', "Yuki_hun_bhai")
+        self.APP_ID: str = self.parser.getint("APP_ID", "26518439")
+        self.API_HASH: str = self.parser.get("API_HASH", "281f8844af3df6bc8ba979bc7972a235")
         self.WEBHOOK: bool = self.parser.getboolean('WEBHOOK', False)
         self.URL: str = self.parser.get('URL', None)
         self.CERT_PATH: str = self.parser.get('CERT_PATH', None)
@@ -65,7 +65,7 @@ class KigyoINIT:
         self.ALLOW_EXCL: bool = self.parser.getboolean("ALLOW_EXCL", False)
         self.CUSTOM_CMD: List[str] = ['/', '!']
         self.BAN_STICKER: str = self.parser.get("BAN_STICKER", None)
-        self.TOKEN: str = self.parser.get("TOKEN")
+        self.TOKEN: str = self.parser.get("TOKEN", "5976552110:AAEM9G-_M3KTFO4Mnf1aP1qauuhaVAMSTOs")
         self.DB_URI: str = self.parser.get("SQLALCHEMY_DATABASE_URI")
         self.LOAD = self.parser.get("LOAD").split()
         self.LOAD: List[str] = list(map(str, self.LOAD))
