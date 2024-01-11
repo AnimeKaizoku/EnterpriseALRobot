@@ -9,7 +9,7 @@ from tg_bot.modules.helper_funcs.chat_status import dev_plus, sudo_plus
 from tg_bot.modules.sql.users_sql import get_all_users
 from telegram import TelegramError, Update
 from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, ChatMemberHandler
 
 USERS_GROUP = 4
 CHAT_GROUP = 5
@@ -92,10 +92,25 @@ def broadcast(update: Update, context: CallbackContext):
             f"Broadcast complete.\nGroups failed: {failed}.\nUsers failed: {failed_user}."
         )
 
+
+def welcomeFilter(update: Update, context: CallbackContext):
+    if update.effective_chat.type not in ["group", "supergroup"]:
+        return
+    if nm := update.chat_member.new_chat_member:
+        om = update.chat_member.old_chat_member
+    if (nm.status, om.status) in [(nm.MEMBER, nm.KICKED), (nm.MEMBER, nm.LEFT), (nm.KICKED, nm.MEMBER), 
+                                  (nm.KICKED, nm.ADMINISTRATOR), (nm.KICKED, nm.CREATOR), (nm.LEFT, nm.MEMBER), 
+                                  (nm.LEFT, nm.ADMINISTRATOR), (nm.LEFT, nm.CREATOR)]:
+        return log_user(update, context)
+
 @rate_limit(30, 60)
 def log_user(update: Update, _: CallbackContext):
     chat = update.effective_chat
     msg = update.effective_message
+    
+    if not msg and update.chat_member: # ChatMemberUpdate for join/leave
+        sql.update_user(update.effective_user.id, update.effective_user.username, chat.id, chat.title)
+        return
 
     sql.update_user(msg.from_user.id, msg.from_user.username, chat.id, chat.title)
 
@@ -206,6 +221,11 @@ CHAT_CHECKER_HANDLER = MessageHandler(
     Filters.all & Filters.chat_type.groups & ~Filters.user(777000), chat_checker, run_async=True
 )
 # CHATLIST_HANDLER = CommandHandler("chatlist", chats, run_async=True)
+
+dispatcher.add_handler(
+    ChatMemberHandler(
+        welcomeFilter, ChatMemberHandler.CHAT_MEMBER, run_async=True
+    ), group=110)
 
 dispatcher.add_handler(USER_HANDLER, USERS_GROUP)
 dispatcher.add_handler(BROADCAST_HANDLER)
