@@ -62,7 +62,7 @@ else:
 
 if SIBYL_KEY and __name__.split(".")[-1] in ALL_MODULES:
     try:
-        sibylClient = PsychoPass(SIBYL_KEY)
+        sibylClient = PsychoPass(token=SIBYL_KEY, host='https://psychopass.kaizoku.cyou')
         LOGGER.info("Connected to @SibylSystem")
     except Exception as e:
         sibylClient = None
