@@ -5,10 +5,9 @@ import time
 from typing import List
 import spamwatch
 import telegram.ext as tg
-from telethon import TelegramClient
-from telethon.sessions import MemorySession
 from configparser import ConfigParser
 from logging.handlers import RotatingFileHandler
+from dataclasses import dataclass
 
 StartTime = time.time()
 
@@ -47,6 +46,7 @@ parser = ConfigParser()
 parser.read("config.ini")
 kigconfig = parser["kigconfig"]
 
+@dataclass
 class KigyoINIT:
     def __init__(self, parser: ConfigParser):
         self.parser = parser
@@ -142,8 +142,6 @@ sw = KInit.init_sw()
 
 
 updater = tg.Updater(token=TOKEN, base_url=KInit.BOT_API_URL, base_file_url=KInit.BOT_API_FILE_URL, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
-
-telethn = TelegramClient(MemorySession(), APP_ID, API_HASH)
 dispatcher = updater.dispatcher
 
 

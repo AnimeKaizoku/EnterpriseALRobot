@@ -6,14 +6,10 @@ import sys
 from time import sleep
 
 from telegram.ext.callbackqueryhandler import CallbackQueryHandler
-from tg_bot import DEV_USERS, dispatcher, telethn, OWNER_ID
+from tg_bot import DEV_USERS, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from telegram import TelegramError, Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler
-import asyncio
-from statistics import mean
-from time import monotonic as time
-from telethon import events
 
 
 @dev_plus
@@ -79,50 +75,50 @@ def restart(update: Update, context: CallbackContext):
     os.execv("start.bat", sys.argv)
 
 
-class Store:
-    def __init__(self, func):
-        self.func = func
-        self.calls = []
-        self.time = time()
-        self.lock = asyncio.Lock()
+# class Store:
+#     def __init__(self, func):
+#         self.func = func
+#         self.calls = []
+#         self.time = time()
+#         self.lock = asyncio.Lock()
 
-    def average(self):
-        return round(mean(self.calls), 2) if self.calls else 0
+#     def average(self):
+#         return round(mean(self.calls), 2) if self.calls else 0
 
-    def __repr__(self):
-        return f"<Store func={self.func.__name__}, average={self.average()}>"
+#     def __repr__(self):
+#         return f"<Store func={self.func.__name__}, average={self.average()}>"
 
-    async def __call__(self, event):
-        async with self.lock:
-            if not self.calls:
-                self.calls = [0]
-            if time() - self.time > 1:
-                self.time = time()
-                self.calls.append(1)
-            else:
-                self.calls[-1] += 1
-        await self.func(event)
-
-
-async def nothing(event):
-    pass
+#     async def __call__(self, event):
+#         async with self.lock:
+#             if not self.calls:
+#                 self.calls = [0]
+#             if time() - self.time > 1:
+#                 self.time = time()
+#                 self.calls.append(1)
+#             else:
+#                 self.calls[-1] += 1
+#         await self.func(event)
 
 
-messages = Store(nothing)
-inline_queries = Store(nothing)
-callback_queries = Store(nothing)
-
-telethn.add_event_handler(messages, events.NewMessage())
-telethn.add_event_handler(inline_queries, events.InlineQuery())
-telethn.add_event_handler(callback_queries, events.CallbackQuery())
+# async def nothing(event):
+#     pass
 
 
-@telethn.on(events.NewMessage(pattern=r"/getstats", from_users=OWNER_ID))
-async def getstats(event):
-    await event.reply(
-        f"**__KIGYO EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
-        parse_mode='md'
-    )
+# messages = Store(nothing)
+# inline_queries = Store(nothing)
+# callback_queries = Store(nothing)
+
+# telethn.add_event_handler(messages, events.NewMessage())
+# telethn.add_event_handler(inline_queries, events.InlineQuery())
+# telethn.add_event_handler(callback_queries, events.CallbackQuery())
+
+
+# @telethn.on(events.NewMessage(pattern=r"/getstats", from_users=OWNER_ID))
+# async def getstats(event):
+#     await event.reply(
+#         f"**__KIGYO EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
+#         parse_mode='md'
+#     )
 
 
 @dev_plus
