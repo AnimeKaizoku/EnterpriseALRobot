@@ -101,6 +101,7 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
 
         # Find the packs
         while True:
+            ppref = ""
             last_set = False
             try:
                 if get_sticker_count(context.bot, packname) >= max_stickers:
@@ -113,7 +114,6 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
                         ppref = "vid"
                     else:
                         packname = f"a{packnum}_{user.id}_by_{context.bot.username}"
-                        ppref = ""
                 else:
                     last_set = True
                 packs += f"[{ppref}pack{packnum if packnum != 0 else ''}](t.me/addstickers/{packname})\n"
