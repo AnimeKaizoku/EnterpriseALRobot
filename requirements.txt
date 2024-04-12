@@ -5,7 +5,7 @@ bleach
 cachetools
 configparser
 currencyconverter
-emoji
+emoji==1.7.0
 feedparser
 future
 gitpython
