@@ -19,7 +19,7 @@ from tg_bot import (
     SARDEGNA_USERS,
     WHITELIST_USERS,
     INFOPIC,
-    sw,
+    # sw,
     StartTime
 )
 from tg_bot.__main__ import STATS, USER_INFO, TOKEN
@@ -205,14 +205,14 @@ def get_user_info(chat: Chat, user: User) -> str:
     if user.username:
         text += f"\nUsername: @{html.escape(user.username)}"
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
-    with contextlib.suppress(Exception):
-        if spamwtc := sw.get_ban(int(user.id)):
-            text += "<b>\n\nSpamWatch:\n</b>"
-            text += "<b>This person is banned in Spamwatch!</b>"
-            text += f"\nReason: <pre>{spamwtc.reason}</pre>"
-            text += "\nAppeal at @SpamWatchSupport"
-        else:
-            text += "<b>\n\nSpamWatch:</b>\n Not banned"
+    # with contextlib.suppress(Exception):
+    #     if spamwtc := sw.get_ban(int(user.id)):
+    #         text += "<b>\n\nSpamWatch:\n</b>"
+    #         text += "<b>This person is banned in Spamwatch!</b>"
+    #         text += f"\nReason: <pre>{spamwtc.reason}</pre>"
+    #         text += "\nAppeal at @SpamWatchSupport"
+    #     else:
+    #         text += "<b>\n\nSpamWatch:</b>\n Not banned"
     Nation_level_present = False
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\n<b>Chat count</b>: <code>{num_chats}</code>"

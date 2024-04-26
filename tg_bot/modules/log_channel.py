@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 
 from telegram.ext import CallbackContext
@@ -24,7 +24,6 @@ if is_module_loaded(FILENAME):
     from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin, is_user_admin
     from tg_bot.modules.sql import log_channel_sql as sql
 
-
     def loggable(func):
         @wraps(func)
         def log_action(update, context, *args, **kwargs):
@@ -34,7 +33,7 @@ if is_module_loaded(FILENAME):
 
             if result:
                 datetime_fmt = "%H:%M - %d-%m-%Y"
-                result += f"\n<b>Event Stamp</b>: <code>{datetime.utcnow().strftime(datetime_fmt)}</code>"
+                result += f"\n<b>Event Stamp</b>: <code>{datetime.now(timezone.utc).strftime(datetime_fmt)}</code>"
                 try:
                     if message.chat.type == chat.SUPERGROUP:
                         if message.chat.username:
