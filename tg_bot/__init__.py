@@ -16,6 +16,10 @@ flag = """
 \033[37m┌─────────────────────────────────────────────┐\033[0m\n\033[37m│\033[44m\033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[0m\033[91;101m#########################\033[0m\033[37m│\n\033[37m│\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m  \033[0m\033[97;107m:::::::::::::::::::::::::\033[0m\033[37m│\n\033[37m│\033[44m\033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[0m\033[91;101m#########################\033[0m\033[37m│\n\033[37m│\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m  \033[0m\033[97;107m:::::::::::::::::::::::::\033[0m\033[37m│\n\033[37m│\033[44m\033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[0m\033[91;101m#########################\033[0m\033[37m│\n\033[37m│\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m  \033[0m\033[97;107m:::::::::::::::::::::::::\033[0m\033[37m│\n\033[37m│\033[44m\033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[97m★\033[0m\033[44m \033[0m\033[91;101m#########################\033[0m\033[37m│      \033[1mUnited we stand, Divided we fall\033[0m\n\033[37m│\033[97;107m:::::::::::::::::::::::::::::::::::::::::::::\033[0m\033[37m│ \033[1mKigyo Project, a tribute to USS Enterprise.\033[0m\n\033[37m│\033[91;101m#############################################\033[0m\033[37m│\n\033[37m│\033[97;107m:::::::::::::::::::::::::::::::::::::::::::::\033[0m\033[37m│\n\033[37m│\033[91;101m#############################################\033[0m\033[37m│\n\033[37m│\033[97;107m:::::::::::::::::::::::::::::::::::::::::::::\033[0m\033[37m│\n\033[37m│\033[91;101m#############################################\033[0m\033[37m│\n\033[37m└─────────────────────────────────────────────┘\033[0m\n
 """
 
+parser = ConfigParser()
+parser.read("config.ini")
+kigconfig = parser["kigconfig"]
+
 def get_user_list(key):
     # Import here to evade a circular import
     from tg_bot.modules.sql import nation_sql
@@ -25,7 +29,7 @@ def get_user_list(key):
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[RotatingFileHandler('kigyo.log', maxBytes=1024*1024, backupCount=5), logging.StreamHandler()],
-    level=logging.INFO,
+    level= kigconfig.getboolean("IS_DEBUG", False) and logging.DEBUG or logging.WARN,
 )
 
 #print(flag)
@@ -41,10 +45,6 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 7:
         "[KIGYO] You MUST have a python version of at least 3.7! Multiple features depend on this. Bot quitting."
     )
     quit(1)
-
-parser = ConfigParser()
-parser.read("config.ini")
-kigconfig = parser["kigconfig"]
 
 @dataclass
 class KigyoINIT:
@@ -73,7 +73,7 @@ class KigyoINIT:
         self.GBAN_LOGS: int = self.parser.getint('GBAN_LOGS', None)
         self.NO_LOAD = self.parser.get("NO_LOAD").split()
         self.NO_LOAD: List[str] = list(map(str, self.NO_LOAD))
-        self.spamwatch_api: str = self.parser.get('spamwatch_api', None)
+        # self.spamwatch_api: str = self.parser.get('spamwatch_api', None)
         self.CASH_API_KEY: str = self.parser.get('CASH_API_KEY', None)
         self.TIME_API_KEY: str = self.parser.get('TIME_API_KEY', None)
         self.WALL_API: str = self.parser.get('WALL_API', None)
@@ -88,18 +88,16 @@ class KigyoINIT:
         self.BOT_API_FILE_URL: str = self.parser.get('BOT_API_FILE_URL', "https://api.telegram.org/file/bot")
 
 
-    def init_sw(self):
-        if self.spamwatch_api is None:
-            log.warning("SpamWatch API key is missing! Check your config.ini")
-            return None
-        else:
-            try:
-                sw = spamwatch.Client(spamwatch_api)
-                return sw
-            except:
-                sw = None
-                log.warning("Can't connect to SpamWatch!")
-                return sw
+    # def init_sw(self):
+    #     if self.spamwatch_api is None:
+    #         log.warning("SpamWatch API key is missing! Check your config.ini")
+    #         return None
+    #     else:
+    #         try:
+    #             return spamwatch.Client(spamwatch_api)
+    #         except Exception:
+    #             log.warning("Can't connect to SpamWatch!")
+    #             return None
 
 
 KInit = KigyoINIT(parser=kigconfig)
@@ -130,7 +128,7 @@ SUPPORT_USERS = get_user_list("supports")
 SARDEGNA_USERS = get_user_list("sardegnas")
 WHITELIST_USERS = get_user_list("whitelists")
 SPAMMERS = get_user_list("spammers")
-spamwatch_api = KInit.spamwatch_api
+# spamwatch_api = KInit.spamwatch_api
 CASH_API_KEY = KInit.CASH_API_KEY
 TIME_API_KEY = KInit.TIME_API_KEY
 WALL_API = KInit.WALL_API
@@ -138,7 +136,7 @@ LASTFM_API_KEY = KInit.LASTFM_API_KEY
 CF_API_KEY = KInit.CF_API_KEY
 
 # SpamWatch
-sw = KInit.init_sw()
+# sw = KInit.init_sw()
 
 
 updater = tg.Updater(token=TOKEN, base_url=KInit.BOT_API_URL, base_file_url=KInit.BOT_API_FILE_URL, workers=min(32, os.cpu_count() + 4), request_kwargs={"read_timeout": 10, "connect_timeout": 10})
