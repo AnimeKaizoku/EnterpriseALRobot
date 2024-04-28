@@ -39,9 +39,9 @@ def get_readable_time(time: int) -> str:
 @kigcmd(command="raid", pass_args=True)
 @bot_admin
 @connection_status
+@rate_limit(40, 60)
 @loggable
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@rate_limit(40, 60)
 def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
     args = context.args
     chat = update.effective_chat
@@ -102,10 +102,10 @@ def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
 
 
 @kigcallback(pattern="enable_raid=")
+@rate_limit(40, 60)
 @connection_status
 @user_admin_no_reply
 @loggable
-@rate_limit(40, 60)
 def enable_raid_cb(update: Update, ctx: CallbackContext) -> Optional[str]:
     args = update.callback_query.data.replace("enable_raid=", "").split("=")
     chat = update.effective_chat
@@ -142,8 +142,8 @@ def enable_raid_cb(update: Update, ctx: CallbackContext) -> Optional[str]:
 @kigcallback(pattern="disable_raid=")
 @connection_status
 @user_admin_no_reply
-@loggable
 @rate_limit(40, 60)
+@loggable
 def disable_raid_cb(update: Update, _: CallbackContext) -> Optional[str]:
     args = update.callback_query.data.replace("disable_raid=", "").split("=")
     chat = update.effective_chat
@@ -216,8 +216,8 @@ def raidtime(update: Update, context: CallbackContext) -> Optional[str]:
 @kigcmd(command="raidactiontime", pass_args=True)
 @connection_status
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def raidtime(update: Update, context: CallbackContext) -> Optional[str]:
     what, t, time = sql.getRaidStatus(update.effective_chat.id)
     args = context.args

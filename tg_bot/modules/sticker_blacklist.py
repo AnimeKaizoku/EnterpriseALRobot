@@ -257,9 +257,10 @@ def unblackliststicker(update: Update, context: CallbackContext):
         )
 
 
-@loggable
-@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+
 @rate_limit(40, 60)
+@user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@loggable
 def blacklist_mode(update: Update, context: CallbackContext):
     global settypeblacklist
     chat = update.effective_chat  # type: Optional[Chat]

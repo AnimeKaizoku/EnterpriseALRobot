@@ -68,8 +68,8 @@ def report_setting(update: Update, context: CallbackContext):
 @kigcmd(command='report', filters=Filters.chat_type.groups, group=REPORT_GROUP)
 @kigmsg((Filters.regex(r"(?i)@admin(s)?")), group=REPORT_GROUP)
 @user_not_admin
-@loggable
 @rate_limit(40, 60)
+@loggable
 def report(update: Update, context: CallbackContext) -> str:
     # sourcery no-metrics
     global reply_markup

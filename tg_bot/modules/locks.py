@@ -140,9 +140,9 @@ def locktypes(update, _):
 
 @kigcmd(command='lock', pass_args=True)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 @loggable
 @typing_action
-@rate_limit(40, 60)
 def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat
@@ -249,9 +249,9 @@ def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metric
 
 @kigcmd(command='unlock', pass_args=True)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 @loggable
 @typing_action
-@rate_limit(40, 60)
 def unlock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat

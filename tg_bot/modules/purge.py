@@ -1,14 +1,16 @@
+import contextlib
 import logging
+from telegram.error import BadRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, CallbackQueryHandler
 from typing import List
-from tg_bot import SUDO_USERS
 from tg_bot.modules.helper_funcs.anonymous import AdminPerms, user_admin
-from tg_bot.modules.helper_funcs.chat_status import bot_admin
-from tg_bot.modules.helper_funcs.decorators import rate_limit, kigcmd, kigcallback
+from tg_bot.modules.helper_funcs.chat_status import bot_admin, is_user_admin_callback_query
+from tg_bot.modules.helper_funcs.decorators import rate_limit, kigcmd
 from tg_bot.modules.log_channel import loggable
 from pydantic import BaseModel
 from uuid import uuid4
+from tg_bot import dispatcher
 
 class DeleteMessageCallback(BaseModel):
     purge_id: str
@@ -17,45 +19,56 @@ class DeleteMessageCallback(BaseModel):
 
 DEL_MSG_CB_MAP: List[DeleteMessageCallback] = []
 
-@kigcallback(pattern=r"purge.*")
+# @kigcallback(pattern=r"purge.*")
+@is_user_admin_callback_query
+@bot_admin
+@rate_limit(40, 60)
+@loggable
 def purge_confirm(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     message = update.effective_message
     data = query.data
     purge_id = data.split("_")[-1]
-    member = update.effective_chat.get_member(query.from_user.id)
-    if member.status not in ["administrator", "creator"] or query.from_user.id not in SUDO_USERS:
-        return query.answer("You need to be admin to do this.", show_alert=True)
-
+    # member = update.effective_chat.get_member(query.from_user.id)
+    # if member.status not in ["administrator", "creator"]:
+    #     query.answer("You need to be admin to do this.", show_alert=True)
+    #     return False
     if data == "purge_cancel":
-        return message.edit_text("Purge has been cancelled.")
+        message.edit_text("Purge has been cancelled.")
+        return f"#PURGE_CANCELLED \n<b>Admin:</b> {query.from_user.first_name}\n<b>Chat:</b> {update.effective_chat.title}\n"
 
     for entry in DEL_MSG_CB_MAP:
         if entry.purge_id == purge_id:
-            for msg_id in entry.message_ids:
-                try:
-                    resp = context.bot._request.post(
-                    f"{context.bot.base_url}/deleteMessages",
+            try:
+                resp = context.bot._request.post(
+                f"{context.bot.base_url}/deleteMessages",
                         {
                             "chat_id": entry.chat_id,
                             "message_ids": entry.message_ids
                         },
-                    )
-                    logging.debug(resp)
-                except Exception as e:
-                     logging.exception(e)
-                     query.edit_message_text(text=f"Failed to purge")
-            query.edit_message_text(text="Purge completed.")
-            return
+                )
+                logging.debug(resp)
+                query.edit_message_text(text="Purge completed.")
+                return f"#PURGE_COMPLETED \n<b>Admin:</b> {query.from_user.first_name}\n<b>Chat:</b> {update.effective_chat.title}\n<b>Messages:</b> {len(entry.message_ids)}\n"
+            except BadRequest as e:
+                if e.message == "Too many message identifiers specified":
+                    for msg_id in entry.message_ids:
+                        with contextlib.suppress(BadRequest):
+                            context.bot.delete_message(chat_id=entry.chat_id, message_id=msg_id)
+                    query.edit_message_text(text="Purge completed.")
+                    return f"#PURGE_COMPLETED \n<b>Admin:</b> {query.from_user.first_name}\n<b>Chat:</b> {update.effective_chat.title}\n<b>Messages:</b> {len(entry.message_ids)}\n"
+                query.edit_message_text(text="Failed to purge")
+                return f"#PURGE_FAILED \n<b>Admin:</b> {query.from_user.first_name}\n<b>Chat:</b> {update.effective_chat.title}\n"
     query.edit_message_text(text="Purge failed or purge ID not found.")
+    return f"#PURGE_FAILED \n<b>Admin:</b> {query.from_user.first_name}\n<b>Chat:</b> {update.effective_chat.title}\n"
 
 
 @kigcmd(command='purge')
 @bot_admin
 @user_admin(AdminPerms.CAN_DELETE_MESSAGES)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def purge_messages_botapi(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     # user_id = update.effective_user.id
@@ -76,8 +89,7 @@ def purge_messages_botapi(update: Update, context: CallbackContext):
         return
     messages_to_delete = []
     try:
-        for msg_id in range(message_id_from, message_id_to + 1):
-            messages_to_delete.append(msg_id)
+        messages_to_delete.extend(iter(range(message_id_from, message_id_to + 1)))
         # resp = context.bot._request.post(
         # f"{context.bot.base_url}/deleteMessages",
         # {
@@ -88,23 +100,28 @@ def purge_messages_botapi(update: Update, context: CallbackContext):
         # logging.debug(resp)
         entry = DeleteMessageCallback(chat_id=chat_id, message_ids=messages_to_delete, purge_id=str(uuid4()))
         DEL_MSG_CB_MAP.append(entry)
-        buttons = InlineKeyboardMarkup([
+        buttons = InlineKeyboardMarkup(
             [
-                InlineKeyboardButton(
-                    text=f"Confirm",
-                    callback_data=f"purge_confirm_{entry.purge_id}"),
-                InlineKeyboardButton(
-                    text="Cancel", callback_data="purge_cancel")
-            ],
-        ])
+                [
+                    InlineKeyboardButton(
+                        text="Confirm",
+                        callback_data=f"purge_confirm_{entry.purge_id}",
+                    ),
+                    InlineKeyboardButton(
+                        text="Cancel", callback_data="purge_cancel"
+                    ),
+                ]
+            ]
+        )
         update.effective_message.reply_text(
             f"Purge {len(messages_to_delete)} message(s) from {update.effective_chat.title}? This action cannot be undone.",
             reply_markup=buttons,
             parse_mode=ParseMode.MARKDOWN,
         )
+        return f"#PURGE_ATTEMPT \n<b>Admin:</b> {update.effective_user.first_name} \n<b>Messages:</b> {len(messages_to_delete)}\n"
     except Exception as e:
         logging.exception(e)
-        update.effective_message.reply_text(f"An error occurred while purging")
+        update.effective_message.reply_text("An error occurred while purging")
 
 # async def purge_messages(event):
 #     start = time.perf_counter()
@@ -170,11 +187,13 @@ def purge_messages_botapi(update: Update, context: CallbackContext):
 #     del_message = [message, event.message]
 #     await event.client.delete_messages(chat, del_message)
 
-# from tg_bot.modules.language import gs
+from tg_bot.modules.language import gs
 
-# def get_help(chat):
-#     return gs(chat, "purge_help")
+def get_help(chat):
+    return gs(chat, "purge_help")
 
+CALLBACK_QUERY_HANDLER = CallbackQueryHandler(purge_confirm, pattern=r"purge.*")
+dispatcher.add_handler(CALLBACK_QUERY_HANDLER)
 
 
 
@@ -187,3 +206,4 @@ def purge_messages_botapi(update: Update, context: CallbackContext):
 # __mod_name__ = "Purges"
 # __command_list__ = ["del", "purge"]
 # __handlers__ = [PURGE_HANDLER, DEL_HANDLER]
+
