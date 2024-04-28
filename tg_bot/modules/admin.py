@@ -24,8 +24,8 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def promote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
     args = context.args
@@ -109,8 +109,8 @@ def promote(update: Update, context: CallbackContext) -> Optional[str]:
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def demote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
     args = context.args
@@ -260,8 +260,8 @@ def set_title(update: Update, context: CallbackContext):
 @bot_admin
 @can_pin
 @user_admin(AdminPerms.CAN_PIN_MESSAGES)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def pin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     args = context.args
@@ -303,8 +303,8 @@ def pin(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @can_pin
 @user_admin(AdminPerms.CAN_PIN_MESSAGES)
-@loggable
 @rate_limit(40, 60)
+@loggable
 def unpin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     chat = update.effective_chat

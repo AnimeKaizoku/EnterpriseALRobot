@@ -211,10 +211,10 @@ def unblacklist(update, context):
         )
 
 @kigcmd(command="blacklistmode", pass_args=True)
+@rate_limit(40, 60)
 @loggable
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @typing_action
-@rate_limit(40, 60)
 def blacklist_mode(update, context):  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user

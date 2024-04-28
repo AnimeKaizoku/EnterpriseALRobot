@@ -1,3 +1,4 @@
+import contextlib
 from functools import wraps
 
 from tg_bot import (
@@ -9,6 +10,7 @@ from tg_bot import (
     WHITELIST_USERS,
     dispatcher,
 )
+from telegram.constants import CHATMEMBER_ADMINISTRATOR, CHATMEMBER_CREATOR
 from cachetools import TTLCache
 from telegram import Chat, ChatMember, ParseMode, Update, TelegramError, User
 from telegram.ext import CallbackContext
@@ -67,9 +69,7 @@ def is_user_admin(update: Update, user_id: int, member: ChatMember = None) -> bo
             admin_list = [x.user.id for x in chat_admins]
             ADMIN_CACHE[chat.id] = admin_list
 
-            if user_id in admin_list:
-                return True
-            return False
+            return user_id in admin_list
 
 
 def is_bot_admin(chat: Chat, bot_id: int, bot_member: ChatMember = None) -> bool:
@@ -123,10 +123,8 @@ def dev_plus(func):
         elif not user:
             pass
         elif DEL_CMDS and " " not in update.effective_message.text:
-            try:
+            with contextlib.suppress(TelegramError):
                 update.effective_message.delete()
-            except TelegramError:
-                pass
         else:
             update.effective_message.reply_text(
                 "This is a developer restricted command."
@@ -148,10 +146,8 @@ def sudo_plus(func):
         elif not user:
             pass
         elif DEL_CMDS and " " not in update.effective_message.text:
-            try:
+            with contextlib.suppress(TelegramError):
                 update.effective_message.delete()
-            except TelegramError:
-                pass
         else:
             update.effective_message.reply_text(
                 "Who dis non-admin telling me what to do?"
@@ -170,10 +166,8 @@ def support_plus(func):
         if user and is_support_plus(chat, user.id):
             return func(update, context, *args, **kwargs)
         elif DEL_CMDS and " " not in update.effective_message.text:
-            try:
+            with contextlib.suppress(TelegramError):
                 update.effective_message.delete()
-            except TelegramError:
-                pass
 
     return is_support_plus_func
 
@@ -209,13 +203,31 @@ def user_admin(func):
         elif not user:
             pass
         elif DEL_CMDS and " " not in update.effective_message.text:
-            try:
+            with contextlib.suppress(TelegramError):
                 update.effective_message.delete()
-            except TelegramError:
-                pass
         else:
             update.effective_message.reply_text(
                 "Who dis non-admin telling me what to do?"
+            )
+
+    return is_admin
+
+def is_user_admin_callback_query(func):
+    @wraps(func)
+    def is_admin(update: Update, context: CallbackContext, *args, **kwargs):
+        user = update.callback_query.from_user
+        chat = update.effective_chat
+
+        if chat.get_member(user.id).status in (CHATMEMBER_ADMINISTRATOR, CHATMEMBER_CREATOR):
+            return func(update, context, *args, **kwargs)
+
+        if user.id in DEV_USERS:
+            return func(update, context, *args, **kwargs)
+        elif not user:
+            pass
+        else:
+            update.callback_query.answer(
+                "You don't have access to use this."
             )
 
     return is_admin
@@ -224,8 +236,8 @@ def user_admin(func):
 def user_admin_no_reply(func):
     @wraps(func)
     def is_not_admin_no_reply(
-            update: Update, context: CallbackContext, *args, **kwargs
-    ):
+                update: Update, context: CallbackContext, *args, **kwargs
+        ):
         # bot = context.bot
         user = update.effective_user
         # chat = update.effective_chat
@@ -235,10 +247,8 @@ def user_admin_no_reply(func):
         elif not user:
             pass
         elif DEL_CMDS and " " not in update.effective_message.text:
-            try:
+            with contextlib.suppress(TelegramError):
                 update.effective_message.delete()
-            except TelegramError:
-                pass
 
     return is_not_admin_no_reply
 
