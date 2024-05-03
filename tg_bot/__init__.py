@@ -86,6 +86,9 @@ class KigyoINIT:
         self.DROP_UPDATES: bool = self.parser.getboolean("DROP_UPDATES", True)
         self.BOT_API_URL: str = self.parser.get('BOT_API_URL', "https://api.telegram.org/bot")
         self.BOT_API_FILE_URL: str = self.parser.get('BOT_API_FILE_URL', "https://api.telegram.org/file/bot")
+        self.POSTGRES_POOL_SIZE: int = self.parser.getint("POSTGRES_POOL_SIZE", 1)
+
+        print("Loaded Configuration", self.__dict__)
 
 
     # def init_sw(self):
@@ -134,6 +137,7 @@ TIME_API_KEY = KInit.TIME_API_KEY
 WALL_API = KInit.WALL_API
 LASTFM_API_KEY = KInit.LASTFM_API_KEY
 CF_API_KEY = KInit.CF_API_KEY
+POSTGRES_POOL_SIZE = KInit.POSTGRES_POOL_SIZE
 
 # SpamWatch
 # sw = KInit.init_sw()
