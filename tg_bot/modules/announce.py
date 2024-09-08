@@ -5,7 +5,7 @@ from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
 from tg_bot.modules.log_channel import loggable
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 import tg_bot.modules.sql.logger_sql as sql
 from ..modules.helper_funcs.anonymous import user_admin as u_admin, AdminPerms
@@ -13,6 +13,7 @@ from ..modules.helper_funcs.anonymous import user_admin as u_admin, AdminPerms
 
 @kigcmd(command="announce", pass_args=True)
 @u_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 @loggable
 def announcestat(update: Update, context: CallbackContext) -> str:
     args = context.args

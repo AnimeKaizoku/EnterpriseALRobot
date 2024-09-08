@@ -1,10 +1,11 @@
 from .helper_funcs.misc import upload_text
 from telegram import Update
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 from io import BytesIO
 
 @kigcmd(command='paste', pass_args=True)
+@rate_limit(40, 60)
 def paste(update: Update, context: CallbackContext):
     args = context.args
     message = update.effective_message

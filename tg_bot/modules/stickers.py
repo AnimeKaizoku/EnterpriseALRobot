@@ -5,14 +5,23 @@ from io import BytesIO
 from urllib.error import HTTPError
 
 from PIL import Image
-from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ParseMode,
+from telegram import (Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode,
                       TelegramError, Update)
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
+def get_sticker_count(bot: Bot, packname: str) -> int:
+    resp = bot._request.post(
+        f"{bot.base_url}/getStickerSet",
+        {
+            "name": packname,
+        },
+    )
+    return len(resp["stickers"])
 
 @kigcmd(command='stickerid')
+@rate_limit(40, 60)
 def stickerid(update: Update, context: CallbackContext):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -34,25 +43,21 @@ def stickerid(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='getsticker')
+@rate_limit(40, 60)
 def getsticker(update: Update, context: CallbackContext):
-    bot = context.bot
     msg = update.effective_message
-    chat_id = update.effective_chat.id
     if msg.reply_to_message and msg.reply_to_message.sticker:
         file_id = msg.reply_to_message.sticker.file_id
         # Check if it's an animated file
         is_animated = msg.reply_to_message.sticker.is_animated
+        bot = context.bot
         # Get the file and put it into a memory buffer
         new_file = bot.get_file(file_id)
         sticker_data = new_file.download(out=BytesIO())
         # go back to the start of the buffer
         sticker_data.seek(0)
-        # Reply with the document. Telegram INSISTS on making anything
-        # that ends in .tgs become an animated sticker so we'll have to
-        # rename it to something the user should know how to handle.
-        filename = "sticker.png"
-        if is_animated:
-            filename = "animated_sticker.tgs.rename_me"
+        filename = "animated_sticker.tgs.rename_me" if is_animated else "sticker.png"
+        chat_id = update.effective_chat.id
         # Send the document
         bot.send_document(chat_id,
             document=sticker_data,
@@ -66,6 +71,7 @@ def getsticker(update: Update, context: CallbackContext):
 
 
 @kigcmd(command=["steal", "kang"])
+@rate_limit(40, 60)
 def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
     global ppref
     msg = update.effective_message
@@ -97,8 +103,7 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
         while True:
             last_set = False
             try:
-                stickerset = context.bot.get_sticker_set(packname)
-                if len(stickerset.stickers) >= max_stickers:
+                if get_sticker_count(context.bot, packname) >= max_stickers:
                     packnum += 1
                     if is_animated:
                         packname = f"animated{packnum}_{user.id}_by_{context.bot.username}"
@@ -229,8 +234,7 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
     # Find if the pack is full already
     while not packname_found:
         try:
-            stickerset = context.bot.get_sticker_set(packname)
-            if len(stickerset.stickers) >= max_stickers:
+            if get_sticker_count(context.bot, packname) >= max_stickers:
                 packnum += 1
                 if is_animated:
                     packname = f"animated{packnum}_{user.id}_by_{context.bot.username}"
@@ -245,6 +249,8 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
                 packname_found = True
                 # we will need to create the sticker pack
                 invalid = True
+            else:
+                raise
 
     # if the image isn't animated, ensure it's the right size/format with PIL
     if not is_animated and not is_video:

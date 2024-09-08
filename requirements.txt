@@ -5,7 +5,7 @@ bleach
 cachetools
 configparser
 currencyconverter
-emoji
+emoji==1.7.0
 feedparser
 future
 gitpython
@@ -16,15 +16,16 @@ pillow>=4.2.0
 psutil
 psycopg2-binary
 pyYAML>=5.1.2
-pyrate-limiter
+pyrate-limiter==2.10.0
 python-telegram-bot==13.15
 requests
 spamwatch
 speedtest-cli
 sqlalchemy==1.4.11
-telethon==1.16.4
+# telethon==1.16.4
 ujson
 pycryptodome==3.19.0
 base58
 pytimeparse
 SibylSystem
+pydantic

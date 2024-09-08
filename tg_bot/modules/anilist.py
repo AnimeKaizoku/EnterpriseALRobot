@@ -10,7 +10,7 @@ from telegram import (
 import requests
 import math
 import time
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 def shorten(description, info="anilist.co"):
     msg = ""
@@ -160,6 +160,7 @@ query ($id: Int,$search: String) {
 url = "https://graphql.anilist.co"
 
 @kigcmd(command="airing")
+@rate_limit(messages_per_window=5, window_seconds=60)
 def airing(update: Update, context: CallbackContext):
     message = update.effective_message
     search_str = message.text.split(" ", 1)
@@ -182,6 +183,7 @@ def airing(update: Update, context: CallbackContext):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 @kigcmd(command="anime")
+@rate_limit(40, 60)
 def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -252,6 +254,7 @@ def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
             )
 
 @kigcmd(command="character")
+@rate_limit(40, 60)
 def character(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
@@ -285,6 +288,7 @@ def character(update: Update, context: CallbackContext):
             )
 
 @kigcmd(command="manga")
+@rate_limit(40, 60)
 def manga(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)

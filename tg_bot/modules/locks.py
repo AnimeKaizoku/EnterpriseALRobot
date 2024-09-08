@@ -18,7 +18,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     is_bot_admin,
     user_admin as u_admin,
 )
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, rate_limit
 from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql.approve_sql import is_approved
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
@@ -128,6 +128,7 @@ def unrestr_members(
 
 
 @kigcmd(command='locktypes')
+@rate_limit(40, 60)
 def locktypes(update, _):
     update.effective_message.reply_text(
         "\n • ".join(
@@ -139,6 +140,7 @@ def locktypes(update, _):
 
 @kigcmd(command='lock', pass_args=True)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 @loggable
 @typing_action
 def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
@@ -247,6 +249,7 @@ def lock(update: Update, context: CallbackContext) -> str:  # sourcery no-metric
 
 @kigcmd(command='unlock', pass_args=True)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 @loggable
 @typing_action
 def unlock(update: Update, context: CallbackContext) -> str:  # sourcery no-metrics
@@ -343,6 +346,7 @@ def unlock(update: Update, context: CallbackContext) -> str:  # sourcery no-metr
 
 @kigmsg((Filters.all & Filters.chat_type.groups), group=PERM_GROUP)
 @user_not_admin
+@rate_limit(50, 60)
 def del_lockables(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
@@ -481,6 +485,7 @@ def build_lock_message(chat_id):
 @kigcmd(command='locks')
 @u_admin
 @typing_action
+@rate_limit(40, 60)
 def list_locks(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user

@@ -17,7 +17,7 @@ from telegram import ParseMode, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 BLACKLISTWHITELIST = (
     [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
@@ -27,6 +27,7 @@ BLABLEUSERS = [OWNER_ID] + DEV_USERS
 @kigcmd(command='ignore', pass_args=True)
 @dev_plus
 @gloggable
+@rate_limit(40, 60)
 def bl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -67,6 +68,7 @@ def bl_user(update: Update, context: CallbackContext) -> str:
 @kigcmd(command='notice', pass_args=True)
 @dev_plus
 @gloggable
+@rate_limit(40, 60)
 def unbl_user(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
@@ -108,6 +110,7 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
 
 @kigcmd(command='ignoredlist', pass_args=True)
 @dev_plus
+@rate_limit(40, 60)
 def bl_users(update: Update, context: CallbackContext):
     users = []
     bot = context.bot

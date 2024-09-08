@@ -12,7 +12,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     can_promote,
     connection_status,
 )
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 from tg_bot.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from tg_bot.modules.language import gs
 from tg_bot.modules.log_channel import loggable
@@ -24,6 +24,7 @@ from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
+@rate_limit(40, 60)
 @loggable
 def promote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
@@ -108,6 +109,7 @@ def promote(update: Update, context: CallbackContext) -> Optional[str]:
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
+@rate_limit(40, 60)
 @loggable
 def demote(update: Update, context: CallbackContext) -> Optional[str]:
     bot = context.bot
@@ -181,6 +183,7 @@ def demote(update: Update, context: CallbackContext) -> Optional[str]:
 """
 @kigcmd(command="admincache", can_disable=False)
 @u_admin
+@rate_limit(40, 60)
 def refresh_admin(update, _):
     ADMIN_CACHE.pop(update.effective_chat.id)
     update.effective_message.reply_text("Admins cache refreshed!")
@@ -192,6 +195,7 @@ def refresh_admin(update, _):
 @bot_admin
 @can_promote
 @user_admin(AdminPerms.CAN_PROMOTE_MEMBERS)
+@rate_limit(40, 60)
 def set_title(update: Update, context: CallbackContext):
     bot = context.bot
     args = context.args
@@ -256,6 +260,7 @@ def set_title(update: Update, context: CallbackContext):
 @bot_admin
 @can_pin
 @user_admin(AdminPerms.CAN_PIN_MESSAGES)
+@rate_limit(40, 60)
 @loggable
 def pin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -298,6 +303,7 @@ def pin(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @can_pin
 @user_admin(AdminPerms.CAN_PIN_MESSAGES)
+@rate_limit(40, 60)
 @loggable
 def unpin(update: Update, context: CallbackContext) -> str:
     bot = context.bot
@@ -325,6 +331,7 @@ def unpin(update: Update, context: CallbackContext) -> str:
 @bot_admin
 @user_admin(AdminPerms.CAN_INVITE_USERS)
 @connection_status
+@rate_limit(40, 60)
 def invite(update: Update, context: CallbackContext):
     bot = context.bot
     chat = update.effective_chat
@@ -347,6 +354,7 @@ def invite(update: Update, context: CallbackContext):
 
 
 @kigcmd(command=["admin", "admins"])
+@rate_limit(40, 60)
 def adminlist(update: Update, _):
     administrators = update.effective_chat.get_administrators()
     text = "Admins in *{}*:".format(update.effective_chat.title or "this chat")

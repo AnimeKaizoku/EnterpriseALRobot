@@ -12,6 +12,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     user_admin_no_reply,
     is_anon
 )
+from tg_bot.modules.helper_funcs.decorators import rate_limit
 from tg_bot.modules.helper_funcs.extraction import (
     extract_text,
     extract_user,
@@ -123,7 +124,7 @@ def warn(
             [
                 [
                     InlineKeyboardButton(
-                        "🔘 Remove warn", callback_data="rm_warn({})".format(user.id)
+                        "🔘 Remove warn", callback_data=f"rm_warn({user.id})"
                     )
                 ]
             ]
@@ -162,18 +163,19 @@ def warn(
 
 @user_admin_no_reply
 @bot_admin
+@rate_limit(40, 60)
 @loggable
 def button(update: Update, context: CallbackContext) -> str:
     query: Optional[CallbackQuery] = update.callback_query
     user: Optional[User] = update.effective_user
     match = re.match(r"rm_warn\((.+?)\)", query.data)
     if match:
-        user_id = match.group(1)
+        user_id = match[1]
         chat: Optional[Chat] = update.effective_chat
         res = sql.remove_warn(user_id, chat.id)
         if res:
             update.effective_message.edit_text(
-                "Warn removed by {}.".format(mention_html(user.id, user.first_name) if not is_anon(user, chat) else "anon admin"),
+                f'Warn removed by {"anon admin" if is_anon(user, chat) else mention_html(user.id, user.first_name)}.',
                 parse_mode=ParseMode.HTML,
             )
             user_member = chat.get_member(user_id)
@@ -183,7 +185,7 @@ def button(update: Update, context: CallbackContext) -> str:
                 f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
                 f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}\n"
                 f"<b>User ID:</b> <code>{user_member.user.id}</code>"
-                
+
             )
         else:
             update.effective_message.edit_text(
@@ -195,6 +197,7 @@ def button(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @can_restrict
+@rate_limit(40, 60)
 @loggable
 def warn_user(update: Update, context: CallbackContext) -> str:
     args = context.args
@@ -225,6 +228,7 @@ def warn_user(update: Update, context: CallbackContext) -> str:
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
 @bot_admin
+@rate_limit(40, 60)
 @loggable
 def reset_warns(update: Update, context: CallbackContext) -> str:
     args = context.args
@@ -249,7 +253,7 @@ def reset_warns(update: Update, context: CallbackContext) -> str:
         message.reply_text("No user has been designated!")
     return ""
 
-
+@rate_limit(40, 60)
 def warns(update: Update, context: CallbackContext):
     args = context.args
     message: Optional[Message] = update.effective_message
@@ -281,6 +285,7 @@ def warns(update: Update, context: CallbackContext):
 
 # Dispatcher handler stop - do not async
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def add_warn_filter(update: Update, context: CallbackContext):
     chat: Optional[Chat] = update.effective_chat
     msg: Optional[Message] = update.effective_message
@@ -313,6 +318,7 @@ def add_warn_filter(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def remove_warn_filter(update: Update, context: CallbackContext):
     chat: Optional[Chat] = update.effective_chat
     msg: Optional[Message] = update.effective_message
@@ -347,7 +353,7 @@ def remove_warn_filter(update: Update, context: CallbackContext):
         "That's not a current warning filter - run /warnlist for all active warning filters."
     )
 
-
+@rate_limit(40, 60)
 def list_warn_filters(update: Update, context: CallbackContext):
     chat: Optional[Chat] = update.effective_chat
     all_handlers = sql.get_chat_warn_triggers(chat.id)
@@ -369,6 +375,8 @@ def list_warn_filters(update: Update, context: CallbackContext):
         update.effective_message.reply_text(filter_list, parse_mode=ParseMode.HTML)
 
 
+
+@rate_limit(40, 60)
 @loggable
 def reply_filter(update: Update, context: CallbackContext) -> Optional[str]:
     chat: Optional[Chat] = update.effective_chat
@@ -398,6 +406,7 @@ def reply_filter(update: Update, context: CallbackContext) -> Optional[str]:
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 @loggable
 def set_warn_limit(update: Update, context: CallbackContext) -> str:
     args = context.args
@@ -411,7 +420,7 @@ def set_warn_limit(update: Update, context: CallbackContext) -> str:
                 msg.reply_text("The minimum warn limit is 3!")
             else:
                 sql.set_warn_limit(chat.id, int(args[0]))
-                msg.reply_text("Updated the warn limit to {}".format(args[0]))
+                msg.reply_text(f"Updated the warn limit to {args[0]}")
                 return (
                     f"<b>{html.escape(chat.title)}:</b>\n"
                     f"#SET_WARN_LIMIT\n"
@@ -423,11 +432,12 @@ def set_warn_limit(update: Update, context: CallbackContext) -> str:
     else:
         limit, soft_warn = sql.get_warn_setting(chat.id)
 
-        msg.reply_text("The current warn limit is {}".format(limit))
+        msg.reply_text(f"The current warn limit is {limit}")
     return ""
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def set_warn_strength(update: Update, context: CallbackContext):
     args = context.args
     chat: Optional[Chat] = update.effective_chat

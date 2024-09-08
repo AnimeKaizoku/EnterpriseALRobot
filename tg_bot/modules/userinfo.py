@@ -6,11 +6,12 @@ from telegram.utils.helpers import escape_markdown
 
 import tg_bot.modules.sql.userinfo_sql as sql
 from tg_bot import SUDO_USERS, DEV_USERS
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 from tg_bot.modules.helper_funcs.extraction import extract_user
 
 
 @kigcmd(command='me', pass_args=True)
+@rate_limit(40, 60)
 def about_me(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -37,6 +38,7 @@ def about_me(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='setme')
+@rate_limit(40, 60)
 def set_about_me(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message
@@ -69,6 +71,7 @@ def set_about_me(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='bio', pass_args=True)
+@rate_limit(40, 60)
 def about_bio(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -136,6 +139,7 @@ def about_bio(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='setbio')
+@rate_limit(40, 60)
 def set_about_bio(update: Update, context: CallbackContext):
     message = update.effective_message
     sender_id = update.effective_user.id

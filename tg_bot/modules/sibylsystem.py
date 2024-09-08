@@ -16,6 +16,8 @@ from telegram.utils.helpers import mention_html
 
 from SibylSystem import GeneralException, PsychoPass
 
+from tg_bot.modules.helper_funcs.decorators import rate_limit
+
 from . import ALL_MODULES
 from .log_channel import loggable
 from .sql.users_sql import get_user_com_chats
@@ -60,7 +62,7 @@ else:
 
 if SIBYL_KEY and __name__.split(".")[-1] in ALL_MODULES:
     try:
-        sibylClient = PsychoPass(SIBYL_KEY)
+        sibylClient = PsychoPass(token=SIBYL_KEY, host='https://psychopass.kaizoku.cyou')
         LOGGER.info("Connected to @SibylSystem")
     except Exception as e:
         sibylClient = None
@@ -197,6 +199,7 @@ def get_sibyl_setting(chat_id):
 
 
 @loggable
+@rate_limit(40, 60)
 def sibyl_ban(update: Update, context: CallbackContext) -> Optional[str]:
     message = update.effective_message
     chat = update.effective_chat
@@ -251,6 +254,7 @@ def sibyl_ban(update: Update, context: CallbackContext) -> Optional[str]:
 
 
 @loggable
+@rate_limit(40, 60)
 def sibyl_ban_alert(update: Update, context: CallbackContext) -> Optional[str]:
     message = update.effective_message
     chat = update.effective_chat
@@ -345,6 +349,7 @@ Connection to <a href="https://t.me/SibylSystem/2">Sibyl System</a> can be turne
 
 @connection_status
 @user_admin
+@rate_limit(40, 60)
 def sibylmain(update: Update, _: CallbackContext):
     chat = update.effective_chat
     message = update.effective_message
@@ -408,6 +413,7 @@ class SibylMode(Enum):
 
 
 @connection_status
+@rate_limit(40, 60)
 def sibyltoggle(update: Update, _: CallbackContext):
     chat: Chat = update.effective_chat
     message: Message = update.effective_message
@@ -463,6 +469,7 @@ def sibyltoggle(update: Update, _: CallbackContext):
         pass
 
 
+@rate_limit(40, 60)
 def sibyl_banned(update: Update, ctx: CallbackContext):
     chat: Chat = update.effective_chat
     args = ctx.args
@@ -486,7 +493,7 @@ def sibyl_banned(update: Update, ctx: CallbackContext):
             txt, parse_mode=ParseMode.HTML, reply_markup=reply_markup, disable_web_page_preview=True,
     )
 
-
+@rate_limit(40, 60)
 def sibyl_info(update: Update, context: CallbackContext):
     bot: Bot = context.bot
     args = context.args

@@ -6,10 +6,11 @@ from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 
 from tg_bot import LASTFM_API_KEY
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 import tg_bot.modules.sql.last_fm_sql as sql
 
 @kigcmd(command='setuser')
+@rate_limit(40, 60)
 def set_user(update: Update, context: CallbackContext):
     args = context.args
     msg = update.effective_message
@@ -24,6 +25,7 @@ def set_user(update: Update, context: CallbackContext):
         )
 
 @kigcmd(command='clearuser')
+@rate_limit(40, 60)
 def clear_user(update: Update, _):
     user = update.effective_user.id
     sql.set_user(user, "")
@@ -32,6 +34,7 @@ def clear_user(update: Update, _):
     )
 
 @kigcmd(command='lastfm')
+@rate_limit(40, 60)
 def last_fm(update: Update, _):
     msg = update.effective_message
     user = update.effective_user.first_name

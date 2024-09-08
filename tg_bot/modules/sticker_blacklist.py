@@ -5,6 +5,7 @@ from telegram import Chat, Message, ParseMode, Update, User, ChatPermissions
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html, mention_markdown
+from tg_bot.modules.helper_funcs.decorators import rate_limit
 
 import tg_bot.modules.sql.blsticker_sql as sql
 from tg_bot import log as LOGGER, dispatcher
@@ -23,6 +24,7 @@ from tg_bot.modules.warns import warn
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def blackliststicker(update: Update, context: CallbackContext):
     global text
     msg = update.effective_message  # type: Optional[Message]
@@ -69,6 +71,7 @@ def blackliststicker(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def add_blackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message  # type: Optional[Message]
@@ -96,7 +99,6 @@ def add_blackliststicker(update: Update, context: CallbackContext):
         added = 0
         for trigger in to_blacklist:
             try:
-                get = bot.getStickerSet(trigger)
                 sql.add_to_stickers(chat_id, trigger.lower())
                 added += 1
             except BadRequest:
@@ -132,7 +134,6 @@ def add_blackliststicker(update: Update, context: CallbackContext):
             send_message(update.effective_message, "Sticker is invalid!")
             return
         try:
-            get = bot.getStickerSet(trigger)
             sql.add_to_stickers(chat_id, trigger.lower())
             added += 1
         except BadRequest:
@@ -160,6 +161,7 @@ def add_blackliststicker(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def unblackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message  # type: Optional[Message]
@@ -255,8 +257,10 @@ def unblackliststicker(update: Update, context: CallbackContext):
         )
 
 
-@loggable
+
+@rate_limit(40, 60)
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@loggable
 def blacklist_mode(update: Update, context: CallbackContext):
     global settypeblacklist
     chat = update.effective_chat  # type: Optional[Chat]
@@ -370,6 +374,7 @@ def blacklist_mode(update: Update, context: CallbackContext):
 
 
 @user_not_admin
+@rate_limit(40, 60)
 def del_blackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
     chat = update.effective_chat  # type: Optional[Chat]

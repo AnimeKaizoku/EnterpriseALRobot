@@ -3,7 +3,7 @@ from tg_bot import DEV_USERS, dispatcher
 from tg_bot.modules.helper_funcs.chat_status import dev_plus
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, rate_limit
 
 
 def convert(speed):
@@ -12,6 +12,7 @@ def convert(speed):
 
 @kigcmd(command='speedtest')
 @dev_plus
+@rate_limit(40, 60)
 def speedtestxyz(update: Update, context: CallbackContext):
     buttons = [
         [
@@ -25,6 +26,7 @@ def speedtestxyz(update: Update, context: CallbackContext):
 
 
 @kigcallback(pattern="speedtest_.*")
+@rate_limit(40, 60)
 def speedtestxyz_callback(update: Update, context: CallbackContext):
     query = update.callback_query
 

@@ -9,7 +9,7 @@ from contextlib import redirect_stdout
 from tg_bot import log as LOGGER, SYS_ADMIN
 from telegram import ParseMode, Update
 from telegram.ext import Filters, CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 namespaces = {}
 
@@ -50,12 +50,14 @@ def send(msg, bot, update):
 
 
 @kigcmd(command=("e", "ev", "eva", "eval"), filters=Filters.user(SYS_ADMIN))
+@rate_limit(40, 60)
 def evaluate(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(eval, bot, update), bot, update)
 
 
 @kigcmd(command=("x", "ex", "exe", "exec", "py"), filters=Filters.user(SYS_ADMIN))
+@rate_limit(40, 60)
 def execute(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(exec, bot, update), bot, update)
@@ -115,6 +117,7 @@ def do(func, bot, update):
 
 
 @kigcmd(command="clearlocals", filters=Filters.user(SYS_ADMIN))
+@rate_limit(40, 60)
 def clear(update: Update, context: CallbackContext):
     bot = context.bot
     log_input(update)

@@ -27,7 +27,7 @@ from tg_bot.modules.sql import cust_filters_sql as sql
 from tg_bot.modules.connection import connected
 
 from tg_bot.modules.helper_funcs.alternate import send_message, typing_action
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback, rate_limit
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
@@ -48,6 +48,7 @@ ENUM_FUNC_MAP = {
 
 @typing_action
 @kigcmd(command='filters', admin_ok=True)
+@rate_limit(40, 60)
 def list_handlers(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -97,6 +98,7 @@ def list_handlers(update, context):
 @kigcmd(command='filter', run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
+@rate_limit(40, 60)
 def filters(update, context):  # sourcery no-metrics
     chat = update.effective_chat
     user = update.effective_user
@@ -221,6 +223,7 @@ def filters(update, context):  # sourcery no-metrics
 @kigcmd(command='stop', run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
+@rate_limit(40, 60)
 def stop_filter(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -259,7 +262,8 @@ def stop_filter(update, context):
     )
 
 
-@kigmsg((CustomFilters.has_text & ~Filters.update.edited_message))
+@kigmsg((CustomFilters.has_text & ~Filters.update.edited_message & ~Filters.user(777000)))
+@rate_limit(40, 60)
 def reply_filter(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
@@ -453,6 +457,7 @@ def reply_filter(update, context):  # sourcery no-metrics
 
 
 @kigcmd(command="removeallfilters", filters=Filters.chat_type.groups)
+@rate_limit(40, 60)
 def rmall_filters(update, _):
     chat = update.effective_chat
     user = update.effective_user
@@ -480,6 +485,7 @@ def rmall_filters(update, _):
 
 
 @kigcallback(pattern=r"filters_.*")
+@rate_limit(40, 60)
 def rmall_callback(update, _):
     query = update.callback_query
     chat = update.effective_chat

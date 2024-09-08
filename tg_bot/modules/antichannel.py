@@ -1,5 +1,5 @@
 from telegram.ext.filters import Filters
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, rate_limit
 from telegram import Update, message
 from telegram.ext import CallbackContext
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
@@ -9,6 +9,7 @@ from ..modules.sql.antichannel_sql import antichannel_status, disable_antichanne
 
 @kigcmd(command="antichannel", group=100)
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
+@rate_limit(40, 60)
 def set_antichannel(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat

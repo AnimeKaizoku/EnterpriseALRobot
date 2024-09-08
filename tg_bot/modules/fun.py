@@ -12,15 +12,17 @@ from telegram.ext import CallbackContext
 import tg_bot.modules.fun_strings as fun_strings
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
 from tg_bot.modules.helper_funcs.extraction import extract_user
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 
 @kigcmd(command='runs')
+@rate_limit(40, 60)
 def runs(update: Update, context: CallbackContext):
     update.effective_message.reply_text(random.choice(fun_strings.RUN_STRINGS))
 
 
 @kigcmd(command='slap')
+@rate_limit(40, 60)
 def slap(update: Update, context: CallbackContext):
     bot: telegram.Bot = context.bot
     args = context.args
@@ -78,6 +80,7 @@ def slap(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='pat')
+@rate_limit(40, 60)
 def pat(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     msg = str(update.message.text)
@@ -119,16 +122,19 @@ def pat(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='roll')
+@rate_limit(40, 60)
 def roll(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(range(1, 7)))
 
 
 @kigcmd(command='toss')
+@rate_limit(40, 60)
 def toss(update: Update, context: CallbackContext):
     update.message.reply_text(random.choice(fun_strings.TOSS))
 
 
 @kigcmd(command='shrug')
+@rate_limit(40, 60)
 def shrug(update: Update, context: CallbackContext):
     msg = update.effective_message
     reply_text = (
@@ -138,6 +144,7 @@ def shrug(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='rlg')
+@rate_limit(40, 60)
 def rlg(update: Update, context: CallbackContext):
     eyes = random.choice(fun_strings.EYES)
     mouth = random.choice(fun_strings.MOUTHS)
@@ -151,6 +158,7 @@ def rlg(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='decide')
+@rate_limit(40, 60)
 def decide(update: Update, context: CallbackContext):
     reply_text = (
         update.effective_message.reply_to_message.reply_text
@@ -161,6 +169,7 @@ def decide(update: Update, context: CallbackContext):
 
 
 @kigcmd(command='table')
+@rate_limit(40, 60)
 def table(update: Update, context: CallbackContext):
     reply_text = (
         update.effective_message.reply_to_message.reply_text

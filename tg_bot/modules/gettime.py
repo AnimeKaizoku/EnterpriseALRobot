@@ -5,7 +5,7 @@ import requests
 from tg_bot import TIME_API_KEY, dispatcher
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 
 def generate_time(to_find: str, findtype: List[str]) -> str:
@@ -54,6 +54,7 @@ def generate_time(to_find: str, findtype: List[str]) -> str:
     return result
 
 @kigcmd(command='time')
+@rate_limit(40, 60)
 def gettime(update: Update, context: CallbackContext):
     message = update.effective_message
 

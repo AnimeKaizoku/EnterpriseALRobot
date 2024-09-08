@@ -7,6 +7,7 @@ from tg_bot.modules.helper_funcs.chat_status import (
     connection_status,
     dev_plus,
 )
+from tg_bot.modules.helper_funcs.decorators import rate_limit
 from tg_bot.modules.sql import cleaner_sql as sql
 from telegram import ParseMode, Update
 from telegram.ext import (
@@ -67,6 +68,7 @@ def clean_blue_text_must_click(update: Update, context: CallbackContext):
 @connection_status
 @bot_can_delete
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def set_blue_text_must_click(update: Update, context: CallbackContext):
     chat = update.effective_chat
     message = update.effective_message
@@ -100,6 +102,7 @@ def set_blue_text_must_click(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def add_bluetext_ignore(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
@@ -121,6 +124,7 @@ def add_bluetext_ignore(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def remove_bluetext_ignore(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
@@ -144,6 +148,7 @@ def remove_bluetext_ignore(update: Update, context: CallbackContext):
 
 
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def add_bluetext_ignore_global(update: Update, context: CallbackContext):
     message = update.effective_message
     args = context.args
@@ -164,6 +169,7 @@ def add_bluetext_ignore_global(update: Update, context: CallbackContext):
 
 
 @dev_plus
+@rate_limit(40, 60)
 def remove_bluetext_ignore_global(update: Update, context: CallbackContext):
     message = update.effective_message
     args = context.args
@@ -184,6 +190,7 @@ def remove_bluetext_ignore_global(update: Update, context: CallbackContext):
 
 
 @dev_plus
+@rate_limit(40, 60)
 def bluetext_ignore_list(update: Update, context: CallbackContext):
 
     message = update.effective_message

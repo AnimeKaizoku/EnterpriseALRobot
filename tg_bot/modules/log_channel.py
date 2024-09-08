@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, rate_limit
 from tg_bot.modules.helper_funcs.misc import is_module_loaded
 from tg_bot.modules.language import gs
 
@@ -24,7 +24,6 @@ if is_module_loaded(FILENAME):
     from tg_bot.modules.helper_funcs.chat_status import user_admin as u_admin, is_user_admin
     from tg_bot.modules.sql import log_channel_sql as sql
 
-
     def loggable(func):
         @wraps(func)
         def log_action(update, context, *args, **kwargs):
@@ -34,7 +33,8 @@ if is_module_loaded(FILENAME):
 
             if result:
                 datetime_fmt = "%H:%M - %d-%m-%Y"
-                result += f"\n<b>Event Stamp</b>: <code>{datetime.utcnow().strftime(datetime_fmt)}</code>"
+                result = str(result)
+                result += f"\n<b>Event Stamp</b>: <code>{datetime.now(timezone.utc).strftime(datetime_fmt)}</code>"
                 try:
                     if message.chat.type == chat.SUPERGROUP:
                         if message.chat.username:
@@ -63,7 +63,7 @@ if is_module_loaded(FILENAME):
             if result:
                 datetime_fmt = "%H:%M - %d-%m-%Y"
                 result += "\n<b>Event Stamp</b>: <code>{}</code>".format(
-                    datetime.utcnow().strftime(datetime_fmt)
+                    datetime.now(timezone.utc).strftime(datetime_fmt)
                 )
 
                 if message.chat.type == chat.SUPERGROUP and message.chat.username:
@@ -108,6 +108,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='logchannel')
     @u_admin
+    @rate_limit(40, 60)
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -128,6 +129,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='setlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
+    @rate_limit(40, 60)
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -171,6 +173,7 @@ if is_module_loaded(FILENAME):
 
     @kigcmd(command='unsetlog')
     @user_admin(AdminPerms.CAN_CHANGE_INFO)
+    @rate_limit(40, 60)
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot
         message = update.effective_message
@@ -229,6 +232,7 @@ else:
 
 @kigcmd("logsettings")
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def log_settings(update: Update, _: CallbackContext):
     chat = update.effective_chat
     chat_set = sql.get_chat_setting(chat_id=chat.id)
@@ -257,6 +261,7 @@ from tg_bot.modules.sql import log_channel_sql as sql
 
 
 @kigcallback(pattern=r"log_tog_.*")
+@rate_limit(40, 60)
 def log_setting_callback(update: Update, context: CallbackContext):
     cb = update.callback_query
     user = cb.from_user
@@ -272,7 +277,7 @@ def log_setting_callback(update: Update, context: CallbackContext):
     t = sql.get_chat_setting(chat.id)
     if setting == "warn":
         r = t.toggle_warn()
-        cb.answer("Warning log set to {}".format(r))
+        cb.answer(f"Warning log set to {r}")
         return
     if setting == "act":
         r = t.toggle_action()
@@ -280,11 +285,11 @@ def log_setting_callback(update: Update, context: CallbackContext):
         return
     if setting == "join":
         r = t.toggle_joins()
-        cb.answer("Join log set to {}".format(r))
+        cb.answer(f"Join log set to {r}")
         return
     if setting == "leave":
         r = t.toggle_leave()
-        cb.answer("Leave log set to {}".format(r))
+        cb.answer(f"Leave log set to {r}")
         return
     if setting == "rep":
         r = t.toggle_report()

@@ -2,7 +2,7 @@ import random
 
 from telegram import Update
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 reactions = [
     "( ͡° ͜ʖ ͡°)",
@@ -210,6 +210,7 @@ reactions = [
 ]
 
 @kigcmd(command='react')
+@rate_limit(40, 60)
 def react(update: Update, context: CallbackContext):
     message = update.effective_message
     react = random.choice(reactions)

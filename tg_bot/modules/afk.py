@@ -6,10 +6,11 @@ from telegram.ext import Filters, CallbackContext
 from telegram.error import BadRequest
 from tg_bot.modules.sql import afk_sql as sql
 from tg_bot.modules.users import get_user_id
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, rate_limit
 
 @kigmsg(Filters.regex("(?i)^brb"), friendly="afk", group=3)
 @kigcmd(command="afk", group=3)
+@rate_limit(40, 60)
 def afk(update: Update, context: CallbackContext):
     args = update.effective_message.text.split(None, 1)
     user = update.effective_user
@@ -36,7 +37,8 @@ def afk(update: Update, context: CallbackContext):
     except BadRequest:
         pass
 
-@kigmsg((Filters.all & Filters.chat_type.groups), friendly='afk', group=1)
+@kigmsg((Filters.all & Filters.chat_type.groups & ~Filters.user(777000)), friendly='afk', group=1)
+@rate_limit(40, 60)
 def no_longer_afk(update: Update, context: CallbackContext):
     user = update.effective_user
     message = update.effective_message
@@ -68,6 +70,7 @@ def no_longer_afk(update: Update, context: CallbackContext):
             return
 
 @kigmsg((Filters.entity(MessageEntity.MENTION) | Filters.entity(MessageEntity.TEXT_MENTION) & Filters.chat_type.groups), friendly='afk', group=8)
+@rate_limit(40, 60)
 def reply_afk(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message

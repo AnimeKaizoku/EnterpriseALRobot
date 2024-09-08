@@ -12,7 +12,7 @@ from telegram.ext import (
 )
 import tg_bot.modules.sql.log_channel_sql as logsql
 from telegram.utils.helpers import mention_html
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback, rate_limit
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
@@ -22,6 +22,7 @@ REPORT_IMMUNE_USERS = SUDO_USERS + SARDEGNA_USERS + WHITELIST_USERS
 
 @kigcmd(command='reports')
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
+@rate_limit(40, 60)
 def report_setting(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     chat = update.effective_chat
@@ -67,6 +68,7 @@ def report_setting(update: Update, context: CallbackContext):
 @kigcmd(command='report', filters=Filters.chat_type.groups, group=REPORT_GROUP)
 @kigmsg((Filters.regex(r"(?i)@admin(s)?")), group=REPORT_GROUP)
 @user_not_admin
+@rate_limit(40, 60)
 @loggable
 def report(update: Update, context: CallbackContext) -> str:
     # sourcery no-metrics

@@ -4,7 +4,6 @@ import random
 from .helper_funcs.misc import upload_text
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CommandHandler
-from psycopg2 import errors as sqlerrors
 from tg_bot import KInit, dispatcher, DEV_USERS, OWNER_ID, log
 
 class ErrorsDict(dict):
@@ -48,21 +47,7 @@ def error_callback(update: Update, context: CallbackContext):
         None, context.error, context.error.__traceback__
     )
     tb = "".join(tb_list)
-    pretty_message = (
-        "An exception was raised while handling an update\n"
-        "User: {}\n"
-        "Chat: {} {}\n"
-        "Callback data: {}\n"
-        "Message: {}\n\n"
-        "Full Traceback: {}"
-    ).format(
-        update.effective_user.id,
-        update.effective_chat.title if update.effective_chat else "",
-        update.effective_chat.id if update.effective_chat else "",
-        update.callback_query.data if update.callback_query else "None",
-        update.effective_message.text if update.effective_message else "No message",
-        tb,
-    )
+    pretty_message = f'An exception was raised while handling an update\nUser: {update.effective_user.id if update.effective_user else update.effective_message.sender_chat.id}\nChat: {update.effective_chat.title if update.effective_chat else ""} {update.effective_chat.id if update.effective_chat else ""}\nCallback data: {update.callback_query.data if update.callback_query else "None"}\nMessage: {update.effective_message.text if update.effective_message else "No message"}\n\nFull Traceback: {tb}'
     paste_url = upload_text(pretty_message)
 
 
@@ -72,13 +57,13 @@ def error_callback(update: Update, context: CallbackContext):
         context.bot.send_document(
             OWNER_ID,
             open("error.txt", "rb"),
-            caption=f"#{context.error.identifier}\n<b>Your sugar mommy got an error for you, you cute guy:</b>\n<code>{e}</code>",
+            caption=f"#{context.error.identifier}\n<b>Unhandled exception caught:</b>\n<code>{e}</code>",
             parse_mode="html",
         )
         return
     context.bot.send_message(
         OWNER_ID,
-        text=f"#{context.error.identifier}\n<b>Your sugar mommy got an error for you, you cute guy:</b>\n<code>{e}</code>",
+        text=f"#{context.error.identifier}\n<b>Unhandled exception caught:</b>\n<code>{e}</code>",
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("PrivateBin", url=paste_url)]]),
         parse_mode="html",
     )
@@ -91,16 +76,17 @@ def list_errors(update: Update, context: CallbackContext):
     e = dict(sorted(errors.items(), key=lambda item: item[1], reverse=True))
     msg = "<b>Errors List:</b>\n"
     for x, value in e.items():
-        msg += f"• <code>{x}:</code> <b>{e[x]}</b> #{x.identifier}\n"
+        msg += f"• <code>{x}:</code> <b>{value}</b> #{x.identifier}\n"
 
     msg += f"{len(errors)} have occurred since startup."
     if len(msg) > 4096:
+        msg = "".join(f"• {x}: {value_} #{x.identifier}\n" for x, value_ in e.items())
         with open("errors_msg.txt", "w+") as f:
             f.write(msg)
         context.bot.send_document(
             update.effective_chat.id,
             open("errors_msg.txt", "rb"),
-            caption='Too many errors have occured..',
+            caption='Too many errors have occurred..',
             parse_mode="html",
         )
 

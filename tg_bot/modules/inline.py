@@ -22,10 +22,11 @@ from tg_bot import (
     DEV_USERS,
     SARDEGNA_USERS,
     WHITELIST_USERS,
-    sw, log
+    # sw,
+    log
 )
 from tg_bot.modules.helper_funcs.misc import article
-from tg_bot.modules.helper_funcs.decorators import kiginline
+from tg_bot.modules.helper_funcs.decorators import kiginline, rate_limit
 
 
 def remove_prefix(text, prefix):
@@ -34,6 +35,7 @@ def remove_prefix(text, prefix):
     return text
 
 @kiginline()
+@rate_limit(40, 60)
 def inlinequery(update: Update, _) -> None:
     """
     Main InlineQueryHandler callback.
@@ -167,13 +169,13 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     if nation_level_present:
         text += f' [<a href="https://t.me/{bot.username}?start=nations">?</a>]'
 
-    with contextlib.suppress(Exception):
-        if spamwtc := sw.get_ban(int(user.id)):
-            text += "<b>\n\n• SpamWatched:\n</b> Yes"
-            text += f"\n• Reason: <pre>{spamwtc.reason}</pre>"
-            text += "\n• Appeal at @SpamWatchSupport"
-        else:
-            text += "<b>\n\n• SpamWatched:</b> No"
+    # with contextlib.suppress(Exception):
+    #     if spamwtc := sw.get_ban(int(user.id)):
+    #         text += "<b>\n\n• SpamWatched:\n</b> Yes"
+    #         text += f"\n• Reason: <pre>{spamwtc.reason}</pre>"
+    #         text += "\n• Appeal at @SpamWatchSupport"
+    #     else:
+    #         text += "<b>\n\n• SpamWatched:</b> No"
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\n• <b>Chat count</b>: <code>{num_chats}</code>"
 

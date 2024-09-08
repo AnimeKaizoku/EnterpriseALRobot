@@ -34,7 +34,7 @@ from tg_bot.modules.log_channel import loggable
 from tg_bot.modules.sql import antiflood_sql as sql
 from tg_bot.modules.connection import connected
 from tg_bot.modules.helper_funcs.alternate import send_message
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigmsg, kigcallback, rate_limit
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
 
@@ -131,6 +131,7 @@ def check_flood(update, context) -> Optional[str]:
 @user_admin_no_reply
 @bot_admin
 @kigcallback(pattern=r"unmute_flooder")
+@rate_limit(40, 60)
 def flood_button(update: Update, context: CallbackContext):
     bot = context.bot
     query = update.callback_query

@@ -15,11 +15,12 @@ from tg_bot.__main__ import (
 from tg_bot.modules.helper_funcs.chat_status import dev_plus, sudo_plus
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext
-from tg_bot.modules.helper_funcs.decorators import kigcmd
+from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 
 @kigcmd(command='load')
 @dev_plus
+@rate_limit(40, 60)
 def load(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -85,6 +86,7 @@ def load(update: Update, context: CallbackContext):
 
 @kigcmd(command='unload')
 @dev_plus
+@rate_limit(40, 60)
 def unload(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
@@ -152,6 +154,7 @@ def unload(update: Update, context: CallbackContext):
 
 @kigcmd(command='listmodules')
 @sudo_plus
+@rate_limit(40, 60)
 def listmodules(update: Update, context: CallbackContext):
     message = update.effective_message
     module_list = []

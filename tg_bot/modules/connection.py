@@ -247,7 +247,6 @@ def connect_chat(update, context):  # sourcery no-metrics
                 update.effective_message, "Connection to this chat is not allowed!"
             )
 
-
 def disconnect_chat(update, context):
 
     if update.effective_chat.type == "private":
@@ -316,7 +315,6 @@ CONN_HELP = """
  • Export and Imports of chat backup.
  • More in future!"""
 
-
 def help_connect_chat(update, context):
 
     args = context.args
@@ -326,7 +324,6 @@ def help_connect_chat(update, context):
         return
     else:
         send_message(update.effective_message, CONN_HELP, parse_mode="markdown")
-
 
 def connect_button(update, context):
 
