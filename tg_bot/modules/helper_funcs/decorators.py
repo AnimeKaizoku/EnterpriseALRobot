@@ -12,7 +12,7 @@ from telegram.ext import (
     Filters,
 )
 from tg_bot import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD, dispatcher
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, Union
 from tg_bot.modules.disable import DisableAbleCommandHandler, DisableAbleMessageHandler
 
 redis_client = redis.Redis(
@@ -67,7 +67,7 @@ class KigyoTelegramHandler:
 
     def command(
         self,
-        command: str | List[str],
+        command: Union[str, List[str]],
         filters: Optional[Filters] = None,
         admin_ok: bool = False,
         pass_args: bool = False,
