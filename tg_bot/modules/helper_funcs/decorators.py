@@ -1,205 +1,186 @@
+import logging
 import time
-from cachetools import LRUCache
+import redis
+from functools import wraps
 from telegram import Update
+from telegram.ext import (
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    InlineQueryHandler,
+    CallbackContext,
+    Filters,
+)
+from tg_bot import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD, dispatcher
+from typing import Optional, List, Callable
 from tg_bot.modules.disable import DisableAbleCommandHandler, DisableAbleMessageHandler
-from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, InlineQueryHandler, CallbackContext
-from telegram.ext.filters import BaseFilter, Filters
-from tg_bot import dispatcher as d, log
-from typing import Optional, List
 
-user_history_cache = LRUCache(maxsize=1000)  # Adjust maxsize as needed
+redis_client = redis.Redis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    db=REDIS_DB,
+    password=REDIS_PASSWORD,
+)
+
 
 def rate_limit(messages_per_window: int, window_seconds: int):
-    """
-    Decorator that limits the rate at which a function can be called.
-
-    Args:
-        messages_per_window (int): The maximum number of messages allowed within the specified window.
-        window_seconds (int): The duration of the window in seconds.
-
-    Returns:
-        function: The decorated function.
-
-    Example:
-        @rate_limit(5, 60)  # Allow 5 messages per minute
-        def process_message(update: Update, context: CallbackContext):
-            # Process the message
-    """
     def decorator(func):
+        @wraps(func)
         def wrapper(update: Update, context: CallbackContext):
             user_id = update.effective_user.id
             current_time = time.time()
+            key = f"rate_limit:{user_id}"
 
-            message_history = user_history_cache[user_id] if user_id in user_history_cache else []
-            # print(message_history)
-            message_history = [t for t in message_history if current_time - t <= window_seconds]
+            user_history = redis_client.lrange(key, 0, -1)
+            user_history = [
+                float(t)
+                for t in user_history
+                if current_time - float(t) <= window_seconds
+            ]
 
-            if len(message_history) >= messages_per_window:
-                log.info(f"Rate limit exceeded for user {user_id}. Allowed {messages_per_window} updates in {window_seconds} seconds.")
+            if len(user_history) >= messages_per_window:
+                logging.info(
+                    f"Rate limit exceeded for user {user_id}. Allowed {messages_per_window} updates in {window_seconds} seconds."
+                )
                 return
 
-            message_history.append(current_time)
-            user_history_cache[user_id] = message_history
-            func(update, context)
+            redis_client.lpush(key, current_time)
+            redis_client.ltrim(key, 0, messages_per_window - 1)
+            redis_client.expire(key, window_seconds)
+
+            return func(update, context)
 
         return wrapper
 
     return decorator
 
-class KigyoTelegramHandler:
-    """
-    A class that provides decorators for registering command, message, callback query, and inline query handlers
-    with the Telegram Bot API.
-    """
 
-    def __init__(self, d):
-        self._dispatcher = d
+class KigyoTelegramHandler:
+    def __init__(self, dispatcher):
+        self._dispatcher = dispatcher
+
+    def _add_handler(self, handler, group: Optional[int] = None):
+        if group is not None:
+            self._dispatcher.add_handler(handler, group=group)
+        else:
+            self._dispatcher.add_handler(handler)
 
     def command(
-            self, command: str, filters: Optional[BaseFilter] = None, admin_ok: bool = False, pass_args: bool = False,
-            pass_chat_data: bool = False, run_async: bool = True, can_disable: bool = True,
-            group: Optional[int] = 40
+        self,
+        command: str | List[str],
+        filters: Optional[Filters] = None,
+        admin_ok: bool = False,
+        pass_args: bool = False,
+        pass_chat_data: bool = False,
+        run_async: bool = True,
+        can_disable: bool = True,
+        group: Optional[int] = 40,
     ):
-        """
-        Decorator for registering a command handler with the Telegram Bot API.
+        def decorator(func: Callable):
+            if isinstance(command, str):
+                commands = [command]
+            else:
+                commands = command
 
-        Args:
-            command (str): The command string.
-            filters (Optional[BaseFilter]): Filters to apply to the command handler.
-            admin_ok (bool): Whether the command can be executed by admins only.
-            pass_args (bool): Whether to pass command arguments to the handler.
-            pass_chat_data (bool): Whether to pass chat data to the handler.
-            run_async (bool): Whether the handler should be executed asynchronously.
-            can_disable (bool): Whether the command can be disabled.
-            group (Optional[int]): The group ID for ordering the command handlers.
+            command_filter = Filters.command(commands)
+            if filters:
+                command_filter = command_filter & filters
 
-        Returns:
-            Callable: The decorated function.
-        """
-        if filters:
-           filters = filters & ~Filters.update.edited_message
-        else:
-            filters = ~Filters.update.edited_message
-        def _command(func):
-            try:
-                if can_disable:
-                    self._dispatcher.add_handler(
-                        DisableAbleCommandHandler(command, func, filters=filters, run_async=run_async,
-                                                  pass_args=pass_args, admin_ok=admin_ok), group
-                    )
-                else:
-                    self._dispatcher.add_handler(
-                        CommandHandler(command, func, filters=filters, run_async=run_async, pass_args=pass_args), group
-                    )
-                log.debug(f"[KIGCMD] Loaded handler {command} for function {func.__name__} in group {group}")
-            except TypeError:
-                if can_disable:
-                    self._dispatcher.add_handler(
-                        DisableAbleCommandHandler(command, func, filters=filters, run_async=run_async,
-                                                  pass_args=pass_args, admin_ok=admin_ok, pass_chat_data=pass_chat_data)
-                    )
-                else:
-                    self._dispatcher.add_handler(
-                        CommandHandler(command, func, filters=filters, run_async=run_async, pass_args=pass_args,
-                                       pass_chat_data=pass_chat_data)
-                    )
-                log.debug(f"[KIGCMD] Loaded handler {command} for function {func.__name__}")
+            command_filter = command_filter & ~Filters.update.edited_message
 
+            if can_disable:
+                handler = DisableAbleCommandHandler(
+                    commands,
+                    func,
+                    filters=command_filter,
+                    run_async=run_async,
+                    pass_args=pass_args,
+                    admin_ok=admin_ok,
+                    pass_chat_data=pass_chat_data,
+                )
+            else:
+                handler = CommandHandler(
+                    commands,
+                    func,
+                    filters=command_filter,
+                    run_async=run_async,
+                    pass_args=pass_args,
+                    pass_chat_data=pass_chat_data,
+                )
+
+            self._add_handler(handler, group)
+            logging.debug(
+                f"[KIGCMD] Loaded handler {command} for function {func.__name__}"
+            )
             return func
 
-        return _command
+        return decorator
 
-    def message(self, pattern: Optional[BaseFilter] = None, can_disable: bool = True, run_async: bool = True,
-                group: Optional[int] = 60, friendly=None):
-        """
-        Decorator for registering a message handler with the Telegram Bot API.
+    def message(
+        self,
+        pattern: Optional[Filters] = None,
+        can_disable: bool = True,
+        run_async: bool = True,
+        group: Optional[int] = 60,
+        friendly: Optional[str] = None,
+    ):
+        def decorator(func: Callable):
+            message_filter = pattern if pattern else Filters.all
+            message_filter = message_filter & ~Filters.update.edited_message
 
-        Args:
-            pattern (Optional[BaseFilter]): Filters to apply to the message handler.
-            can_disable (bool): Whether the message handler can be disabled.
-            run_async (bool): Whether the handler should be executed asynchronously.
-            group (Optional[int]): The group ID for ordering the message handlers.
-            friendly: A friendly name for the handler.
+            if can_disable:
+                handler = DisableAbleMessageHandler(
+                    message_filter, func, friendly=friendly, run_async=run_async
+                )
+            else:
+                handler = MessageHandler(message_filter, func, run_async=run_async)
 
-        Returns:
-            Callable: The decorated function.
-        """
-        if pattern:
-           pattern = pattern & ~Filters.update.edited_message
-        else:
-           pattern = ~Filters.update.edited_message
-        def _message(func):
-            try:
-                if can_disable:
-                    self._dispatcher.add_handler(
-                        DisableAbleMessageHandler(pattern, func, friendly=friendly, run_async=run_async), group
-                    )
-                else:
-                    self._dispatcher.add_handler(
-                        MessageHandler(pattern, func, run_async=run_async), group
-                    )
-                log.debug(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__} in group {group}")
-            except TypeError:
-                if can_disable:
-                    self._dispatcher.add_handler(
-                        DisableAbleMessageHandler(pattern, func, friendly=friendly, run_async=run_async)
-                    )
-                else:
-                    self._dispatcher.add_handler(
-                        MessageHandler(pattern, func, run_async=run_async)
-                    )
-                log.debug(f"[KIGMSG] Loaded filter pattern {pattern} for function {func.__name__}")
-
+            self._add_handler(handler, group)
+            logging.debug(f"[KIGMSG] Loaded filter for function {func.__name__}")
             return func
 
-        return _message
+        return decorator
 
     def callbackquery(self, pattern: str = None, run_async: bool = True):
-        """
-        Decorator for registering a callback query handler with the Telegram Bot API.
-
-        Args:
-            pattern (str): The pattern string.
-            run_async (bool): Whether the handler should be executed asynchronously.
-
-        Returns:
-            Callable: The decorated function.
-        """
-        def _callbackquery(func):
-            self._dispatcher.add_handler(CallbackQueryHandler(pattern=pattern, callback=func, run_async=run_async))
-            log.debug(f'[KIGCALLBACK] Loaded callbackquery handler with pattern {pattern} for function {func.__name__}')
+        def decorator(func: Callable):
+            handler = CallbackQueryHandler(func, pattern=pattern, run_async=run_async)
+            self._add_handler(handler)
+            logging.debug(
+                f"[KIGCALLBACK] Loaded callbackquery handler for function {func.__name__}"
+            )
             return func
 
-        return _callbackquery
+        return decorator
 
-    def inlinequery(self, pattern: Optional[str] = None, run_async: bool = True, pass_user_data: bool = True,
-                    pass_chat_data: bool = True, chat_types: List[str] = None):
-        """
-        Decorator for registering an inline query handler with the Telegram Bot API.
-
-        Args:
-            pattern (Optional[str]): The pattern string.
-            run_async (bool): Whether the handler should be executed asynchronously.
-            pass_user_data (bool): Whether to pass user data to the handler.
-            pass_chat_data (bool): Whether to pass chat data to the handler.
-            chat_types (List[str]): The types of chats to handle.
-
-        Returns:
-            Callable: The decorated function.
-        """
-        def _inlinequery(func):
-            self._dispatcher.add_handler(
-                InlineQueryHandler(pattern=pattern, callback=func, run_async=run_async, pass_user_data=pass_user_data,
-                                   pass_chat_data=pass_chat_data, chat_types=chat_types))
-            log.debug(
-                f'[KIGINLINE] Loaded inlinequery handler with pattern {pattern} for function {func.__name__} | PASSES '
-                f'USER DATA: {pass_user_data} | PASSES CHAT DATA: {pass_chat_data} | CHAT TYPES: {chat_types}')
+    def inlinequery(
+        self,
+        pattern: Optional[str] = None,
+        run_async: bool = True,
+        pass_user_data: bool = True,
+        pass_chat_data: bool = True,
+        chat_types: List[str] = None,
+    ):
+        def decorator(func: Callable):
+            handler = InlineQueryHandler(
+                func,
+                pattern=pattern,
+                run_async=run_async,
+                pass_user_data=pass_user_data,
+                pass_chat_data=pass_chat_data,
+                chat_types=chat_types,
+            )
+            self._add_handler(handler)
+            logging.debug(
+                f"[KIGINLINE] Loaded inlinequery handler for function {func.__name__}"
+            )
             return func
 
-        return _inlinequery
+        return decorator
 
 
-kigcmd = KigyoTelegramHandler(d).command
-kigmsg = KigyoTelegramHandler(d).message
-kigcallback = KigyoTelegramHandler(d).callbackquery
-kiginline = KigyoTelegramHandler(d).inlinequery
+kigyo_handler = KigyoTelegramHandler(dispatcher)
+
+kigcmd = kigyo_handler.command
+kigmsg = kigyo_handler.message
+kigcallback = kigyo_handler.callbackquery
+kiginline = kigyo_handler.inlinequery

@@ -13,6 +13,8 @@ from sqlalchemy import (
     func,
 )
 
+from tg_bot.modules.sql.cache_utils import cached, clear_cache, invalidate_cache_pattern
+
 
 class Users(BASE):
     __tablename__ = "users"
@@ -95,6 +97,7 @@ def update_user(user_id, username, chat_id=None, chat_name=None):
 
         if not chat_id or not chat_name:
             SESSION.commit()
+            invalidate_user_cache(user_id)
             return
 
         chat = SESSION.query(Chats).get(str(chat_id))
@@ -102,7 +105,6 @@ def update_user(user_id, username, chat_id=None, chat_name=None):
             chat = Chats(str(chat_id), chat_name)
             SESSION.add(chat)
             SESSION.flush()
-
         else:
             chat.chat_name = chat_name
 
@@ -116,78 +118,67 @@ def update_user(user_id, username, chat_id=None, chat_name=None):
             SESSION.add(chat_member)
 
         SESSION.commit()
+        invalidate_user_cache(user_id)
+        invalidate_chat_cache(chat_id)
 
 
+@cached(ttl=300)
 def get_userid_by_name(username):
-    try:
-        return (
-            SESSION.query(Users)
-            .filter(func.lower(Users.username) == username.lower())
-            .all()
-        )
-    finally:
-        SESSION.close()
+    return [
+        user.user_id
+        for user in SESSION.query(Users)
+        .filter(func.lower(Users.username) == username.lower())
+        .all()
+    ]
 
 
+@cached(ttl=300)
 def get_name_by_userid(user_id):
-    try:
-        return SESSION.query(Users).get(Users.user_id == int(user_id)).first()
-    finally:
-        SESSION.close()
+    user = SESSION.query(Users).filter(Users.user_id == int(user_id)).first()
+    return user.username if user else None
 
 
+@cached(ttl=300)
 def get_chat_members(chat_id):
-    try:
-        return SESSION.query(ChatMembers).filter(ChatMembers.chat == str(chat_id)).all()
-    finally:
-        SESSION.close()
+    return [
+        member.user
+        for member in SESSION.query(ChatMembers)
+        .filter(ChatMembers.chat == str(chat_id))
+        .all()
+    ]
 
 
+@cached(ttl=300)
 def get_all_chats():
-    try:
-        return SESSION.query(Chats).all()
-    finally:
-        SESSION.close()
+    return [chat.chat_id for chat in SESSION.query(Chats).all()]
 
 
+@cached(ttl=300)
 def get_all_users():
-    try:
-        return SESSION.query(Users).all()
-    finally:
-        SESSION.close()
+    return [user.user_id for user in SESSION.query(Users).all()]
 
 
+@cached(ttl=300)
 def get_user_num_chats(user_id):
-    try:
-        return (
-            SESSION.query(ChatMembers).filter(ChatMembers.user == int(user_id)).count()
-        )
-    finally:
-        SESSION.close()
+    return SESSION.query(ChatMembers).filter(ChatMembers.user == int(user_id)).count()
 
 
+@cached(ttl=300)
 def get_user_com_chats(user_id):
-    try:
-        chat_members = (
-            SESSION.query(ChatMembers).filter(ChatMembers.user == int(user_id)).all()
-        )
-        return [i.chat for i in chat_members]
-    finally:
-        SESSION.close()
+    chat_members = (
+        SESSION.query(ChatMembers).filter(ChatMembers.user == int(user_id)).all()
+    )
+    return [member.chat for member in chat_members]
 
 
+@cached(ttl=300)
 def num_chats():
-    try:
-        return SESSION.query(Chats).count()
-    finally:
-        SESSION.close()
+    return SESSION.query(Chats).count()
 
 
+@cached(ttl=300)
 def num_users():
-    try:
-        return SESSION.query(Users).count()
-    finally:
-        SESSION.close()
+    return SESSION.query(Users).count()
 
 
 def migrate_chat(old_chat_id, new_chat_id):
@@ -209,6 +200,8 @@ def migrate_chat(old_chat_id, new_chat_id):
             SESSION.add(member)
 
         SESSION.commit()
+        invalidate_chat_cache(old_chat_id)
+        invalidate_chat_cache(new_chat_id)
 
 
 ensure_bot_in_db()
@@ -220,11 +213,12 @@ def del_user(user_id):
         if curr:
             SESSION.delete(curr)
             SESSION.commit()
+            invalidate_user_cache(user_id)
             return True
 
         ChatMembers.query.filter(ChatMembers.user == user_id).delete()
         SESSION.commit()
-        SESSION.close()
+        invalidate_user_cache(user_id)
     return False
 
 
@@ -234,5 +228,18 @@ def rem_chat(chat_id):
         if chat:
             SESSION.delete(chat)
             SESSION.commit()
+            invalidate_chat_cache(chat_id)
         else:
             SESSION.close()
+
+
+def invalidate_user_cache(user_id):
+    invalidate_cache_pattern(f"*:{user_id}:*")
+
+
+def invalidate_chat_cache(chat_id):
+    invalidate_cache_pattern(f"*:{chat_id}:*")
+
+
+def invalidate_all_cache():
+    clear_cache()

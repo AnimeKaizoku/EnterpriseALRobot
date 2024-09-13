@@ -5,18 +5,22 @@ Dank-del
 """
 
 import importlib
+import logging
 import re
 import threading
 from sys import argv
 from typing import Optional
 
 from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.error import (TelegramError, Unauthorized, BadRequest,
-                            TimedOut, ChatMigrated, NetworkError)
-from telegram.ext import (
-    CallbackContext,
-    Filters
+from telegram.error import (
+    TelegramError,
+    Unauthorized,
+    BadRequest,
+    TimedOut,
+    ChatMigrated,
+    NetworkError,
 )
+from telegram.ext import CallbackContext, Filters
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
 
@@ -30,14 +34,19 @@ from tg_bot import (
     CERT_PATH,
     PORT,
     URL,
-    log,
-    KigyoINIT
+    KigyoINIT,
 )
+
 # needed to dynamically load modules
 # NOTE: Module order is not guaranteed, specify that in the config file!
 from tg_bot.modules import ALL_MODULES
 from tg_bot.modules.helper_funcs.chat_status import is_user_admin
-from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, kigmsg, rate_limit
+from tg_bot.modules.helper_funcs.decorators import (
+    kigcmd,
+    kigcallback,
+    kigmsg,
+    rate_limit,
+)
 from tg_bot.modules.helper_funcs.misc import paginate_modules
 from tg_bot.modules.language import gs
 
@@ -109,7 +118,7 @@ def send_help(chat_id, text, keyboard=None):
     )
 
 
-@kigcmd(command='text')
+@kigcmd(command="text")
 def test(update: Update, _: CallbackContext):
     """#TODO
 
@@ -123,8 +132,8 @@ def test(update: Update, _: CallbackContext):
     print(update.effective_message)
 
 
-@kigcallback(pattern=r'start_back')
-@kigcmd(command='start', pass_args=True)
+@kigcallback(pattern=r"start_back")
+@kigcmd(command="start", pass_args=True)
 @rate_limit(40, 60)
 def start(update: Update, context: CallbackContext):  # sourcery no-metrics
     """#TODO
@@ -136,9 +145,9 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
     chat = update.effective_chat
     args = context.args
 
-    if hasattr(update, 'callback_query'):
+    if hasattr(update, "callback_query"):
         query = update.callback_query
-        if hasattr(query, 'id'):
+        if hasattr(query, "id"):
             first_name = update.effective_user.first_name
             update.effective_message.edit_text(
                 text=gs(chat.id, "pm_start_text").format(
@@ -152,7 +161,7 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
                         [
                             InlineKeyboardButton(
                                 text=gs(chat.id, "support_chat_link_btn"),
-                                url='https://t.me/YorktownEagleUnion',
+                                url="https://t.me/YorktownEagleUnion",
                             ),
                             InlineKeyboardButton(
                                 text=gs(chat.id, "updates_channel_link_btn"),
@@ -203,10 +212,19 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
                     help_buttons = help_list[1:]
                 elif isinstance(help_list, str):
                     help_text = help_list
-                text = "Here is the help for the *{}* module:\n".format(HELPABLE[mod].__mod_name__) + help_text
+                text = (
+                    "Here is the help for the *{}* module:\n".format(
+                        HELPABLE[mod].__mod_name__
+                    )
+                    + help_text
+                )
                 help_buttons.append(
-                    [InlineKeyboardButton(text="Back", callback_data="help_back"),
-                     InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+                    [
+                        InlineKeyboardButton(text="Back", callback_data="help_back"),
+                        InlineKeyboardButton(
+                            text="Support", url="https://t.me/YorkTownEagleUnion"
+                        ),
+                    ]
                 )
                 send_help(
                     chat.id,
@@ -246,7 +264,7 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
                         [
                             InlineKeyboardButton(
                                 text=gs(chat.id, "support_chat_link_btn"),
-                                url='https://t.me/YorktownEagleUnion',
+                                url="https://t.me/YorktownEagleUnion",
                             ),
                             InlineKeyboardButton(
                                 text=gs(chat.id, "updates_channel_link_btn"),
@@ -280,9 +298,9 @@ def start(update: Update, context: CallbackContext):  # sourcery no-metrics
     else:
         update.effective_message.reply_text(gs(chat.id, "grp_start_text"))
 
-    if hasattr(update, 'callback_query'):
+    if hasattr(update, "callback_query"):
         query = update.callback_query
-        if hasattr(query, 'id'):
+        if hasattr(query, "id"):
             context.bot.answer_callback_query(query.id)
 
 
@@ -314,7 +332,7 @@ def error_callback(_, context: CallbackContext):
         # handle all other telegram related errors
 
 
-@kigcallback(pattern=r'help_')
+@kigcallback(pattern=r"help_")
 @rate_limit(40, 60)
 def help_button(update: Update, context: CallbackContext):
     """#TODO
@@ -344,14 +362,18 @@ def help_button(update: Update, context: CallbackContext):
                 help_text = help_list
                 help_buttons = []
             text = (
-                    "Here is the help for the *{}* module:\n".format(
-                        HELPABLE[module].__mod_name__
-                    )
-                    + help_text
+                "Here is the help for the *{}* module:\n".format(
+                    HELPABLE[module].__mod_name__
+                )
+                + help_text
             )
             help_buttons.append(
-                [InlineKeyboardButton(text="Back", callback_data="help_back"),
-                 InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+                [
+                    InlineKeyboardButton(text="Back", callback_data="help_back"),
+                    InlineKeyboardButton(
+                        text="Support", url="https://t.me/YorkTownEagleUnion"
+                    ),
+                ]
             )
             query.message.edit_text(
                 text=text,
@@ -402,15 +424,15 @@ def help_button(update: Update, context: CallbackContext):
         pass
 
 
-@kigcmd(command='help')
+@kigcmd(command="help")
 @rate_limit(40, 60)
 def get_help(update: Update, context: CallbackContext):
-    '''#TODO
+    """#TODO
 
     Params:
         update  -
         context -
-    '''
+    """
 
     chat = update.effective_chat  # type: Optional[Chat]
     args = update.effective_message.text.split(None, 1)
@@ -469,10 +491,19 @@ def get_help(update: Update, context: CallbackContext):
                 help_buttons = help_list[1:]
             elif isinstance(help_list, str):
                 help_text = help_list
-            text = "Here is the available help for the *{}* module:\n".format(HELPABLE[module].__mod_name__) + help_text
+            text = (
+                "Here is the available help for the *{}* module:\n".format(
+                    HELPABLE[module].__mod_name__
+                )
+                + help_text
+            )
             help_buttons.append(
-                [InlineKeyboardButton(text="Back", callback_data="help_back"),
-                 InlineKeyboardButton(text='Support', url='https://t.me/YorkTownEagleUnion')]
+                [
+                    InlineKeyboardButton(text="Back", callback_data="help_back"),
+                    InlineKeyboardButton(
+                        text="Support", url="https://t.me/YorkTownEagleUnion"
+                    ),
+                ]
             )
             send_help(
                 chat.id,
@@ -489,13 +520,13 @@ def get_help(update: Update, context: CallbackContext):
 
 
 def send_settings(chat_id: int, user_id: int, user=False):
-    '''#TODO
+    """#TODO
 
     Params:
         chat_id -
         user_id -
         user    -
-    '''
+    """
 
     if user:
         if USER_SETTINGS:
@@ -539,12 +570,12 @@ def send_settings(chat_id: int, user_id: int, user=False):
 @kigcallback(pattern=r"stngs_")
 @rate_limit(40, 60)
 def settings_button(update: Update, context: CallbackContext):
-    '''#TODO
+    """#TODO
 
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
 
     query = update.callback_query
     user = update.effective_user
@@ -609,7 +640,7 @@ def settings_button(update: Update, context: CallbackContext):
             chat = bot.get_chat(chat_id)
             query.message.reply_text(
                 text="Hi there! There are quite a few settings for {} - go ahead and pick what "
-                     "you're interested in.".format(escape_markdown(chat.title)),
+                "you're interested in.".format(escape_markdown(chat.title)),
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(0, CHAT_SETTINGS, "stngs", chat=chat_id)
@@ -621,22 +652,22 @@ def settings_button(update: Update, context: CallbackContext):
         query.message.delete()
     except BadRequest as excp:
         if excp.message not in [
-            'Message is not modified',
-            'Query_id_invalid',
+            "Message is not modified",
+            "Query_id_invalid",
             "Message can't be deleted",
         ]:
-            log.exception('Exception in settings buttons. %s', str(query.data))
+            logging.exception("Exception in settings buttons. %s", str(query.data))
 
 
-@kigcmd(command='settings')
+@kigcmd(command="settings")
 @rate_limit(40, 60)
 def get_settings(update: Update, context: CallbackContext):
-    '''#TODO
+    """#TODO
 
     Params:
         update: Update           -
         context: CallbackContext -
-    '''
+    """
 
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
@@ -667,7 +698,7 @@ def get_settings(update: Update, context: CallbackContext):
         text = "Click here to check your settings."
 
 
-@kigcmd(command='donate')
+@kigcmd(command="donate")
 @rate_limit(40, 60)
 def donate(update: Update, _: CallbackContext):
     """#TODO
@@ -699,11 +730,11 @@ def migrate_chats(update: Update, context: CallbackContext):
     else:
         return
 
-    log.info("Migrating from %s, to %s", str(old_chat), str(new_chat))
+    logging.info("Migrating from %s, to %s", str(old_chat), str(new_chat))
     for mod in MIGRATEABLE:
         mod.__migrate__(old_chat, new_chat)
 
-    log.info("Successfully migrated!")
+    logging.info("Successfully migrated!")
     raise DispatcherHandlerStop
 
 
@@ -712,22 +743,36 @@ def main():
     # dispatcher.add_error_handler(error_handler)
 
     if WEBHOOK:
-        log.info("Using webhooks.")
-        updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, allowed_updates=Update.ALL_TYPES, 
-                            webhook_url=URL+TOKEN, drop_pending_updates=KInit.DROP_UPDATES, 
-                            cert=CERT_PATH if CERT_PATH else None)
-        log.info(f"Kigyo started, Using webhooks. | BOT: [@{dispatcher.bot.username}]")
+        logging.info("Using webhooks.")
+        updater.start_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            url_path=TOKEN,
+            allowed_updates=Update.ALL_TYPES,
+            webhook_url=URL + TOKEN,
+            drop_pending_updates=KInit.DROP_UPDATES,
+            cert=CERT_PATH if CERT_PATH else None,
+        )
+        logging.info(
+            f"Kigyo started, Using webhooks. | BOT: [@{dispatcher.bot.username}]"
+        )
 
     else:
-        log.info(f"Kigyo started, Using long polling. | BOT: [@{dispatcher.bot.username}]")
+        logging.info(
+            f"Kigyo started, Using long polling. | BOT: [@{dispatcher.bot.username}]"
+        )
         KigyoINIT.bot_id = dispatcher.bot.id
         KigyoINIT.bot_username = dispatcher.bot.username
         KigyoINIT.bot_name = dispatcher.bot.first_name
-        updater.start_polling(timeout=15, read_latency=4, allowed_updates=Update.ALL_TYPES,
-                              drop_pending_updates=KInit.DROP_UPDATES)
+        updater.start_polling(
+            timeout=15,
+            read_latency=4,
+            allowed_updates=Update.ALL_TYPES,
+            drop_pending_updates=KInit.DROP_UPDATES,
+        )
 
 
 if __name__ == "__main__":
-    log.info("[KIGYO] Successfully loaded modules: " + str(ALL_MODULES))
+    logging.info("[KIGYO] Successfully loaded modules: " + str(ALL_MODULES))
     threading.Thread(target=main).start()
     updater.idle()
