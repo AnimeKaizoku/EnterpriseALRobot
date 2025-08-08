@@ -1,10 +1,11 @@
 import contextlib
 from io import BytesIO
 from time import sleep
+import time
 from tg_bot.modules.helper_funcs.decorators import rate_limit
 
 import tg_bot.modules.sql.users_sql as sql
-from tg_bot import DEV_USERS, log, OWNER_ID, dispatcher
+from tg_bot import DEV_USERS, log, OWNER_ID, dispatcher, redis_conn
 from tg_bot.modules.helper_funcs.chat_status import dev_plus, sudo_plus
 from tg_bot.modules.sql.users_sql import get_all_users
 from telegram import TelegramError, Update
@@ -52,45 +53,188 @@ def broadcast(update: Update, context: CallbackContext):
     to_send = update.effective_message.text.split(None, 1)
 
     if len(to_send) >= 2:
-        to_group = False
-        to_user = False
-        if to_send[0] == "/broadcastgroups":
-            to_group = True
-        if to_send[0] == "/broadcastusers":
-            to_user = True
-        else:
+        cmd = to_send[0]
+        msg_text = to_send[1]
+        to_group = cmd == "/broadcastgroups" or cmd == "/broadcastall"
+        to_user = cmd == "/broadcastusers" or cmd == "/broadcastall"
+        if cmd not in ["/broadcastgroups", "/broadcastusers", "/broadcastall"]:
             to_group = to_user = True
-        chats = sql.get_all_chats() or []
-        users = get_all_users()
-        failed = 0
-        failed_user = 0
+        meta_key = "broadcast:meta"
+        lock_key = "broadcast:lock"
+        gq_key = "broadcast:groups"
+        uq_key = "broadcast:users"
+        existing = redis_conn.hgetall(meta_key)
+        if existing and existing.get(b"status", b"").decode() in ["running", "paused"]:
+            update.effective_message.reply_text("A broadcast is in progress. Use /broadcaststatus or /broadcastresume.")
+            return
         if to_group:
-            for chat in chats:
-                try:
-                    context.bot.sendMessage(
-                        int(chat.chat_id),
-                        to_send[1],
-                        parse_mode="MARKDOWN",
-                        disable_web_page_preview=True,
-                    )
-                    sleep(0.1)
-                except TelegramError:
-                    failed += 1
+            redis_conn.delete(gq_key)
+            for c in sql.get_all_chats() or []:
+                redis_conn.rpush(gq_key, int(c))
         if to_user:
-            for user in users:
+            redis_conn.delete(uq_key)
+            for u in get_all_users() or []:
+                redis_conn.rpush(uq_key, int(u))
+        total_groups = redis_conn.llen(gq_key) if to_group else 0
+        total_users = redis_conn.llen(uq_key) if to_user else 0
+        redis_conn.hmset(
+            meta_key,
+            {
+                "message": msg_text,
+                "to_group": int(to_group),
+                "to_user": int(to_user),
+                "total_groups": int(total_groups),
+                "total_users": int(total_users),
+                "sent_groups": 0,
+                "sent_users": 0,
+                "failed_groups": 0,
+                "failed_users": 0,
+                "status": "paused",
+                "admin_id": update.effective_user.id,
+                "started_at": int(time.time()),
+                "updated_at": int(time.time()),
+            },
+        )
+        if not redis_conn.set(lock_key, str(int(time.time())), nx=True, ex=3600):
+            update.effective_message.reply_text("Another broadcast is running. Try again later.")
+            return
+        redis_conn.hset(meta_key, "status", "running")
+        failed_g = 0
+        failed_u = 0
+        if to_group:
+            while True:
+                nxt = redis_conn.lpop(gq_key)
+                if not nxt:
+                    break
                 try:
                     context.bot.sendMessage(
-                        int(user.user_id),
-                        to_send[1],
+                        int(nxt),
+                        msg_text,
                         parse_mode="MARKDOWN",
                         disable_web_page_preview=True,
                     )
-                    sleep(0.1)
+                    redis_conn.hincrby(meta_key, "sent_groups", 1)
                 except TelegramError:
-                    failed_user += 1
+                    failed_g += 1
+                    redis_conn.hincrby(meta_key, "failed_groups", 1)
+                redis_conn.hset(meta_key, "updated_at", int(time.time()))
+                redis_conn.expire(lock_key, 3600)
+                sleep(0.1)
+        if to_user:
+            while True:
+                nxt = redis_conn.lpop(uq_key)
+                if not nxt:
+                    break
+                try:
+                    context.bot.sendMessage(
+                        int(nxt),
+                        msg_text,
+                        parse_mode="MARKDOWN",
+                        disable_web_page_preview=True,
+                    )
+                    redis_conn.hincrby(meta_key, "sent_users", 1)
+                except TelegramError:
+                    failed_u += 1
+                    redis_conn.hincrby(meta_key, "failed_users", 1)
+                redis_conn.hset(meta_key, "updated_at", int(time.time()))
+                redis_conn.expire(lock_key, 3600)
+                sleep(0.1)
+        redis_conn.hset(meta_key, "status", "completed")
+        redis_conn.delete(lock_key)
         update.effective_message.reply_text(
-            f"Broadcast complete.\nGroups failed: {failed}.\nUsers failed: {failed_user}."
+            f"Broadcast complete.\nGroups failed: {failed_g}.\nUsers failed: {failed_u}."
         )
+
+
+@dev_plus
+@rate_limit(20, 30)
+def broadcast_status(update: Update, context: CallbackContext):
+    meta = redis_conn.hgetall("broadcast:meta")
+    if not meta:
+        update.effective_message.reply_text("No broadcast state.")
+        return
+    m = {k.decode(): v.decode() for k, v in meta.items()}
+    tg = int(m.get("total_groups", 0) or 0)
+    tu = int(m.get("total_users", 0) or 0)
+    sg = int(m.get("sent_groups", 0) or 0)
+    su = int(m.get("sent_users", 0) or 0)
+    fg = int(m.get("failed_groups", 0) or 0)
+    fu = int(m.get("failed_users", 0) or 0)
+    rg = redis_conn.llen("broadcast:groups") if int(m.get("to_group", 0)) else 0
+    ru = redis_conn.llen("broadcast:users") if int(m.get("to_user", 0)) else 0
+    status = m.get("status", "unknown")
+    update.effective_message.reply_text(
+        f"Status: {status}\nGroups: {sg}/{tg} (left {rg}), failed {fg}\nUsers: {su}/{tu} (left {ru}), failed {fu}"
+    )
+
+
+@dev_plus
+@rate_limit(40, 60)
+def broadcast_resume(update: Update, context: CallbackContext):
+    meta_key = "broadcast:meta"
+    lock_key = "broadcast:lock"
+    gq_key = "broadcast:groups"
+    uq_key = "broadcast:users"
+    meta = redis_conn.hgetall(meta_key)
+    if not meta:
+        update.effective_message.reply_text("No broadcast to resume.")
+        return
+    m = {k.decode(): v.decode() for k, v in meta.items()}
+    if m.get("status") == "completed" or (redis_conn.llen(gq_key) == 0 and redis_conn.llen(uq_key) == 0):
+        update.effective_message.reply_text("Broadcast already completed.")
+        return
+    if not redis_conn.set(lock_key, str(int(time.time())), nx=True, ex=3600):
+        update.effective_message.reply_text("Another broadcast is running. Try again later.")
+        return
+    redis_conn.hset(meta_key, "status", "running")
+    msg_text = m.get("message", "")
+    to_group = bool(int(m.get("to_group", 0)))
+    to_user = bool(int(m.get("to_user", 0)))
+    failed_g = 0
+    failed_u = 0
+    if to_group:
+        while True:
+            nxt = redis_conn.lpop(gq_key)
+            if not nxt:
+                break
+            try:
+                context.bot.sendMessage(
+                    int(nxt),
+                    msg_text,
+                    parse_mode="MARKDOWN",
+                    disable_web_page_preview=True,
+                )
+                redis_conn.hincrby(meta_key, "sent_groups", 1)
+            except TelegramError:
+                failed_g += 1
+                redis_conn.hincrby(meta_key, "failed_groups", 1)
+            redis_conn.hset(meta_key, "updated_at", int(time.time()))
+            redis_conn.expire(lock_key, 3600)
+            sleep(0.1)
+    if to_user:
+        while True:
+            nxt = redis_conn.lpop(uq_key)
+            if not nxt:
+                break
+            try:
+                context.bot.sendMessage(
+                    int(nxt),
+                    msg_text,
+                    parse_mode="MARKDOWN",
+                    disable_web_page_preview=True,
+                )
+                redis_conn.hincrby(meta_key, "sent_users", 1)
+            except TelegramError:
+                failed_u += 1
+                redis_conn.hincrby(meta_key, "failed_users", 1)
+            redis_conn.hset(meta_key, "updated_at", int(time.time()))
+            redis_conn.expire(lock_key, 3600)
+            sleep(0.1)
+    redis_conn.hset(meta_key, "status", "completed")
+    redis_conn.delete(lock_key)
+    update.effective_message.reply_text(
+        f"Broadcast complete.\nGroups failed: {failed_g}.\nUsers failed: {failed_u}."
+    )
 
 
 def welcomeFilter(update: Update, context: CallbackContext):
@@ -214,6 +358,12 @@ __help__ = ""  # no help string
 BROADCAST_HANDLER = CommandHandler(
     ["broadcastall", "broadcastusers", "broadcastgroups"], broadcast, run_async=True
 )
+BROADCST_STATUS_HANDLER = CommandHandler(
+    ["broadcaststatus"], broadcast_status, run_async=True
+)
+BROADCST_RESUME_HANDLER = CommandHandler(
+    ["broadcastresume"], broadcast_resume, run_async=True
+)
 USER_HANDLER = MessageHandler(
     Filters.all & Filters.chat_type.groups & ~Filters.user(777000), log_user, run_async=True
 )
@@ -229,8 +379,10 @@ dispatcher.add_handler(
 
 dispatcher.add_handler(USER_HANDLER, USERS_GROUP)
 dispatcher.add_handler(BROADCAST_HANDLER)
+dispatcher.add_handler(BROADCST_STATUS_HANDLER)
+dispatcher.add_handler(BROADCST_RESUME_HANDLER)
 # dispatcher.add_handler(CHATLIST_HANDLER)
 dispatcher.add_handler(CHAT_CHECKER_HANDLER, CHAT_GROUP)
 
 __mod_name__ = "Users"
-__handlers__ = [(USER_HANDLER, USERS_GROUP), BROADCAST_HANDLER]
+__handlers__ = [(USER_HANDLER, USERS_GROUP), BROADCAST_HANDLER, BROADCST_STATUS_HANDLER, BROADCST_RESUME_HANDLER]
