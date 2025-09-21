@@ -27,6 +27,8 @@ def rate_limit(messages_per_window: int, window_seconds: int):
     def decorator(func):
         @wraps(func)
         def wrapper(update: Update, context: CallbackContext):
+            if update.effective_user is None:
+                return func(update, context)
             user_id = update.effective_user.id
             current_time = time.time()
             key = f"rate_limit:{user_id}"
