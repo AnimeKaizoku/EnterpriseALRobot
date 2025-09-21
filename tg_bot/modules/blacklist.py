@@ -345,9 +345,9 @@ def findall(p, s):
 
 
 
-@kigmsg(((Filters.text | Filters.command | Filters.sticker | Filters.photo) & Filters.chat_type.groups), group=BLACKLIST_GROUP)
+@kigmsg(((Filters.text | Filters.command | Filters.sticker | Filters.photo | Filters.video | Filters.audio | Filters.document | Filters.animation | Filters.voice | Filters.video_note) & Filters.chat_type.groups), group=BLACKLIST_GROUP)
 @user_not_admin
-def del_blacklist(update, context):  # sourcery no-metrics
+def del_blacklist(update, context):
     chat = update.effective_chat
     message = update.effective_message
     user = update.effective_user
