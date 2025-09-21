@@ -103,6 +103,7 @@ def kang(update: Update, context: CallbackContext):  # sourcery no-metrics
         while True:
             last_set = False
             try:
+                ppref = "animated" if is_animated else "vid" if is_video else ""
                 if get_sticker_count(context.bot, packname) >= max_stickers:
                     packnum += 1
                     if is_animated:
