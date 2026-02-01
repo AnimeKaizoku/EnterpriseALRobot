@@ -1,4 +1,5 @@
 import html
+import logging
 from typing import Optional
 
 from tg_bot import SARDEGNA_USERS
@@ -19,6 +20,8 @@ from tg_bot.modules.language import gs
 from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
 
 from ..modules.helper_funcs.anonymous import user_admin, AdminPerms
+
+log = logging.getLogger(__name__)
 
 
 def check_user(user_id: int, bot: Bot, update: Update) -> Optional[str]:
@@ -196,7 +199,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
     if not mutetime:
         return ""
 
-    log = (
+    log_message = (
         f"<b>{html.escape(chat.title)}:</b>\n"
         f"#TEMP MUTED\n"
         f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
@@ -204,7 +207,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
         f"<b>Time:</b> {time_val}"
     )
     if reason:
-        log += f"\n<b>Reason:</b> {reason}"
+        log_message += f"\n<b>Reason:</b> {reason}"
 
     try:
         if member.can_send_messages is None or member.can_send_messages:
@@ -217,7 +220,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
                 f"Muted <b>{html.escape(member.user.first_name)}</b> for {time_val}!\n<b>Reason</b>: <code>{reason}</code>",
                 parse_mode=ParseMode.HTML,
             )
-            return log
+            return log_message
         else:
             message.reply_text("This user is already muted.")
 
@@ -225,7 +228,7 @@ def temp_mute(update: Update, context: CallbackContext) -> str:
         if excp.message == "Reply message not found":
             # Do not reply
             message.reply_text(f"Muted for {time_val}!", quote=False)
-            return log
+            return log_message
         else:
             log.warning(update)
             log.exception(

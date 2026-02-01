@@ -67,7 +67,10 @@ def is_user_admin(update: Update, user_id: int, member: ChatMember = None) -> bo
             # while saving it in cache for future usage...
             chat_admins = dispatcher.bot.getChatAdministrators(chat.id)
             admin_list = [x.user.id for x in chat_admins]
-            ADMIN_CACHE[chat.id] = admin_list
+            try:
+                ADMIN_CACHE[chat.id] = admin_list
+            except KeyError:
+                pass
 
             return user_id in admin_list
 
@@ -77,7 +80,10 @@ def is_bot_admin(chat: Chat, bot_id: int, bot_member: ChatMember = None) -> bool
         return True
 
     if not bot_member:
-        bot_member = chat.get_member(bot_id)
+        try:
+            bot_member = chat.get_member(bot_id)
+        except BadRequest:
+            return False
 
     return bot_member.status in ("administrator", "creator")
 
