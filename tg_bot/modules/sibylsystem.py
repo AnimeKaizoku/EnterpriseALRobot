@@ -21,7 +21,7 @@ from tg_bot.modules.helper_funcs.decorators import rate_limit
 from . import ALL_MODULES
 from .log_channel import loggable
 from .sql.users_sql import get_user_com_chats
-from .helper_funcs.chat_status import connection_status, is_user_admin, user_admin
+from .helper_funcs.chat_status import connection_status, is_user_admin, user_admin, is_bot_admin
 from .helper_funcs.extraction import extract_user
 
 try:
@@ -210,6 +210,9 @@ def sibyl_ban(update: Update, context: CallbackContext) -> Optional[str]:
     if not does_chat_sibylban(chat.id):
         return
 
+    if not is_bot_admin(chat, bot.id):
+        return
+
     mem = chat.get_member(user.id)
     if mem.status not in ["member", "left"]:
         return
@@ -320,8 +323,10 @@ def handle_sibyl_banned(user, data):
             log_stat, act = get_sibyl_setting(c.id)
 
             if act in {1, 2}:
-                # ban user without spamming chat even if its interactive
-                bot.ban_chat_member(chat_id=c, user_id=user.id)
+                try:
+                    bot.ban_chat_member(chat_id=c, user_id=user.id)
+                except BadRequest:
+                    pass
 
             if log_stat:
                 log_msg = "#SIBYL_BAN #{}".format(", #".join(data.ban_flags)) if data.ban_flags else "#SIBYL_BAN"

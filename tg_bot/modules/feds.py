@@ -857,46 +857,54 @@ def fed_ban(update, context):  # sourcery no-metrics
     )
     # Send message to owner if fednotif is enabled
     if getfednotif:
-        context.bot.send_message(
-            info["owner"],
-            "<b>FedBan reason updated</b>"
-            "\n<b>Federation:</b> {}"
-            "\n<b>Federation Admin:</b> {}"
-            "\n<b>User:</b> {}"
-            "\n<b>User ID:</b> <code>{}</code>"
-	    "\n<b>Initiated From:</b> <code>{}</code>"
-            "\n<b>Reason:</b> {}".format(
-                fed_name,
-                mention_html(user.id, user.first_name),
-                user_target,
-                fban_user_id,
-		message.chat.title,
-                reason,
-            ),
-            parse_mode="HTML",
-        )
-    # If fedlog is set, then send message, except fedlog is current chat
-    get_fedlog = sql.get_fed_log(fed_id)
-    if get_fedlog:
-        if int(get_fedlog) != int(chat.id):
+        try:
             context.bot.send_message(
-                get_fedlog,
+                info["owner"],
                 "<b>FedBan reason updated</b>"
                 "\n<b>Federation:</b> {}"
                 "\n<b>Federation Admin:</b> {}"
                 "\n<b>User:</b> {}"
                 "\n<b>User ID:</b> <code>{}</code>"
-		"\n<b>Initiated From:</b> <code>{}</code>"
+    	        "\n<b>Initiated From:</b> <code>{}</code>"
                 "\n<b>Reason:</b> {}".format(
                     fed_name,
                     mention_html(user.id, user.first_name),
                     user_target,
                     fban_user_id,
-		    message.chat.title,
+    		    message.chat.title,
                     reason,
                 ),
                 parse_mode="HTML",
             )
+        except Unauthorized:
+            # Federation owner has deactivated their account, skip notification
+            pass
+    # If fedlog is set, then send message, except fedlog is current chat
+    get_fedlog = sql.get_fed_log(fed_id)
+    if get_fedlog:
+        if int(get_fedlog) != int(chat.id):
+            try:
+                context.bot.send_message(
+                    get_fedlog,
+                    "<b>FedBan reason updated</b>"
+                    "\n<b>Federation:</b> {}"
+                    "\n<b>Federation Admin:</b> {}"
+                    "\n<b>User:</b> {}"
+                    "\n<b>User ID:</b> <code>{}</code>"
+		    "\n<b>Initiated From:</b> <code>{}</code>"
+                    "\n<b>Reason:</b> {}".format(
+                        fed_name,
+                        mention_html(user.id, user.first_name),
+                        user_target,
+                        fban_user_id,
+			message.chat.title,
+                        reason,
+                    ),
+                    parse_mode="HTML",
+                )
+            except Unauthorized:
+                # Fedlog chat is inaccessible, skip notification
+                pass
     chats_in_fed = 0
     for fedschat in fed_chats:
         chats_in_fed += 1

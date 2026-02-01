@@ -2,6 +2,7 @@ import threading
 import ast
 from sqlalchemy import Column, String, UnicodeText, Integer, Boolean
 from sqlalchemy.sql.sqltypes import BigInteger
+from sqlalchemy.exc import DataError
 from telegram.error import BadRequest, Unauthorized
 
 from tg_bot import dispatcher
@@ -669,7 +670,13 @@ def set_feds_setting(user_id: int, setting: bool):
         user_setting.should_report = setting
         FEDERATION_NOTIFICATION[str(user_id)] = setting
         SESSION.add(user_setting)
-        SESSION.commit()
+        try:
+            SESSION.commit()
+        except DataError:
+            # Handle case where user_id is too large for INTEGER column
+            # Rollback the transaction but keep the in-memory setting
+            SESSION.rollback()
+            # The setting is still stored in FEDERATION_NOTIFICATION
 
 
 def get_fed_log(fed_id):
