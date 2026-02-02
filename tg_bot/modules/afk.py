@@ -75,6 +75,8 @@ def reply_afk(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message
     userc = update.effective_user
+    if not userc:
+        return
     userc_id = userc.id
     if message.entities and message.parse_entities(
         [MessageEntity.TEXT_MENTION, MessageEntity.MENTION]

@@ -14,6 +14,7 @@ from telegram.constants import CHATMEMBER_ADMINISTRATOR, CHATMEMBER_CREATOR
 from cachetools import TTLCache
 from telegram import Chat, ChatMember, ParseMode, Update, TelegramError, User
 from telegram.ext import CallbackContext
+from telegram.error import BadRequest
 
 # stores admin in memory for 10 min.
 ADMIN_CACHE = TTLCache(maxsize=512, ttl=60 * 10)
