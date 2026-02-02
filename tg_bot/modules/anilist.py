@@ -6,11 +6,11 @@ from telegram import (
     Update,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
+    InputMediaPhoto,
 )
 import requests
-import math
-import time
-from tg_bot.modules.helper_funcs.decorators import kigcmd, rate_limit
+from tg_bot.modules.helper_funcs.decorators import kigcmd, kigcallback, rate_limit
+from tg_bot.modules.language import gs
 
 def shorten(description, info="anilist.co"):
     msg = ""
@@ -114,9 +114,30 @@ anime_query = """
       }
     }
 """
+
+anime_search_query = """
+query ($search: String) {
+  Page(perPage: 10) {
+    media(search: $search, type: ANIME) {
+      id
+      title {
+        romaji
+        english
+        native
+      }
+      startDate {
+        year
+      }
+      status
+      averageScore
+      format
+    }
+  }
+}
+"""
 character_query = """
-    query ($query: String) {
-        Character (search: $query) {
+    query ($id: Int, $query: String) {
+        Character (id: $id, search: $query) {
                id
                name {
                      first
@@ -130,6 +151,21 @@ character_query = """
                description
         }
     }
+"""
+
+character_search_query = """
+query ($query: String) {
+  Page(perPage: 10) {
+    characters(search: $query) {
+      id
+      name {
+        first
+        last
+        full
+      }
+    }
+  }
+}
 """
 
 manga_query = """
@@ -154,6 +190,27 @@ query ($id: Int,$search: String) {
           bannerImage
       }
     }
+"""
+
+manga_search_query = """
+query ($search: String) {
+  Page(perPage: 10) {
+    media(search: $search, type: MANGA) {
+      id
+      title {
+        romaji
+        english
+        native
+      }
+      startDate {
+        year
+      }
+      status
+      averageScore
+      format
+    }
+  }
+}
 """
 
 
@@ -194,13 +251,27 @@ def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
         search = search[1]
     variables = {"search": search}
     json = requests.post(
-        url, json={"query": anime_query, "variables": variables}
+        url, json={"query": anime_search_query, "variables": variables}
     ).json()
     if "errors" in json.keys():
         update.effective_message.reply_text("Anime not found")
         return
-    if json:
+    media_list = json["data"]["Page"]["media"]
+    if not media_list:
+        update.effective_message.reply_text("No anime found")
+        return
+    if len(media_list) == 1:
+        # directly show
+        anime_id = media_list[0]["id"]
+        variables = {"id": anime_id}
+        json = requests.post(
+            url, json={"query": anime_query, "variables": variables}
+        ).json()
+        if "errors" in json.keys():
+            update.effective_message.reply_text("Anime not found")
+            return
         json = json["data"]["Media"]
+        # then the rest of the code
         msg = f"*{json['title']['romaji']}*(`{json['title']['native']}`)\n*Type*: {json['format']}\n*Status*: {json['status']}\n*Episodes*: {json.get('episodes', 'N/A')}\n*Duration*: {json.get('duration', 'N/A')} Per Ep.\n*Score*: {json['averageScore']}\n*Genres*: `"
         for x in json["genres"]:
             msg += f"{x}, "
@@ -252,6 +323,19 @@ def anime(update: Update, context: CallbackContext):  # sourcery no-metrics
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
+    else:
+        buttons = []
+        for media in media_list:
+            title = media["title"]["romaji"] or media["title"]["english"] or media["title"]["native"]
+            year = media.get("startDate", {}).get("year", "N/A")
+            status = media.get("status", "N/A")
+            score = media.get("averageScore", "N/A")
+            button_text = f"{title} ({year}) [{status}]"
+            buttons.append([InlineKeyboardButton(button_text, callback_data=f"anilist_anime_{media['id']}_{update.effective_user.id}")])
+        update.effective_message.reply_text(
+            "Select an anime:",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
 
 @kigcmd(command="character")
 @rate_limit(40, 60)
@@ -264,12 +348,25 @@ def character(update: Update, context: CallbackContext):
     search = search[1]
     variables = {"query": search}
     json = requests.post(
-        url, json={"query": character_query, "variables": variables}
+        url, json={"query": character_search_query, "variables": variables}
     ).json()
     if "errors" in json.keys():
         update.effective_message.reply_text("Character not found")
         return
-    if json:
+    char_list = json["data"]["Page"]["characters"]
+    if not char_list:
+        update.effective_message.reply_text("No character found")
+        return
+    if len(char_list) == 1:
+        # directly show
+        char_id = char_list[0]["id"]
+        variables = {"id": char_id}
+        json = requests.post(
+            url, json={"query": character_query, "variables": variables}
+        ).json()
+        if "errors" in json.keys():
+            update.effective_message.reply_text("Character not found")
+            return
         json = json["data"]["Character"]
         msg = f"*{json.get('name').get('full')}*(`{json.get('name').get('native')}`)\n"
         description = bs4.BeautifulSoup(f"{json['description']}", features='html.parser').text
@@ -286,6 +383,15 @@ def character(update: Update, context: CallbackContext):
             update.effective_message.reply_text(
                 msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN
             )
+    else:
+        buttons = []
+        for char in char_list:
+            name = char["name"]["full"] or f"{char['name']['first']} {char['name']['last']}"
+            buttons.append([InlineKeyboardButton(name, callback_data=f"anilist_char_{char['id']}_{update.effective_user.id}")])
+        update.effective_message.reply_text(
+            "Select a character:",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
 
 @kigcmd(command="manga")
 @rate_limit(40, 60)
@@ -298,14 +404,27 @@ def manga(update: Update, context: CallbackContext):
     search = search[1]
     variables = {"search": search}
     json = requests.post(
-        url, json={"query": manga_query, "variables": variables}
+        url, json={"query": manga_search_query, "variables": variables}
     ).json()
-    msg = ""
     if "errors" in json.keys():
         update.effective_message.reply_text("Manga not found")
         return
-    if json:
+    media_list = json["data"]["Page"]["media"]
+    if not media_list:
+        update.effective_message.reply_text("No manga found")
+        return
+    if len(media_list) == 1:
+        # directly show
+        manga_id = media_list[0]["id"]
+        variables = {"id": manga_id}
+        json = requests.post(
+            url, json={"query": manga_query, "variables": variables}
+        ).json()
+        if "errors" in json.keys():
+            update.effective_message.reply_text("Manga not found")
+            return
         json = json["data"]["Media"]
+        msg = ""
         title, title_native = json["title"].get("romaji", False), json["title"].get(
             "native", False
         )
@@ -353,11 +472,196 @@ def manga(update: Update, context: CallbackContext):
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
+    else:
+        buttons = []
+        for media in media_list:
+            title = media["title"]["romaji"] or media["title"]["english"] or media["title"]["native"]
+            year = media.get("startDate", {}).get("year", "N/A")
+            status = media.get("status", "N/A")
+            score = media.get("averageScore", "N/A")
+            button_text = f"{title} ({year}) [{status}]"
+            buttons.append([InlineKeyboardButton(button_text, callback_data=f"anilist_manga_{media['id']}_{update.effective_user.id}")])
+        update.effective_message.reply_text(
+            "Select a manga:",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
 
 
-from tg_bot.modules.language import gs
+@kigcallback(pattern=r"anilist_anime_(\d+)_(\d+)")
+def anime_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    data = query.data
+    parts = data.split('_')
+    anime_id = int(parts[2])
+    user_id = int(parts[3])
+    if query.from_user.id != user_id:
+        query.edit_message_text("This selection is not for you!")
+        return
+    variables = {"id": anime_id}
+    json = requests.post(
+        url, json={"query": anime_query, "variables": variables}
+    ).json()
+    if "errors" in json.keys():
+        query.edit_message_text("Anime not found")
+        return
+    json = json["data"]["Media"]
+    msg = f"*{json['title']['romaji']}*(`{json['title']['native']}`)\n*Type*: {json['format']}\n*Status*: {json['status']}\n*Episodes*: {json.get('episodes', 'N/A')}\n*Duration*: {json.get('duration', 'N/A')} Per Ep.\n*Score*: {json['averageScore']}\n*Genres*: `"
+    for x in json["genres"]:
+        msg += f"{x}, "
+    msg = msg[:-2] + "`\n"
+    msg += "*Studios*: `"
+    for x in json["studios"]["nodes"]:
+        msg += f"{x['name']}, "
+    msg = msg[:-2] + "`\n"
+    info = json.get("siteUrl")
+    trailer = json.get("trailer", None)
+    if trailer:
+        trailer_id = trailer.get("id", None)
+        site = trailer.get("site", None)
+        if site == "youtube":
+            trailer = f"https://youtu.be/{trailer_id}"
+    description = (
+       bs4.BeautifulSoup(json.get("description", "N/A"), features='html.parser').text
+    )
+    msg += shorten(description, info)
+    image = json.get("bannerImage", None)
+    if trailer:
+        buttons = [
+            [
+                InlineKeyboardButton("More Info", url=info),
+                InlineKeyboardButton("Trailer 🎬", url=trailer),
+            ]
+        ]
+    else:
+        buttons = [[InlineKeyboardButton("More Info", url=info)]]
+    if image:
+        try:
+            query.edit_message_media(
+                media=InputMediaPhoto(image, caption=msg, parse_mode=ParseMode.MARKDOWN),
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+        except Exception:
+            msg += f" [〽️]({image})"
+            query.edit_message_text(
+                msg,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+    else:
+        query.edit_message_text(
+            msg,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+
+
+@kigcallback(pattern=r"anilist_char_(\d+)_(\d+)")
+def character_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    data = query.data
+    parts = data.split('_')
+    char_id = int(parts[2])
+    user_id = int(parts[3])
+    if query.from_user.id != user_id:
+        query.edit_message_text("This selection is not for you!")
+        return
+    variables = {"id": char_id}
+    json = requests.post(
+        url, json={"query": character_query, "variables": variables}
+    ).json()
+    if "errors" in json.keys():
+        query.edit_message_text("Character not found")
+        return
+    json = json["data"]["Character"]
+    msg = f"*{json.get('name').get('full')}*(`{json.get('name').get('native')}`)\n"
+    description = bs4.BeautifulSoup(f"{json['description']}", features='html.parser').text
+    site_url = json.get("siteUrl")
+    msg += shorten(description, site_url)
+    image = json.get("image", None)
+    if image:
+        image = image.get("large")
+        query.edit_message_media(
+            media=InputMediaPhoto(image, caption=msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN),
+        )
+    else:
+        query.edit_message_text(
+            msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN
+        )
+
+
+@kigcallback(pattern=r"anilist_manga_(\d+)_(\d+)")
+def manga_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    chat_id = update.effective_chat.id
+    query.answer()
+    data = query.data
+    parts = data.split('_')
+    manga_id = int(parts[2])
+    user_id = int(parts[3])
+    if query.from_user.id != user_id:
+        query.edit_message_text("This selection is not for you!")
+        return
+    variables = {"id": manga_id}
+    json = requests.post(
+        url, json={"query": manga_query, "variables": variables}
+    ).json()
+    if "errors" in json.keys():
+        query.edit_message_text("Manga not found")
+        return
+    json = json["data"]["Media"]
+    msg = ""
+    title, title_native = json["title"].get("romaji", False), json["title"].get(
+        "native", False
+    )
+    start_date, status, score = (
+        json["startDate"].get("year", False),
+        json.get("status", False),
+        json.get("averageScore", False),
+    )
+    if title:
+        msg += f"*{title}*"
+        if title_native:
+            msg += f"(`{title_native}`)"
+    if start_date:
+        msg += f"\n*Start Date* - `{start_date}`"
+    if status:
+        msg += f"\n*Status* - `{status}`"
+    if score:
+        msg += f"\n*Score* - `{score}`"
+    msg += "\n*Genres* - "
+    for x in json.get("genres", []):
+        msg += f"{x}, "
+    msg = msg[:-2]
+    info = json["siteUrl"]
+    buttons = [[InlineKeyboardButton("More Info", url=info)]]
+    image = json.get("bannerImage", False)
+    msg += f"_{bs4.BeautifulSoup(json.get('description', None), features='html.parser').text}_"
+    if image:
+        try:
+            query.edit_message_media(
+                media=InputMediaPhoto(image, caption=msg, parse_mode=ParseMode.MARKDOWN),
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+        except Exception:
+            msg += f" [〽️]({image})"
+            query.edit_message_text(
+                msg,
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(buttons),
+            )
+    else:
+        query.edit_message_text(
+            msg,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+
+
+    return gs(chat_id, "anilist_help")
+
+__mod_name__ = "AniList"
 
 def get_help(chat):
     return gs(chat, "anilist_help")
-
-__mod_name__ = "AniList"
